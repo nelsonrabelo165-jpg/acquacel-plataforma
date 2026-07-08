@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquacel · Atualizar Carteira</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F8FAFF; --card:#FFFFFF; --card2:#F0F4FF; --border:#E2E8F0; --border2:#CBD5E1;
+  --primary:#1B4FD8; --primary-dim:rgba(27,79,216,.10); --primary-border:rgba(27,79,216,.25);
+  --text:#1A202C; --muted:#718096; --dim:#222;
+  --green:#22C55E; --green-dim:rgba(34,197,94,.1); --green-border:rgba(34,197,94,.3);
+  --red:#EF4444; --red-dim:rgba(239,68,68,.1);
+  --yellow:#EAB308; --yellow-dim:rgba(234,179,8,.1);
+  --blue:#60A5FA; --blue-dim:rgba(96,165,250,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;padding-bottom:60px}
+
+/* ── HEADER ── */
+.header{background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px)}
+.header-inner{max-width:640px;margin:0 auto;height:56px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;color:var(--primary)}
+.logo-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.user-badge{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--card);border:1px solid var(--border2);border-radius:20px;font-size:12px;cursor:pointer;transition:all .15s}
+.user-badge:hover{border-color:var(--primary)}
+.user-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* ── LAYOUT ── */
+.wrap{max-width:640px;margin:0 auto;padding:24px 20px}
+
+/* ── LOGIN ── */
+.login-hero{text-align:center;padding:40px 0 32px}
+.login-icon{font-size:48px;margin-bottom:16px}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--muted);line-height:1.6}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.field input,.field select{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--primary)}
+.field input::placeholder{color:var(--muted)}
+
+/* ── STEPS ── */
+.steps{display:flex;margin-bottom:28px;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.step-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-right:1px solid var(--border);background:var(--card);transition:all .2s;cursor:default}
+.step-item:last-child{border-right:none}
+.step-item .si-num{width:24px;height:24px;border-radius:50%;background:var(--dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);transition:all .2s;margin-bottom:2px}
+.step-item.active{background:var(--primary-dim);color:var(--primary)}
+.step-item.active .si-num{background:var(--primary);color:#000}
+.step-item.done{background:var(--green-dim);color:var(--green)}
+.step-item.done .si-num{background:var(--green);color:#000}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px}
+.card-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── DROP ZONE ── */
+.drop-zone{border:2px dashed var(--border2);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.drop-zone:hover,.drop-zone.over{border-color:var(--primary);background:var(--primary-dim)}
+.drop-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:36px;margin-bottom:10px}
+.drop-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.drop-sub{font-size:12px;color:var(--muted);line-height:1.5}
+.file-selecionado{background:var(--green-dim);border:1px solid var(--green-border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:10px}
+
+/* ── MAP ── */
+.map-row{display:grid;grid-template-columns:120px 20px 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.map-label{font-size:12px;font-weight:600;padding:8px 10px;background:var(--primary-dim);border:1px solid var(--primary-border);border-radius:8px;color:var(--primary);text-align:center}
+.map-label.opt{background:var(--card2);border-color:var(--border2);color:var(--muted)}
+.map-arrow{text-align:center;color:var(--muted);font-size:13px}
+.map-sel{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:9px 10px;color:var(--text);font-size:12px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.map-sel:focus{border-color:var(--primary)}
+.map-sel.ok{border-color:var(--green);color:var(--green)}
+
+/* ── PLANO MAP ── */
+.plano-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.plano-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--card2);border:1px solid var(--border2);border-radius:20px;font-size:11px}
+.plano-chip-val{font-family:'DM Mono',monospace;color:var(--yellow)}
+.plano-chip select{background:transparent;border:none;color:var(--text);font-size:11px;outline:none;font-family:'Barlow',sans-serif;padding:0}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat-box{background:var(--card2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)}
+.stat-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* ── PREVIEW TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:#131313}
+th{padding:8px 10px;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.ok{color:var(--green)} .warn{color:var(--yellow)} .err{color:var(--red)} .dim{color:var(--muted)}
+
+/* ── ALERT ── */
+.alert{padding:10px 14px;border-radius:8px;font-size:12px;line-height:1.6;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px}
+.alert-ok{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green)}
+.alert-warn{background:var(--yellow-dim);border:1px solid rgba(234,179,8,.25);color:var(--yellow)}
+.alert-err{background:var(--red-dim);border:1px solid rgba(239,68,68,.25);color:var(--red)}
+.alert-info{background:var(--blue-dim);border:1px solid rgba(96,165,250,.25);color:var(--blue)}
+
+/* ── BUTTONS ── */
+.btn-primary{padding:14px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),#3B82F6);color:#000;font-size:14px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:opacity .2s;width:100%}
+.btn-primary:hover{opacity:.9}
+.btn-primary:disabled{background:var(--dim);color:var(--muted);cursor:default;opacity:1}
+.btn-sec{padding:12px 20px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;width:100%}
+.btn-sec:hover{border-color:var(--primary);color:var(--primary)}
+
+/* ── PROGRESS ── */
+.progress-steps{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.prog-step{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:500;transition:all .3s}
+.prog-step.idle{background:var(--card2);color:var(--muted)}
+.prog-step.loading{background:var(--blue-dim);border:1px solid rgba(96,165,250,.2);color:var(--blue)}
+.prog-step.done{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green)}
+.prog-step.err{background:var(--red-dim);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.prog-icon{font-size:16px;flex-shrink:0}
+
+/* ── SUCCESS ── */
+.success-screen{text-align:center;padding:32px 20px}
+.success-icon{font-size:56px;margin-bottom:16px}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--green);margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.success-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.success-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.success-stat-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--primary)}
+.success-stat-label{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ── SEC ── */
+.sec{display:none}
+.sec.active{display:block}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--primary);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── SPINNER ── */
+.spinner{width:20px;height:20px;border:2px solid rgba(96,165,250,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="logo">Acquacel</div>
+      <div class="logo-sub">Atualização de Carteira</div>
+    </div>
+    <div class="user-badge" id="userBadge" style="display:none" onclick="fazerLogout()">
+      <div class="user-dot"></div>
+      <span id="userBadgeNome">—</span>
+      <span style="color:var(--muted)">· Sair</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ── SEC 0: LOGIN ── -->
+  <div class="sec active" id="sec0">
+    <div class="login-hero">
+      <div class="login-icon">🏋️</div>
+      <div class="login-title">Atualizar carteira de alunos</div>
+      <div class="login-sub">Importe a lista do seu sistema de gestão e atualize o Acquacel com um clique. Rápido, seguro e sem precisar de TI.</div>
+    </div>
+    <div class="login-card">
+      <div class="field">
+        <label>E-mail do gestor</label>
+        <input type="email" id="loginEmail" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="loginSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <button class="btn-primary" onclick="fazerLogin()" style="margin-top:4px" id="btnLogin">Entrar</button>
+      <div id="loginErro" style="display:none;margin-top:10px;text-align:center;font-size:12px;color:var(--red)"></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px">
+      Credenciais fornecidas pela equipe Acquacel · <a href="mailto:suporte@gefit.com.br" style="color:var(--primary)">suporte@gefit.com.br</a>
+    </div>
+  </div>
+
+  <!-- ── SEC 1-4: FLUXO ── -->
+  <div class="sec" id="secApp">
+
+    <!-- STEPS BAR -->
+    <div class="steps" id="stepsBar">
+      <div class="step-item active" id="si1"><div class="si-num">1</div>Upload</div>
+      <div class="step-item" id="si2"><div class="si-num">2</div>Mapear</div>
+      <div class="step-item" id="si3"><div class="si-num">3</div>Revisar</div>
+      <div class="step-item" id="si4"><div class="si-num">4</div>Importar</div>
+    </div>
+
+    <!-- ── STEP 1: UPLOAD ── -->
+    <div class="sec active" id="step1">
+      <div class="card">
+        <div class="card-title">Seu sistema de gestão</div>
+        <div class="field">
+          <label>Sistema usado pela academia</label>
+          <select id="sistemaSel" onchange="updateDica()">
+            <option value="">Selecionar sistema...</option>
+            <option value="sca">SCA</option>
+            <option value="evo">EVO</option>
+            <option value="nextfit">NextFit</option>
+            <option value="tecnofit">Tecnofit</option>
+            <option value="wafitness">WA Fitness</option>
+            <option value="excel">Excel / planilha própria</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div id="dicaSistema" style="display:none" class="alert alert-info"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Arquivo de alunos</div>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" class="drop-input" id="fileInput" accept=".csv,.txt,.xlsx,.xls" onchange="processarArquivo(this.files[0])">
+          <div class="drop-icon">📂</div>
+          <div class="drop-title">Arraste o arquivo aqui</div>
+          <div class="drop-sub">CSV, Excel (.xlsx) ou TXT<br>Qualquer separador: vírgula, ponto-e-vírgula ou tabulação</div>
+        </div>
+        <div id="fileInfo" style="display:none" class="file-selecionado">
+          <span style="font-size:20px">📄</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600" id="fileNome">—</div>
+            <div style="font-size:11px;color:var(--muted)" id="fileInfo2">—</div>
+          </div>
+          <span style="color:var(--green);font-size:18px">✓</span>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <span>💡</span>
+        <div>Exporte a <strong>lista de alunos ativos</strong> do seu sistema. Não precisa ser formatada — o conversor detecta as colunas automaticamente.</div>
+      </div>
+
+      <button class="btn-primary" id="btnProStep1" onclick="irStep(2)" disabled>Próximo →</button>
+    </div>
+
+    <!-- ── STEP 2: MAPEAMENTO ── -->
+    <div class="sec" id="step2">
+      <div class="card">
+        <div class="card-title">Colunas detectadas no arquivo</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Confirme ou ajuste qual coluna do seu arquivo corresponde a cada campo do sistema:</div>
+        <div id="mapRows"></div>
+      </div>
+
+      <div id="planoMapWrap" style="display:none" class="card">
+        <div class="card-title">Equivalência de planos</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Valores encontrados → padrão Acquacel:</div>
+        <div id="planoChips"></div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn-sec" onclick="irStep(1)">← Voltar</button>
+        <button class="btn-primary" onclick="converter()">Converter →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: REVISÃO ── -->
+    <div class="sec" id="step3">
+      <div class="stats-grid" id="statsGrid"></div>
+      <div id="alertasDiv"></div>
+
+      <div class="card">
+        <div class="card-title">Preview — primeiros 10 alunos</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Matrícula</th><th>Plano</th><th>Vencimento</th><th>Idade</th><th>Telefone</th><th>Status</th></tr></thead>
+            <tbody id="previewTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Modo de importação</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px">
+            <input type="radio" name="modoImport" value="adicionar" checked style="margin-top:2px;accent-color:var(--primary)">
+            <div>
+              <div style="font-size:13px;font-weight:600">Adicionar novos alunos</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Insere apenas alunos que ainda não existem no banco (por matrícula ou nome)</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px">
+            <input type="radio" name="modoImport" value="atualizar" style="margin-top:2px;accent-color:var(--primary)">
+            <div>
+              <div style="font-size:13px;font-weight:600">Adicionar e atualizar</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Insere novos e atualiza plano/vencimento dos já existentes</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px 12px;background:var(--red-dim);border:1px solid rgba(239,68,68,.2);border-radius:8px">
+            <input type="radio" name="modoImport" value="substituir" style="margin-top:2px;accent-color:var(--red)">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--red)">⚠️ Substituir carteira completa</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Remove todos os alunos atuais e substitui pela nova lista. Use com cuidado.</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn-sec" onclick="irStep(2)">← Voltar</button>
+        <button class="btn-primary" onclick="irStep(4)">✅ Importar agora</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: IMPORTANDO ── -->
+    <div class="sec" id="step4">
+      <div class="card">
+        <div class="card-title">Importando para o Acquacel</div>
+        <div class="progress-steps" id="progSteps">
+          <div class="prog-step idle" id="prog1"><span class="prog-icon">🔐</span> Verificando credenciais...</div>
+          <div class="prog-step idle" id="prog2"><span class="prog-icon">🔍</span> Verificando alunos existentes...</div>
+          <div class="prog-step idle" id="prog3"><span class="prog-icon">💾</span> Importando alunos...</div>
+          <div class="prog-step idle" id="prog4"><span class="prog-icon">✅</span> Finalizando...</div>
+        </div>
+        <div id="importLog" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;max-height:120px;overflow-y:auto;background:#F8FAFF;border-radius:6px;padding:10px;margin-top:10px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- ── STEP 5: SUCESSO ── -->
+    <div class="sec" id="step5">
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Carteira atualizada!</div>
+        <div class="success-sub" id="successSub">Alunos importados com sucesso para o sistema Acquacel.</div>
+        <div class="success-stats" id="successStats"></div>
+        <button class="btn-primary" onclick="novaImportacao()" style="margin-bottom:10px">📂 Importar outro arquivo</button>
+        <button class="btn-sec" onclick="window.location.href='sistema_integrado_v3.html'">← Ir para o sistema</button>
+      </div>
+    </div>
+
+  </div><!-- /secApp -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+let sb, sessaoUser, academiaId, treinadorId;
+
+// ── STATE ─────────────────────────────────────────────────────
+let rawRows=[], headers=[], sep=',', mapeamento={}, planoMap={}, dadosConvertidos=[];
+
+const CAMPOS = [
+  {key:'nome',      label:'Nome',       obrig:true},
+  {key:'matricula', label:'Matrícula',  obrig:false},
+  {key:'plano',     label:'Plano',      obrig:false},
+  {key:'vencimento',label:'Vencimento', obrig:false},
+  {key:'idade',     label:'Idade',      obrig:false},
+  {key:'telefone',  label:'Telefone',   obrig:false},
+];
+
+const AUTO_KEYS = {
+  nome:       ['nome','name','aluno','cliente','member'],
+  matricula:  ['matricula','matr','código','codigo','code','id','reg'],
+  plano:      ['plano','plan','modalidade','produto','contrato','tipo'],
+  vencimento: ['vencimento','venc','validade','expir','fim','data_fim','dt_venc','prazo'],
+  idade:      ['idade','age','anos'],
+  telefone:   ['telefone','fone','celular','whatsapp','tel','phone'],
+};
+
+const PLANO_KW = {
+  anual:       ['anual','annual','ano','12','yearly'],
+  mensal:      ['mensal','mes','monthly','mês'],
+  recorrencia: ['recorr','recur','debito','débito','auto'],
+};
+
+const DICAS = {
+  sca:     '📌 SCA: Relatórios → Clientes → Exportar → CSV',
+  evo:     '📌 EVO: Relatórios → Alunos Ativos → Exportar CSV',
+  nextfit: '📌 NextFit: Pessoas → Alunos → Filtrar ativos → Exportar',
+  tecnofit:'📌 Tecnofit: Relatórios → Matriculados → Exportar CSV',
+  wafitness:'📌 WA Fitness: Alunos → Lista → Exportar Excel',
+  excel:   '📌 Excel: Salve como "CSV UTF-8" antes de fazer upload',
+};
+
+// ── LOGIN ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  const { data:{session} } = await sb.auth.getSession();
+  if(session) await loginSucesso(session.user);
+});
+
+async function fazerLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const senha = document.getElementById('loginSenha').value;
+  const btn = document.getElementById('btnLogin');
+  const erro = document.getElementById('loginErro');
+  if(!email||!senha){ showErr('Preencha e-mail e senha'); return; }
+
+  btn.disabled=true; btn.textContent='Entrando...';
+  erro.style.display='none';
+
+  const {data,error} = await sb.auth.signInWithPassword({email,password:senha});
+  if(error){ showErr('E-mail ou senha incorretos'); btn.disabled=false; btn.textContent='Entrar'; return; }
+  await loginSucesso(data.user);
+}
+
+async function loginSucesso(user){
+  sessaoUser = user;
+
+  // Buscar primeiro em treinadores, depois em gestores
+  let perfil = null;
+  let tipo = null;
+
+  const {data:t} = await sb.from('treinadores').select('id,nome,academia_id').eq('user_id',user.id).single();
+  if(t){ perfil=t; tipo='treinador'; treinadorId=t.id; }
+
+  if(!perfil){
+    const {data:g} = await sb.from('gestores').select('id,nome,academia_id').eq('user_id',user.id).single();
+    if(g){ perfil=g; tipo='gestor'; treinadorId=g.id; }
+  }
+
+  if(!perfil){ showErr('Perfil não encontrado. Verifique suas credenciais com a equipe Acquacel.'); return; }
+
+  academiaId = perfil.academia_id;
+
+  // Buscar nome academia
+  const {data:acad} = await sb.from('academias').select('nome').eq('id',academiaId).single();
+
+  document.getElementById('userBadgeNome').textContent = (acad?.nome||'Academia') + ' · ' + perfil.nome;
+  document.getElementById('userBadge').style.display='flex';
+  document.getElementById('sec0').classList.remove('active');
+  document.getElementById('secApp').classList.add('active');
+}
+
+function showErr(msg){
+  const el = document.getElementById('loginErro');
+  el.textContent=msg; el.style.display='block';
+}
+
+async function fazerLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// ── DICA SISTEMA ──────────────────────────────────────────────
+function updateDica(){
+  const v = document.getElementById('sistemaSel').value;
+  const d = document.getElementById('dicaSistema');
+  if(DICAS[v]){ d.innerHTML=DICAS[v]; d.style.display='flex'; }
+  else d.style.display='none';
+}
+
+// ── UPLOAD ────────────────────────────────────────────────────
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');const f=e.dataTransfer.files[0];if(f){document.getElementById('fileInput').files=e.dataTransfer.files;processarArquivo(f);}});
+
+function processarArquivo(file){
+  if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  document.getElementById('fileNome').textContent = file.name;
+  document.getElementById('fileInfo2').textContent = (file.size/1024).toFixed(1)+' KB';
+  document.getElementById('fileInfo').style.display='flex';
+
+  const reader = new FileReader();
+  if(ext==='csv'||ext==='txt'){
+    reader.onload=e=>parseCSV(e.target.result);
+    reader.readAsText(file,'UTF-8');
+  } else {
+    showToast('Excel: salve como CSV UTF-8 e tente novamente');
+  }
+}
+
+function parseCSV(text){
+  const fl = text.split('\n')[0];
+  if(fl.split(';').length > fl.split(',').length) sep=';';
+  else if(fl.split('\t').length > fl.split(',').length) sep='\t';
+  else sep=',';
+
+  const lines = text.split('\n').map(l=>l.trim()).filter(l=>l);
+  if(lines.length<2){ showToast('Arquivo vazio'); return; }
+
+  headers = parseRow(lines[0]);
+  rawRows = lines.slice(1).map(parseRow).filter(r=>r.some(c=>c));
+
+  document.getElementById('fileInfo2').textContent = `${rawRows.length} alunos · ${headers.length} colunas detectadas`;
+  document.getElementById('btnProStep1').disabled=false;
+  autoMapear();
+}
+
+function parseRow(linha){
+  const res=[]; let f='', q=false;
+  for(let i=0;i<linha.length;i++){
+    const c=linha[i];
+    if(c==='"') q=!q;
+    else if((c===sep||c===','||c===';')&&!q){res.push(f.trim());f='';}
+    else f+=c;
+  }
+  res.push(f.trim()); return res;
+}
+
+// ── MAPEAMENTO ────────────────────────────────────────────────
+function autoMapear(){
+  mapeamento={};
+  CAMPOS.forEach(campo=>{
+    const kws = AUTO_KEYS[campo.key]||[];
+    headers.forEach((h,i)=>{
+      const hl = h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if(kws.some(k=>hl.includes(k)) && mapeamento[campo.key]===undefined) mapeamento[campo.key]=i;
+    });
+  });
+}
+
+function renderMapeamento(){
+  const c = document.getElementById('mapRows');
+  c.innerHTML = CAMPOS.map(campo=>{
+    const sel = mapeamento[campo.key];
+    return `<div class="map-row">
+      <div class="map-label ${campo.obrig?'':'opt'}">${campo.label}${campo.obrig?' *':''}</div>
+      <div class="map-arrow">←</div>
+      <select class="map-sel ${sel!==undefined?'ok':''}" id="ms-${campo.key}" onchange="setMap('${campo.key}',this)">
+        <option value="-1">${campo.obrig?'— selecionar —':'— não mapear —'}</option>
+        ${headers.map((h,i)=>`<option value="${i}" ${sel===i?'selected':''}>${h}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+  renderPlanoMap();
+}
+
+function setMap(campo, sel){
+  const v=parseInt(sel.value);
+  mapeamento[campo]=v>=0?v:undefined;
+  sel.className='map-sel'+(v>=0?' ok':'');
+  if(campo==='plano') renderPlanoMap();
+}
+
+function renderPlanoMap(){
+  const idx=mapeamento['plano'];
+  if(idx===undefined){document.getElementById('planoMapWrap').style.display='none';return;}
+  const vals=[...new Set(rawRows.map(r=>r[idx]).filter(Boolean))];
+  if(!vals.length){document.getElementById('planoMapWrap').style.display='none';return;}
+
+  vals.forEach(v=>{
+    if(!planoMap[v]){
+      const vl=v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      for(const[p,ks] of Object.entries(PLANO_KW)){if(ks.some(k=>vl.includes(k))){planoMap[v]=p;break;}}
+      if(!planoMap[v]) planoMap[v]='mensal';
+    }
+  });
+
+  document.getElementById('planoMapWrap').style.display='block';
+  document.getElementById('planoChips').innerHTML = `<div class="plano-chips">${
+    vals.map(v=>`<div class="plano-chip">
+      <span class="plano-chip-val">${v}</span>
+      <span style="color:var(--muted)">→</span>
+      <select class="plano-chip select" onchange="planoMap['${v}']=this.value">
+        <option value="anual" ${planoMap[v]==='anual'?'selected':''}>anual</option>
+        <option value="mensal" ${planoMap[v]==='mensal'?'selected':''}>mensal</option>
+        <option value="recorrencia" ${planoMap[v]==='recorrencia'?'selected':''}>recorrencia</option>
+      </select>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ── CONVERTER ─────────────────────────────────────────────────
+function converter(){
+  if(mapeamento['nome']===undefined){showToast('⚠️ Selecione a coluna Nome');return;}
+
+  dadosConvertidos = rawRows.map(row=>{
+    const g = k=>{const i=mapeamento[k]; return i!==undefined?(row[i]||'').trim():'';};
+    const nome=g('nome'); if(!nome) return null;
+    let plano=g('plano');
+    if(plano&&planoMap[plano]) plano=planoMap[plano];
+    if(!['anual','mensal','recorrencia'].includes(plano)) plano=plano?'mensal':'';
+    return {nome, matricula:g('matricula'), plano, vencimento:normData(g('vencimento')), idade:g('idade').replace(/\D/g,''), telefone:g('telefone').replace(/[^\d()\-+ ]/g,'')};
+  }).filter(Boolean);
+
+  renderRevisao();
+  irStep(3);
+}
+
+function normData(v){
+  if(!v) return '';
+  v=v.trim();
+  let m;
+  if((m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))) return v;
+  if((m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/))) return `${m[3]}/${m[2]}/${m[1]}`;
+  if((m=v.match(/^(\d{2})-(\d{2})-(\d{4})$/))) return `${m[1]}/${m[2]}/${m[3]}`;
+  if((m=v.match(/^(\d{2})\.(\d{2})\.(\d{4})$/))) return `${m[1]}/${m[2]}/${m[3]}`;
+  if((m=v.match(/^(\d{2})\/(\d{2})\/(\d{2})$/))){ const a=parseInt(m[3])<50?'20'+m[3]:'19'+m[3]; return `${m[1]}/${m[2]}/${a}`; }
+  if(/^\d{5}$/.test(v)){ const d=new Date((parseInt(v)-25569)*86400*1000); return d.toLocaleDateString('pt-BR'); }
+  return v;
+}
+
+function renderRevisao(){
+  const total=dadosConvertidos.length;
+  const semPlano=dadosConvertidos.filter(r=>!r.plano).length;
+  const semVenc=dadosConvertidos.filter(r=>!r.vencimento).length;
+  const hoje=new Date();
+  const vencidos=dadosConvertidos.filter(r=>{
+    if(!r.vencimento) return false;
+    const [d,m,a]=r.vencimento.split('/').map(Number);
+    return new Date(a,m-1,d)<hoje;
+  }).length;
+
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-box"><div class="stat-val ok">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat-box"><div class="stat-val ${semPlano?'warn':'ok'}">${total-semPlano}</div><div class="stat-label">Com plano</div></div>
+    <div class="stat-box"><div class="stat-val ${semVenc?'warn':'ok'}">${total-semVenc}</div><div class="stat-label">Com venc.</div></div>
+    <div class="stat-box"><div class="stat-val ${vencidos?'err':'ok'}">${vencidos}</div><div class="stat-label">Vencidos</div></div>`;
+
+  let al='';
+  if(semPlano) al+=`<div class="alert alert-warn"><span>⚠️</span><div>${semPlano} aluno(s) sem plano → serão importados como "mensal"</div></div>`;
+  if(semVenc)  al+=`<div class="alert alert-warn"><span>⚠️</span><div>${semVenc} aluno(s) sem data de vencimento</div></div>`;
+  if(vencidos) al+=`<div class="alert alert-warn"><span>⚠️</span><div>${vencidos} plano(s) já vencido(s) — verifique se são alunos a renovar</div></div>`;
+  if(!semPlano&&!semVenc) al+=`<div class="alert alert-ok"><span>✅</span><div>Todos os registros completos e prontos para importar</div></div>`;
+  document.getElementById('alertasDiv').innerHTML=al;
+
+  document.getElementById('previewTbody').innerHTML=dadosConvertidos.slice(0,10).map((r,i)=>{
+    const vok=r.vencimento&&/^\d{2}\/\d{2}\/\d{4}$/.test(r.vencimento);
+    const [d,m,a]=vok?r.vencimento.split('/').map(Number):[];
+    const venc=vok&&new Date(a,m-1,d)<new Date();
+    return `<tr><td class="dim">${i+1}</td><td class="ok">${r.nome}</td><td class="dim">${r.matricula||'—'}</td><td class="${r.plano?'ok':'warn'}">${r.plano||'mensal*'}</td><td class="${venc?'err':vok?'ok':'warn'}">${r.vencimento||'—'}</td><td class="dim">${r.idade||'—'}</td><td class="dim">${r.telefone||'—'}</td><td class="${venc?'err':'ok'}">${venc?'⚠️':'✅'}</td></tr>`;
+  }).join('');
+}
+
+// ── IMPORTAR ──────────────────────────────────────────────────
+async function importar(){
+  const modo = document.querySelector('input[name="modoImport"]:checked').value;
+  if(modo==='substituir'&&!confirm(`⚠️ ATENÇÃO\n\nIsso vai APAGAR todos os alunos atuais da carteira e substituir pelos ${dadosConvertidos.length} do arquivo.\n\nTem certeza?`)) return;
+
+  const log = document.getElementById('importLog');
+  log.style.display='block'; log.innerHTML='';
+  const addLog = msg=>{ log.innerHTML+=msg+'\n'; log.scrollTop=log.scrollHeight; };
+
+  const setStep=(id,status)=>{
+    const el=document.getElementById(id);
+    el.className='prog-step '+status;
+    const icons={idle:'⏳',loading:'',done:'✅',err:'❌'};
+    if(status==='loading') el.innerHTML=`<div class="spinner"></div>${el.textContent.trim()}`;
+    else el.innerHTML=`<span class="prog-icon">${icons[status]}</span> ${el.textContent.replace(/[⏳✅❌]/,'').trim()}`;
+  };
+
+  try {
+    // 1. Verificar sessão
+    setStep('prog1','loading');
+    await new Promise(r=>setTimeout(r,400));
+    setStep('prog1','done');
+    addLog(`✓ Academia: ${academiaId}`);
+
+    // 2. Verificar existentes
+    setStep('prog2','loading');
+    const {data:existentes} = await sb.from('alunos').select('id,matricula,nome').eq('academia_id',academiaId);
+    const existMap = {};
+    (existentes||[]).forEach(a=>{ if(a.matricula) existMap[a.matricula]=a.id; existMap['n:'+a.nome.toLowerCase()]=a.id; });
+    setStep('prog2','done');
+    addLog(`✓ ${(existentes||[]).length} alunos já cadastrados`);
+
+    // 3. Importar
+    setStep('prog3','loading');
+    let inseridos=0, atualizados=0, ignorados=0;
+
+    if(modo==='substituir'){
+      await sb.from('alunos').delete().eq('academia_id',academiaId);
+      addLog(`⚠️ Carteira anterior removida`);
+    }
+
+    // Processar em lotes de 50
+    const LOTE=50;
+    for(let i=0;i<dadosConvertidos.length;i+=LOTE){
+      const lote=dadosConvertidos.slice(i,i+LOTE);
+      for(const r of lote){
+        const venc = r.vencimento ? (() => { const [d,m,a]=r.vencimento.split('/'); return `${a}-${m}-${d}`; })() : null;
+        const payload = {
+          academia_id:academiaId, treinador_id:treinadorId,
+          nome:r.nome, matricula:r.matricula||null,
+          plano:r.plano||'mensal', vencimento:venc,
+          idade:parseInt(r.idade)||null, telefone:r.telefone||null, ativo:true,
+        };
+
+        const existId = r.matricula ? existMap[r.matricula] : existMap['n:'+r.nome.toLowerCase()];
+
+        if(existId && modo==='atualizar'){
+          await sb.from('alunos').update({plano:payload.plano,vencimento:payload.vencimento,telefone:payload.telefone,idade:payload.idade}).eq('id',existId);
+          atualizados++;
+        } else if(existId && modo==='adicionar'){
+          ignorados++;
+        } else {
+          await sb.from('alunos').insert([payload]);
+          inseridos++;
+        }
+      }
+      addLog(`Processados: ${Math.min(i+LOTE,dadosConvertidos.length)}/${dadosConvertidos.length}`);
+    }
+
+    setStep('prog3','done');
+    addLog(`✓ Inseridos: ${inseridos} · Atualizados: ${atualizados} · Ignorados: ${ignorados}`);
+
+    // 4. Finalizar
+    setStep('prog4','loading');
+    await new Promise(r=>setTimeout(r,400));
+    setStep('prog4','done');
+
+    // Sucesso
+    document.getElementById('successSub').textContent=`${inseridos} aluno(s) adicionado(s)${atualizados?', '+atualizados+' atualizado(s)':''}${ignorados?' ('+ignorados+' já existiam)':''}.`;
+    document.getElementById('successStats').innerHTML=`
+      <div class="success-stat"><div class="success-stat-val" style="color:var(--green)">${inseridos}</div><div class="success-stat-label">Inseridos</div></div>
+      <div class="success-stat"><div class="success-stat-val" style="color:var(--blue)">${atualizados}</div><div class="success-stat-label">Atualizados</div></div>
+      <div class="success-stat"><div class="success-stat-val">${ignorados}</div><div class="success-stat-label">Já existiam</div></div>
+      <div class="success-stat"><div class="success-stat-val" style="color:var(--primary)">${dadosConvertidos.length}</div><div class="success-stat-label">Total</div></div>`;
+
+    setTimeout(()=>{ irStep(5); }, 800);
+
+  } catch(err){
+    showToast('Erro: '+err.message);
+    ['prog1','prog2','prog3','prog4'].forEach(id=>{
+      if(document.getElementById(id).classList.contains('loading')) document.getElementById(id).className='prog-step err';
+    });
+  }
+}
+
+// ── NAV ───────────────────────────────────────────────────────
+function irStep(n){
+  [1,2,3,4,5].forEach(i=>{
+    document.getElementById('step'+i)?.classList.toggle('active',i===n);
+  });
+  [1,2,3,4].forEach(i=>{
+    const el=document.getElementById('si'+i);
+    if(el){el.classList.toggle('active',i===n);el.classList.toggle('done',i<n);}
+  });
+  if(n===2) renderMapeamento();
+  if(n===4) importar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function novaImportacao(){
+  rawRows=[]; headers=[]; mapeamento={}; planoMap={}; dadosConvertidos=[];
+  document.getElementById('fileInput').value='';
+  document.getElementById('fileInfo').style.display='none';
+  document.getElementById('btnProStep1').disabled=true;
+  document.getElementById('importLog').innerHTML='';
+  ['prog1','prog2','prog3','prog4'].forEach(id=>{document.getElementById(id).className='prog-step idle';});
+  irStep(1);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>

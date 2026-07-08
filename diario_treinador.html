@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Acquacel · Diário do Treinador</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F8FAFF;
+  --card:#FFFFFF;
+  --card2:#F0F4FF;
+  --border:#E2E8F0;
+  --border2:#CBD5E1;
+  --primary:#1B4FD8;
+  --primary-dim:rgba(27,79,216,.10);
+  --primary-border:rgba(27,79,216,.25);
+  --text:#1A202C;
+  --muted: #555;
+  --dim: #222;
+  --green: #22C55E;
+  --green-dim: rgba(34,197,94,.1);
+  --green-border: rgba(34,197,94,.25);
+  --red: #EF4444;
+  --yellow: #EAB308;
+  --blue: #60A5FA;
+  --blue-dim: rgba(96,165,250,.1);
+  --purple: #A78BFA;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:'Barlow',sans-serif;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+/* ── HEADER ── */
+.header {
+  background: rgba(10,10,10,.96);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.header-logo {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: .04em;
+}
+.header-nome {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.header-data {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+  padding: 3px 10px;
+  background: var(--primary-dim);
+  border: 1px solid var(--primary-border);
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* ── DATE NAV ── */
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.date-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family:'Barlow',sans-serif;
+  transition: all .15s;
+}
+.date-btn:hover { border-color:var(--primary); color: var(--primary); }
+.date-display {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.date-today {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 3px 8px;
+  background: var(--primary-dim);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ── CONTENT ── */
+.content { padding: 14px 16px; }
+
+/* ── STATUS BANNER ── */
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.status-banner.novo {
+  background: var(--primary-dim);
+  border: 1px solid var(--primary-border);
+  color: var(--primary);
+}
+.status-banner.salvo {
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+}
+.status-banner.passado {
+  background: var(--blue-dim);
+  border: 1px solid rgba(96,165,250,.25);
+  color: var(--blue);
+}
+
+/* ── GRUPOS ── */
+.grupo {
+  margin-bottom: 14px;
+}
+.grupo-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  padding-left: 4px;
+  border-left: 2px solid var(--primary);
+  padding-left: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.grupo-label span {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: 0;
+  font-style: italic;
+}
+
+/* ── CAMPO NUMÉRICO ── */
+.campo {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color .15s;
+}
+.campo:focus-within { border-color:var(--primary); }
+.campo-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+.campo-info { flex: 1; min-width: 0; }
+.campo-nome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.campo-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.campo-controle {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.campo-btn {
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .1s;
+  font-family:'Barlow',sans-serif;
+}
+.campo-btn:hover { background: var(--dim); color: var(--primary); }
+.campo-btn:active { background: var(--primary-dim); }
+.campo-val {
+  min-width: 36px;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0 4px;
+}
+.campo-val.positivo { color: var(--primary); }
+
+/* ── OBS ── */
+.obs-wrap { margin-bottom: 14px; }
+.obs-wrap textarea {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 13px;
+  font-family:'Barlow',sans-serif;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color .15s;
+}
+.obs-wrap textarea:focus { border-color:var(--primary); }
+
+/* ── RESUMO SEMANAL ── */
+.resumo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.resumo-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.resumo-item { text-align: center; }
+.resumo-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--primary);
+}
+.resumo-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+/* ── HISTÓRICO MINI ── */
+.historico-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.historico-row:last-child { border: none; padding-bottom: 0; }
+.hist-data {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 50px;
+}
+.hist-dots { display: flex; gap: 3px; flex: 1; flex-wrap: wrap; }
+.hist-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+}
+.hist-total {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 24px;
+  text-align: right;
+}
+
+/* ── BTN SALVAR ── */
+.btn-salvar {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #3B82F6);
+  color: #000;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family:'Barlow Condensed',sans-serif;
+  transition: opacity .2s;
+  letter-spacing: .02em;
+}
+.btn-salvar:hover { opacity: .9; }
+.btn-salvar:disabled { background: var(--dim); color: var(--muted); cursor: default; opacity: 1; }
+
+/* ── LOADING ── */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+}
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--primary);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 999;
+  transition: transform .25s;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── SECTION TOGGLE ── */
+.section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.section-toggle-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.section-toggle-icon {
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform .2s;
+}
+.section-toggle-icon.open { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-row">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="window.location.href='sistema_integrado_v3.html'" style="background:none;border:1px solid var(--border2);border-radius:7px;color:var(--muted);cursor:pointer;padding:5px 10px;font-size:13px;font-family:'Barlow',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">← Home</button>
+      <div>
+        <div class="header-logo">Acquacel · Diário</div>
+        <div class="header-nome" id="hNome">Carregando...</div>
+      </div>
+    </div>
+    <div class="header-data" id="hDataBadge" onclick="voltarHoje()">Hoje</div>
+  </div>
+</div>
+
+<!-- DATE NAV -->
+<div class="date-nav">
+  <button class="date-btn" onclick="navData(-1)">‹</button>
+  <div class="date-display" id="dateDisplay">—</div>
+  <span class="date-today" onclick="voltarHoje()">Hoje</span>
+  <button class="date-btn" onclick="navData(1)">›</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="mainContent">
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:var(--muted)">Carregando...</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+
+let sb, treinador, academiaId;
+let dataAtual = new Date();
+dataAtual.setHours(0,0,0,0);
+
+// Campos do diário
+const CAMPOS = [
+  {
+    grupo: 'Novos inícios',
+    descGrupo: 'registre quem começou hoje',
+    itens: [
+      { key: 'experiencias_iniciadas', icon: '⚡', nome: 'Experiências iniciadas', desc: 'Leads que iniciaram a experiência de 5, 10 ou 12 dias' },
+      { key: 'novos_alunos',           icon: '🆕', nome: 'Novos alunos (1º planner)', desc: 'Alunos que fizeram o 1º treino / tiveram planner ativado' },
+      { key: 'inseridos_carteira',     icon: '👥', nome: 'Inseridos na carteira', desc: 'Alunos adicionados ou reativados na sua carteira hoje' },
+    ]
+  },
+  {
+    grupo: 'Revisões de treino',
+    descGrupo: 'previstas vs. realizadas',
+    itens: [
+      { key: 'revisoes_previstas',  icon: '📅', nome: 'Revisões previstas', desc: 'Revisões agendadas para hoje ou que estão pendentes da semana' },
+      { key: 'revisoes_realizadas', icon: '✅', nome: 'Revisões realizadas', desc: 'Revisões efetivamente concluídas hoje' },
+    ]
+  },
+  {
+    grupo: 'Consultorias & Avaliações',
+    descGrupo: 'atendimentos técnicos do dia',
+    itens: [
+      { key: 'consultorias_realizadas', icon: '📋', nome: 'Consultorias realizadas', desc: 'Consultorias técnicas com definição de área foco e metas' },
+      { key: 'avaliacoes_realizadas',   icon: '📏', nome: 'Avaliações físicas', desc: 'Avaliações físicas / bioimpedância realizadas hoje' },
+    ]
+  },
+];
+
+// Estado atual do formulário
+let vals = { experiencias_iniciadas:0, novos_alunos:0, inseridos_carteira:0, revisoes_previstas:0, revisoes_realizadas:0, consultorias_realizadas:0, avaliacoes_realizadas:0, obs:'' };
+let registroId = null;
+let jaExiste = false;
+let historico = [];
+
+// ── INIT ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Verificar sessão
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ window.location.replace('index.html'); return; }
+
+  // Buscar treinador
+  const { data: t } = await sb.from('treinadores').select('*').eq('user_id', session.user.id).single();
+  if(!t){ document.getElementById('mainContent').innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted)">Perfil de treinador não encontrado.</div>'; return; }
+
+  treinador = t;
+  academiaId = t.academia_id;
+
+  document.getElementById('hNome').textContent = t.nome || 'Treinador';
+
+  await carregarHistorico();
+  await carregarDia();
+});
+
+// ── DATA ─────────────────────────────────────────────────────
+function dataStr(d){ return d.toISOString().slice(0,10); }
+
+function atualizarHeaderData(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const isHoje = dataStr(dataAtual) === dataStr(hoje);
+  const opts = { weekday:'long', day:'numeric', month:'long' };
+  const label = dataAtual.toLocaleDateString('pt-BR', opts);
+  document.getElementById('dateDisplay').textContent = isHoje ? 'Hoje, '+label : label;
+  document.getElementById('hDataBadge').textContent = isHoje ? 'Hoje' : dataStr(dataAtual).split('-').reverse().join('/');
+}
+
+async function navData(dir){
+  dataAtual.setDate(dataAtual.getDate() + dir);
+  resetVals();
+  await carregarDia();
+}
+
+function voltarHoje(){
+  dataAtual = new Date(); dataAtual.setHours(0,0,0,0);
+  resetVals();
+  carregarDia();
+}
+
+function resetVals(){
+  vals = { experiencias_iniciadas:0, novos_alunos:0, inseridos_carteira:0, revisoes_previstas:0, revisoes_realizadas:0, consultorias_realizadas:0, avaliacoes_realizadas:0, obs:'' };
+  registroId = null;
+  jaExiste = false;
+}
+
+// ── CARREGAR DIA ─────────────────────────────────────────────
+async function carregarDia(){
+  atualizarHeaderData();
+  document.getElementById('mainContent').innerHTML = '<div class="loading-screen"><div class="spinner"></div></div>';
+
+  try {
+    const { data } = await sb.from('diario_treinador')
+      .select('*').eq('treinador_id', treinador.id).eq('data', dataStr(dataAtual)).single();
+
+    if(data){
+      registroId = data.id;
+      jaExiste = true;
+      vals = {
+        experiencias_iniciadas: data.experiencias_iniciadas||0,
+        novos_alunos: data.novos_alunos||0,
+        inseridos_carteira: data.inseridos_carteira||0,
+        revisoes_previstas: data.revisoes_previstas||0,
+        revisoes_realizadas: data.revisoes_realizadas||0,
+        consultorias_realizadas: data.consultorias_realizadas||0,
+        avaliacoes_realizadas: data.avaliacoes_realizadas||0,
+        obs: data.obs||'',
+      };
+    }
+  } catch(e){ /* sem registro ainda */ }
+
+  renderFormulario();
+}
+
+// ── CARREGAR HISTÓRICO ────────────────────────────────────────
+async function carregarHistorico(){
+  try {
+    const { data } = await sb.from('diario_treinador')
+      .select('*')
+      .eq('treinador_id', treinador.id)
+      .order('data', {ascending:false})
+      .limit(14);
+    historico = data || [];
+  } catch(e){ historico = []; }
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderFormulario(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const isHoje = dataStr(dataAtual) === dataStr(hoje);
+  const isFuturo = dataAtual > hoje;
+  const readonly = isFuturo;
+
+  const totalDia = Object.entries(vals).filter(([k])=>k!=='obs').reduce((s,[,v])=>s+Number(v),0);
+
+  let html = '';
+
+  // ── STATUS BANNER ──
+  if(isFuturo){
+    html += `<div class="status-banner passado"><span style="font-size:18px">📅</span><div>Data futura — não é possível lançar dados adiantados.</div></div>`;
+  } else if(jaExiste){
+    html += `<div class="status-banner salvo"><span style="font-size:18px">✅</span><div>Relatório salvo · ${totalDia} registro(s) no total · Toque nos valores para editar</div></div>`;
+  } else if(!isHoje){
+    html += `<div class="status-banner passado"><span style="font-size:18px">📋</span><div>Lançamento retroativo — você pode registrar dias passados a qualquer momento.</div></div>`;
+  } else {
+    html += `<div class="status-banner novo"><span style="font-size:18px">📝</span><div>Relatório de hoje ainda não preenchido — preencha antes de encerrar o expediente.</div></div>`;
+  }
+
+  // ── GRUPOS DE CAMPOS ──
+  CAMPOS.forEach(grupo => {
+    html += `<div class="grupo">
+      <div class="grupo-label">${grupo.grupo} <span>${grupo.descGrupo}</span></div>`;
+    grupo.itens.forEach(item => {
+      const v = vals[item.key] || 0;
+      html += `
+      <div class="campo">
+        <div class="campo-icon">${item.icon}</div>
+        <div class="campo-info">
+          <div class="campo-nome">${item.nome}</div>
+          <div class="campo-desc">${item.desc}</div>
+        </div>
+        <div class="campo-controle">
+          <button class="campo-btn" onclick="alterar('${item.key}',-1)" ${readonly?'disabled':''}>−</button>
+          <input class="campo-val ${v>0?'positivo':''}" type="number" min="0" max="99"
+            value="${v}" id="val-${item.key}"
+            oninput="vals['${item.key}']=Math.max(0,parseInt(this.value)||0);this.className='campo-val '+(vals['${item.key}']>0?'positivo':'')"
+            ${readonly?'readonly':''}>
+          <button class="campo-btn" onclick="alterar('${item.key}',1)" ${readonly?'disabled':''}>+</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  // ── OBSERVAÇÕES ──
+  if(!readonly){
+    html += `
+    <div class="grupo-label" style="margin-top:4px">Observações <span>opcional</span></div>
+    <div class="obs-wrap">
+      <textarea rows="3" placeholder="Algo relevante do dia: aluno em risco, evento especial, dificuldade..."
+        oninput="vals.obs=this.value">${vals.obs||''}</textarea>
+    </div>`;
+  }
+
+  // ── BOTÃO SALVAR ──
+  if(!readonly){
+    html += `<button class="btn-salvar" id="btnSalvar" onclick="salvarDiario()">
+      ${jaExiste ? '💾 Atualizar relatório' : '✅ Salvar relatório do dia'}
+    </button>`;
+  }
+
+  // ── RESUMO SEMANAL ──
+  html += renderResumoSemanal();
+
+  // ── HISTÓRICO ──
+  if(historico.length > 0){
+    html += renderHistorico();
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+// ── RESUMO SEMANAL ────────────────────────────────────────────
+function renderResumoSemanal(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const diaSemana = hoje.getDay();
+  const seg = new Date(hoje); seg.setDate(hoje.getDate() - (diaSemana===0?6:diaSemana-1));
+
+  const semana = historico.filter(h => {
+    const d = new Date(h.data+'T00:00:00');
+    return d >= seg && d <= hoje;
+  });
+
+  const tot = {
+    exp: semana.reduce((s,h)=>s+(h.experiencias_iniciadas||0),0),
+    novos: semana.reduce((s,h)=>s+(h.novos_alunos||0),0),
+    cons: semana.reduce((s,h)=>s+(h.consultorias_realizadas||0),0),
+    revP: semana.reduce((s,h)=>s+(h.revisoes_previstas||0),0),
+    revR: semana.reduce((s,h)=>s+(h.revisoes_realizadas||0),0),
+    aval: semana.reduce((s,h)=>s+(h.avaliacoes_realizadas||0),0),
+    cart: semana.reduce((s,h)=>s+(h.inseridos_carteira||0),0),
+  };
+  const pctRev = tot.revP > 0 ? Math.round(tot.revR/tot.revP*100) : 0;
+
+  return `
+  <div style="margin-top:20px">
+    <div class="section-toggle" onclick="toggleSection('resumoSemana')">
+      <div class="section-toggle-title">📊 Semana atual</div>
+      <div class="section-toggle-icon open" id="icon-resumoSemana">▾</div>
+    </div>
+    <div id="sec-resumoSemana">
+      <div class="resumo-card">
+        <div class="resumo-title"><span>Seg–${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][hoje.getDay()]}</span><span style="color:var(--primary)">${semana.length} dia(s)</span></div>
+        <div class="resumo-grid">
+          <div class="resumo-item"><div class="resumo-val" style="color:var(--yellow)">${tot.exp}</div><div class="resumo-label">Exp.</div></div>
+          <div class="resumo-item"><div class="resumo-val" style="color:var(--green)">${tot.novos}</div><div class="resumo-label">Novos</div></div>
+          <div class="resumo-item"><div class="resumo-val" style="color:var(--blue)">${tot.cons}</div><div class="resumo-label">Consult.</div></div>
+          <div class="resumo-item"><div class="resumo-val" style="color:${pctRev>=70?'var(--green)':pctRev>=40?'var(--yellow)':'var(--red)'}">${tot.revP>0?pctRev+'%':'—'}</div><div class="resumo-label">Rev. %</div></div>
+          <div class="resumo-item"><div class="resumo-val">${tot.revP}</div><div class="resumo-label">Rev. prev.</div></div>
+          <div class="resumo-item"><div class="resumo-val" style="color:var(--green)">${tot.revR}</div><div class="resumo-label">Rev. real.</div></div>
+          <div class="resumo-item"><div class="resumo-val" style="color:var(--primary)">${tot.aval}</div><div class="resumo-label">Aval.</div></div>
+          <div class="resumo-item"><div class="resumo-val">${tot.cart}</div><div class="resumo-label">Carteira</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── HISTÓRICO ─────────────────────────────────────────────────
+function renderHistorico(){
+  const cores = {
+    exp: '#EAB308', novos: '#22C55E', cart: '#60A5FA',
+    revP: '#555', revR: '#22C55E', cons: '#A78BFA', aval: '#1B4FD8'
+  };
+
+  return `
+  <div style="margin-top:8px">
+    <div class="section-toggle" onclick="toggleSection('historico')">
+      <div class="section-toggle-title">📅 Últimos 14 dias</div>
+      <div class="section-toggle-icon" id="icon-historico">▾</div>
+    </div>
+    <div id="sec-historico" style="display:none">
+      <div class="resumo-card">
+        ${historico.map(h => {
+          const d = new Date(h.data+'T00:00:00');
+          const label = d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
+          const total = (h.experiencias_iniciadas||0)+(h.novos_alunos||0)+(h.revisoes_realizadas||0)+(h.consultorias_realizadas||0)+(h.avaliacoes_realizadas||0);
+          const dots = [
+            {v:h.experiencias_iniciadas||0, c:'#EAB308', t:'Exp'},
+            {v:h.novos_alunos||0,          c:'#22C55E', t:'Nov'},
+            {v:h.revisoes_realizadas||0,   c:'#60A5FA', t:'Rev'},
+            {v:h.consultorias_realizadas||0,c:'#A78BFA',t:'Con'},
+            {v:h.avaliacoes_realizadas||0, c:'#1B4FD8', t:'Ava'},
+          ].filter(x=>x.v>0);
+          return `<div class="historico-row" onclick="irParaData('${h.data}')">
+            <div class="hist-data">${label}</div>
+            <div class="hist-dots">
+              ${dots.map(x=>`<div class="hist-dot" style="background:${x.c}" title="${x.t}: ${x.v}">${x.v}</div>`).join('')}
+              ${dots.length===0?'<div style="font-size:11px;color:var(--muted)">sem registros</div>':''}
+            </div>
+            <div class="hist-total">${total||'—'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────
+function alterar(key, delta){
+  vals[key] = Math.max(0, (vals[key]||0) + delta);
+  const el = document.getElementById('val-'+key);
+  if(el){
+    el.value = vals[key];
+    el.className = 'campo-val ' + (vals[key]>0?'positivo':'');
+  }
+}
+
+async function salvarDiario(){
+  const btn = document.getElementById('btnSalvar');
+  if(btn){ btn.disabled=true; btn.textContent='Salvando...'; }
+
+  try {
+    const payload = {
+      academia_id: academiaId,
+      treinador_id: treinador.id,
+      treinador_nome: treinador.nome,
+      data: dataStr(dataAtual),
+      ...vals,
+    };
+    delete payload.obs_temp;
+
+    let error;
+    if(jaExiste && registroId){
+      ({ error } = await sb.from('diario_treinador').update(payload).eq('id', registroId));
+    } else {
+      const res = await sb.from('diario_treinador').insert([payload]).select().single();
+      error = res.error;
+      if(res.data){ registroId = res.data.id; jaExiste = true; }
+    }
+
+    if(error) throw new Error(error.message);
+
+    showToast('✅ Relatório salvo!');
+    await carregarHistorico();
+    renderFormulario();
+
+  } catch(err){
+    showToast('Erro: '+err.message);
+    if(btn){ btn.disabled=false; btn.textContent=jaExiste?'💾 Atualizar relatório':'✅ Salvar relatório do dia'; }
+  }
+}
+
+function irParaData(dataISO){
+  const [y,m,d] = dataISO.split('-').map(Number);
+  dataAtual = new Date(y,m-1,d);
+  resetVals();
+  carregarDia();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function toggleSection(id){
+  const sec = document.getElementById('sec-'+id);
+  const icon = document.getElementById('icon-'+id);
+  if(!sec) return;
+  const open = sec.style.display !== 'none';
+  sec.style.display = open ? 'none' : 'block';
+  if(icon) icon.classList.toggle('open', !open);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

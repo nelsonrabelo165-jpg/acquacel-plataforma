@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Acquacel · Revisão de Treino</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F8FAFF; --card:#FFFFFF; --card2:#F0F4FF; --border:#E2E8F0; --border2:#CBD5E1;
+  --primary:#1B4FD8; --primary-dim:rgba(27,79,216,.10); --primary-border:rgba(27,79,216,.25);
+  --text:#1A202C; --muted:#718096; --dim:#E2E8F0;
+  --green:#22C55E; --green-dim:rgba(34,197,94,.12);
+  --red:#EF4444; --red-dim:rgba(239,68,68,.12);
+  --yellow:#EAB308; --yellow-dim:rgba(234,179,8,.12);
+  --blue:#60A5FA; --blue-dim:rgba(96,165,250,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:100px}
+
+/* ── HEADER ── */
+.header{background:rgba(10,10,10,.95);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.header-logo{display:flex;align-items:center;gap:8px}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:var(--primary)}
+.logo-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.header-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800}
+.header-sub{font-size:11px;color:var(--muted)}
+
+/* ── STEP PROGRESS ── */
+.steps-bar{display:flex;gap:4px;padding:0 16px;margin-bottom:0}
+.step-seg{flex:1;height:3px;border-radius:2px;background:var(--border2);transition:background .3s}
+.step-seg.done{background:var(--primary)}
+.step-seg.active{background:var(--primary);opacity:.5}
+
+/* ── SECTIONS ── */
+.content{padding:16px}
+.step-panel{display:none}
+.step-panel.active{display:block}
+
+.sec-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-label:first-child{margin-top:0}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
+
+/* ── FIELDS ── */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.field input,.field select,.field textarea{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.field textarea{resize:none}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+
+/* ── STATUS CHIPS ── */
+.chip-group{display:flex;gap:6px;flex-wrap:wrap}
+.chip-opt{padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);font-family:'Barlow',sans-serif}
+.chip-opt.active{background:var(--primary-dim);border-color:var(--primary);color:var(--primary)}
+.chip-opt.active.green{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.chip-opt.active.red{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+/* ── EXERCÍCIOS ── */
+.ex-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
+.ex-num{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.ex-fields{display:flex;flex-direction:column;gap:8px}
+
+/* ── MÉTODOS ── */
+.metodos-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.metodo-btn{padding:10px 12px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);text-align:left;font-family:'Barlow',sans-serif;line-height:1.3}
+.metodo-btn.active{background:var(--primary-dim);border-color:var(--primary);color:var(--primary)}
+.metodo-desc{font-size:10px;color:var(--muted);margin-top:8px;background:var(--card2);border-radius:8px;padding:10px 12px;line-height:1.6;display:none}
+.metodo-desc.show{display:block}
+
+/* ── TESTES ── */
+.teste-row{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
+.teste-title{font-size:12px;font-weight:700;margin-bottom:10px;color:var(--text)}
+.teste-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.teste-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;text-align:center;padding:4px;border-radius:6px;margin-bottom:6px}
+.col-inicial{background:var(--dim);color:var(--muted)}
+.col-atual{background:var(--primary-dim);color:var(--primary)}
+.indice-box{text-align:center;margin-top:8px;padding:8px;background:var(--card);border-radius:8px;border:1px solid var(--border2)}
+.indice-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--blue)}
+.indice-label{font-size:10px;color:var(--muted);margin-top:2px}
+.evolucao-badge{text-align:center;margin-top:8px;font-size:12px;font-weight:700}
+
+/* ── NOVO CICLO ── */
+.area-list{display:flex;flex-direction:column;gap:5px}
+.area-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;cursor:pointer;transition:all .15s}
+.area-item.selected{background:var(--primary-dim);border-color:var(--primary)}
+.area-item.atencao{border-color:var(--yellow);background:rgba(234,179,8,.05)}
+.area-emoji{font-size:16px;flex-shrink:0}
+.area-name{font-size:12px;font-weight:600;flex:1}
+.area-item.selected .area-name{color:var(--primary)}
+.area-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px}
+.badge-foco{background:var(--primary);color:#000}
+.badge-atencao{background:var(--yellow);color:#000}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,10,10,.96);border-top:1px solid var(--border);padding:12px 16px 24px;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(12px);z-index:100}
+.btn-prev,.btn-next{padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .2s;border:none}
+.btn-prev{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-prev:disabled{opacity:.3;cursor:default}
+.btn-next{background:var(--primary);color:#000}
+.btn-next.disabled{background:var(--dim);color:var(--muted);cursor:default}
+.btn-next.final{background:linear-gradient(135deg,var(--green),#4ADE80);color:#000}
+.nav-info{font-size:11px;color:var(--muted);text-align:center}
+
+/* ── SCRIPT PANEL ── */
+.script-panel{background:#F0F4FF;border:1px solid rgba(27,79,216,.2);border-radius:10px;padding:12px 14px;margin-top:10px}
+.script-line{font-size:12px;color:#D4A866;line-height:1.55;font-style:italic;padding-left:10px;border-left:2px solid rgba(27,79,216,.3);margin-bottom:5px}
+.script-tip{font-size:11px;color:var(--muted);background:#161616;border-radius:6px;padding:7px 10px;line-height:1.5;margin-top:6px}
+
+/* ── SUCCESS ── */
+.success-screen{text-align:center;padding:40px 20px}
+.success-icon{font-size:60px;margin-bottom:16px}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.btn-full{width:100%;padding:16px;border-radius:12px;border:none;font-size:15px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;margin-bottom:10px}
+
+/* Toast */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--primary);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;max-width:280px;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-logo">
+      <div class="logo-dot"></div>
+      <div class="logo-name">Acquacel</div>
+    </div>
+    <div style="font-size:11px;color:var(--primary);font-weight:600" id="headerCiclo">Revisão de Treino</div>
+  </div>
+  <div class="header-title" id="headerTitle">Identificação</div>
+  <div class="header-sub" id="headerSub">Preencha os dados da revisão</div>
+</div>
+<div class="steps-bar" id="stepsBar"></div>
+
+<div class="content">
+
+  <!-- ── STEP 0: IDENTIFICAÇÃO ── -->
+  <div class="step-panel active" id="panel-0">
+    <div class="sec-label">Dados da revisão</div>
+    <div class="card">
+      <div class="field">
+        <label>Aluno(a)</label>
+        <input type="text" id="f-aluno" placeholder="Nome do aluno" oninput="st.aluno=this.value;updateHeader()">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Matrícula</label>
+          <input type="text" id="f-matricula" placeholder="Ex: 2847" oninput="st.matricula=this.value">
+        </div>
+        <div class="field">
+          <label>Data da Revisão</label>
+          <input type="date" id="f-data" oninput="st.data=this.value">
+        </div>
+      </div>
+      <div class="field">
+        <label>Treinador(a) responsável (carteira)</label>
+        <select id="f-treinador-resp" oninput="st.treinadorResp=this.value">
+          <option value="">Carregando treinadores...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Revisão realizada por</label>
+        <select id="f-treinador-revisao" oninput="st.treinadorRevisao=this.value">
+          <option value="">Carregando treinadores...</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sec-label">Status e jornada</div>
+    <div class="card">
+      <div class="field">
+        <label>Status da revisão</label>
+        <div class="chip-group">
+          <button class="chip-opt active green" onclick="selectStatus('realizada',this)">✅ Realizada</button>
+          <button class="chip-opt" onclick="selectStatus('reagendada',this)">📅 Reagendada</button>
+          <button class="chip-opt" onclick="selectStatus('nao_realizada',this)">❌ Não realizada</button>
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:12px">
+        <div class="field">
+          <label>Jornada do projeto</label>
+          <select oninput="st.jornada=this.value">
+            <option value="">Selecionar...</option>
+            <option>8 semanas</option>
+            <option>10 semanas</option>
+            <option>12 semanas</option>
+            <option>100 dias</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nº do ciclo</label>
+          <select oninput="st.cicloNum=this.value">
+            <option value="">Selecionar...</option>
+            <option>1º ciclo</option>
+            <option>2º ciclo</option>
+            <option>3º ciclo</option>
+            <option>4º ciclo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-panel">
+      <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💬 Script de abertura</div>
+      <div class="script-line">"[Nome], vamos fazer sua revisão de treino hoje. Vou observar sua execução e ajustar alguns movimentos conforme o que evoluiu desde a última vez."</div>
+      <div class="script-line">"Você pode treinar normalmente — vou passando pelos exercícios com você."</div>
+      <div class="script-tip">💡 A revisão acontece no salão durante o treino normal. Você consegue acompanhar 2-3 alunos simultaneamente.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: EXERCÍCIOS ── -->
+  <div class="step-panel" id="panel-1">
+    <div class="sec-label">Ajustes de exercícios</div>
+
+    <div id="exCards"></div>
+    <button onclick="adicionarExercicio()" id="btnAddEx" style="width:100%;padding:10px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:10px;transition:all .15s" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">+ Adicionar ajuste de exercício</button>
+
+    <div class="script-panel">
+      <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💬 Script durante os ajustes</div>
+      <div class="script-line">"Vou ajustar esse exercício para trabalhar melhor o que identificamos no seu mapeamento."</div>
+      <div class="script-line">"Presta atenção na amplitude — quero que você sinta isso aqui [indicar o músculo]."</div>
+      <div class="script-tip">💡 Registre cada ajuste — adição, retirada ou modificação. Ao salvar, vira tarefa para você atualizar no sistema da academia.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: MÉTODO ── -->
+  <div class="step-panel" id="panel-2">
+    <div class="sec-label">Método de treino aplicado</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Selecione o(s) método(s) utilizado(s) nesta revisão. Toque para ver a descrição.</div>
+      <div class="metodos-grid" id="metodosGrid"></div>
+    </div>
+    <div class="metodo-desc" id="metodoDESC"></div>
+
+    <div class="field" style="margin-top:10px">
+      <label>Observações sobre o método</label>
+      <textarea rows="3" placeholder="Ex: Aplicou Super-Série em peito + costas para otimizar o tempo do treino..." oninput="st.metodoObs=this.value" style="background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;width:100%"></textarea>
+    </div>
+
+    <div class="script-panel">
+      <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💬 Script ao explicar o método</div>
+      <div class="script-line">"Hoje vou aplicar o [método] no seu treino — isso vai [benefício principal]."</div>
+      <div class="script-tip">💡 Explique brevemente o método ao aluno. Ele entende melhor o propósito e engaja mais com o treino.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: TESTES ── -->
+  <div class="step-panel" id="panel-3">
+    <div class="sec-label">Testes neuromusculares — comparativo</div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Peso corporal atual (kg)</label>
+        <input type="number" step="0.1" placeholder="Ex: 72.5" oninput="st.peso=this.value;calcIndices()">
+      </div>
+    </div>
+
+    <!-- Superior -->
+    <div class="teste-row">
+      <div class="teste-title">💪 Membro Superior</div>
+      <div class="field">
+        <label>Exercício</label>
+        <select oninput="st.supEx=this.value">
+          <option value="">Selecionar...</option>
+          <option>Supino Reto</option><option>Supino Inclinado</option>
+          <option>Desenvolvimento</option><option>Remada Curvada</option>
+          <option>Puxada Frontal</option><option>Rosca Direta</option>
+          <option>Tríceps Pulley</option><option>Crucifixo</option>
+        </select>
+      </div>
+      <div class="teste-compare">
+        <div>
+          <div class="teste-col-label col-inicial">Teste inicial</div>
+          <div class="field"><label>Kg</label><input type="number" placeholder="0" oninput="st.supKgI=this.value;calcIndices()" id="sup-kg-i"></div>
+          <div class="field"><label>Reps</label><input type="number" placeholder="0" oninput="st.supRepsI=this.value;calcIndices()" id="sup-reps-i"></div>
+          <div class="indice-box"><div class="indice-val" id="sup-idx-i">—</div><div class="indice-label">Índice inicial</div></div>
+        </div>
+        <div>
+          <div class="teste-col-label col-atual">Teste atual</div>
+          <div class="field"><label>Kg</label><input type="number" placeholder="0" oninput="st.supKgA=this.value;calcIndices()" id="sup-kg-a"></div>
+          <div class="field"><label>Reps</label><input type="number" placeholder="0" oninput="st.supRepsA=this.value;calcIndices()" id="sup-reps-a"></div>
+          <div class="indice-box"><div class="indice-val" id="sup-idx-a">—</div><div class="indice-label">Índice atual</div></div>
+        </div>
+      </div>
+      <div class="evolucao-badge" id="sup-evolucao"></div>
+    </div>
+
+    <!-- Inferior -->
+    <div class="teste-row">
+      <div class="teste-title">🦵 Membro Inferior</div>
+      <div class="field">
+        <label>Exercício</label>
+        <select oninput="st.infEx=this.value">
+          <option value="">Selecionar...</option>
+          <option>Agachamento Livre</option><option>Leg Press 45°</option>
+          <option>Cadeira Extensora</option><option>Cadeira Flexora</option>
+          <option>Stiff</option><option>Avanço</option><option>Afundo</option>
+        </select>
+      </div>
+      <div class="teste-compare">
+        <div>
+          <div class="teste-col-label col-inicial">Teste inicial</div>
+          <div class="field"><label>Kg</label><input type="number" placeholder="0" oninput="st.infKgI=this.value;calcIndices()" id="inf-kg-i"></div>
+          <div class="field"><label>Reps</label><input type="number" placeholder="0" oninput="st.infRepsI=this.value;calcIndices()" id="inf-reps-i"></div>
+          <div class="indice-box"><div class="indice-val" id="inf-idx-i">—</div><div class="indice-label">Índice inicial</div></div>
+        </div>
+        <div>
+          <div class="teste-col-label col-atual">Teste atual</div>
+          <div class="field"><label>Kg</label><input type="number" placeholder="0" oninput="st.infKgA=this.value;calcIndices()" id="inf-kg-a"></div>
+          <div class="field"><label>Reps</label><input type="number" placeholder="0" oninput="st.infRepsA=this.value;calcIndices()" id="inf-reps-a"></div>
+          <div class="indice-box"><div class="indice-val" id="inf-idx-a">—</div><div class="indice-label">Índice atual</div></div>
+        </div>
+      </div>
+      <div class="evolucao-badge" id="inf-evolucao"></div>
+    </div>
+
+    <div class="script-panel">
+      <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💬 Script dos testes</div>
+      <div class="script-line">"Vamos repetir o mesmo teste do início. Quero que você dê o máximo — mesma carga, máximo de repetições com boa execução."</div>
+      <div class="script-line">"Olha aqui: no início você fez [X], hoje você fez [Y]. Isso é evolução real."</div>
+      <div class="script-tip">💡 O índice neuromuscular é calculado automaticamente. Use o comparativo para motivar o aluno e reforçar o valor do método.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: NOVO CICLO ── -->
+  <div class="step-panel" id="panel-4">
+    <div class="sec-label">Área foco do próximo ciclo</div>
+    <div class="card">
+      <div class="chip-group" style="margin-bottom:12px">
+        <button class="chip-opt active" onclick="selectAreaMode('manter',this)">Manter área anterior</button>
+        <button class="chip-opt" onclick="selectAreaMode('alterar',this)">Definir nova área</button>
+      </div>
+      <div id="areaSelectorDiv" style="display:none">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Selecione a nova área foco para o próximo ciclo de 21 dias:</div>
+        <div class="area-list" id="areaList"></div>
+      </div>
+      <div id="areaManterDiv">
+        <div style="padding:10px 12px;background:var(--primary-dim);border:1px solid var(--primary-border);border-radius:8px;font-size:13px;color:var(--primary)">
+          ✅ Área foco mantida para o próximo ciclo
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Novo desafio de 21 dias</div>
+    <div class="card">
+      <div class="field">
+        <label>App do desafio</label>
+        <div class="chip-group">
+          <button class="chip-opt" onclick="selectApp('sim',this)">✅ Aluno ativou novo desafio</button>
+          <button class="chip-opt" onclick="selectApp('nao',this)">❌ Optou por não usar</button>
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:12px">
+        <div class="field">
+          <label>Data início novo ciclo</label>
+          <input type="date" oninput="st.novoInicio=this.value;calcProximaRevisao()">
+        </div>
+        <div class="field">
+          <label>Próxima revisão</label>
+          <input type="text" id="f-proxima-revisao" placeholder="Calculada automaticamente" readonly style="color:var(--primary);font-weight:600">
+        </div>
+      </div>
+      <div class="field">
+        <label>Metas combinadas para o próximo ciclo</label>
+        <textarea rows="2" placeholder="Ex: Aumentar carga no supino em 5kg e dormir antes da meia-noite..." oninput="st.metasCombinadas=this.value" style="background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;width:100%"></textarea>
+      </div>
+    </div>
+
+    <div class="script-panel">
+      <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💬 Script de fechamento da revisão</div>
+      <div class="script-line">"Olha o que evoluiu nesse ciclo — [citar 1 ou 2 conquistas concretas]."</div>
+      <div class="script-line">"Agora vamos combinar: você continua com o desafio no app por mais 21 dias, com foco em [área]."</div>
+      <div class="script-line">"Sua próxima revisão já está marcada para [data]. Até lá, apareça nos dias combinados e me chama se precisar."</div>
+      <div class="script-tip">💡 O aluno precisa sair da revisão com 3 coisas claras: o que evoluiu, qual o próximo foco, e quando volta. Isso é o método.</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: OBSERVAÇÕES ── -->
+  <div class="step-panel" id="panel-5">
+    <div class="sec-label">Observações e registro final</div>
+    <div class="card">
+      <div class="field">
+        <label>Observações gerais do treinador</label>
+        <textarea rows="4" placeholder="Registro livre: comportamento do aluno, dificuldades observadas, pontos de atenção para o próximo ciclo..." oninput="st.obs=this.value" style="background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;width:100%"></textarea>
+      </div>
+    </div>
+
+    <!-- Resumo -->
+    <div class="sec-label">Resumo da revisão</div>
+    <div class="card" id="resumoCard"></div>
+
+    <button onclick="finalizarRevisao()" style="width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--green),#4ADE80);color:#000;font-size:15px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;margin-top:6px">
+      ✅ Salvar Revisão
+    </button>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px">
+      O registro fica vinculado ao histórico do aluno no sistema
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<div class="bottom-nav">
+  <button class="btn-prev" id="btnPrev" onclick="navigate(-1)" disabled>← Anterior</button>
+  <div class="nav-info" id="navInfo">Identificação · 1 de 6</div>
+  <button class="btn-next" id="btnNext" onclick="navigate(1)">Próximo →</button>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const METODOS = [
+  {id:'ss',    label:'Super-Série',        abrev:'SS',   desc:'Séries consecutivas entre grupos musculares agonista e antagonista. Ex: 1 série de peito + 1 série de costas + descanso. Objetivo: otimização do tempo e maior intensidade.'},
+  {id:'cir',   label:'Circuito',           abrev:'CIR',  desc:'Mais de 3 séries consecutivas para grupos musculares diferentes. Ex: Flexão + Remada + Agachamento. Objetivo: condicionamento geral e alto gasto calórico.'},
+  {id:'pex',   label:'Pré-Exaustão',       abrev:'PEX',  desc:'Monoarticular seguido de biarticular para o mesmo grupo. Ex: Crucifixo → Supino. Objetivo: intensificar o recrutamento muscular.'},
+  {id:'comb',  label:'Série Combinada',    abrev:'COMB', desc:'Combinação de exercícios com ou sem descanso, sem predominância de outro método específico. Objetivo: variabilidade e adaptação.'},
+  {id:'ret',   label:'Retirada',           abrev:'RET',  desc:'Série adicional sem descanso, retirando 20-50% da carga. Ex: 10x20kg → reduz para 15kg → continua até a falha. Objetivo: intensificação e fadiga muscular.'},
+  {id:'cra',   label:'Comb. c/ Rec. Ativa',abrev:'CRA', desc:'Combinação com intervalos ativos usando exercícios aeróbios entre 1-5 min. Objetivo: condicionamento cardiovascular com alta demanda metabólica.'},
+  {id:'dset',  label:'Drop-Set',           abrev:'DSET', desc:'Mais de uma retirada consecutiva de carga, reduzindo 20-50% a cada série. Objetivo: estresse metabólico elevado e intensificação.'},
+  {id:'pirc',  label:'Pirâmide Crescente', abrev:'P↑',   desc:'Aumento progressivo da carga a cada série (mínimo 3 séries, mínimo 2 aumentos). Objetivo: ganho de força e progressão de intensidade.'},
+  {id:'bset',  label:'Bi-Set',             abrev:'BSET', desc:'2 séries consecutivas de exercícios diferentes para o mesmo grupo muscular. Não usar mono → biarticular. Objetivo: maior volume e intensificação.'},
+  {id:'pird',  label:'Pirâmide Decrescente',abrev:'P↓',  desc:'Redução da carga a cada série (mínimo 3 séries, mínimo 2 reduções). Objetivo: resistência muscular e estresse metabólico.'},
+  {id:'tset',  label:'Tri-Set',            abrev:'TSET', desc:'3 séries consecutivas para o mesmo grupo. Ex: Remada + Puxador + Crucifixo Inverso + descanso. Objetivo: alto volume e intensidade elevada.'},
+  {id:'pirco', label:'Pirâmide Completa',  abrev:'P↑↓',  desc:'Aumento e redução de carga no mesmo exercício (mínimo 5 séries). Objetivo: desenvolvimento de força e resistência com variação de estímulo.'},
+];
+
+const AREAS = [
+  {id:1,name:"Energia & Atividade",icon:"⚡"},{id:2,name:"Articulações & Músculos",icon:"💪"},
+  {id:3,name:"Trato Urinário",icon:"💧"},{id:4,name:"Trato Digestivo",icon:"🌿"},
+  {id:5,name:"Saúde Pulmonar",icon:"🫁"},{id:6,name:"Saúde Nasal",icon:"👃"},
+  {id:7,name:"Saúde da Pele",icon:"✨"},{id:8,name:"Boca & Garganta",icon:"👄"},
+  {id:9,name:"Hormônios",icon:"🔬"},{id:10,name:"Sono",icon:"🌙"},
+  {id:11,name:"Equilíbrio Emocional",icon:"🧠"},{id:12,name:"Ouvidos",icon:"👂"},
+  {id:13,name:"Olhos",icon:"👁️"},{id:14,name:"Coração",icon:"❤️"},
+  {id:15,name:"Clareza Mental",icon:"🎯"},
+];
+
+const EXERCICIOS_ANT = ['Crucifixo','Supino Reto','Supino Inclinado','Remada Curvada','Puxada Frontal','Rosca Direta','Tríceps Pulley','Leg Press','Cadeira Extensora','Cadeira Flexora','Stiff','Agachamento'];
+
+const STEPS = ['Identificação','Exercícios','Método','Testes','Novo Ciclo','Finalizar'];
+
+// ── STATE ────────────────────────────────────────────────────
+const st = {
+  step:0,
+  aluno:'', matricula:'', data:new Date().toISOString().slice(0,10),
+  treinadorResp:'', treinadorRevisao:'',
+  status:'realizada', jornada:'', cicloNum:'',
+  exercicios:[
+    {de:'',para:'',motivo:'',tipo:'ajustar'},
+    {de:'',para:'',motivo:'',tipo:'ajustar'},
+  ],
+  metodosSel:[], metodoObs:'',
+  peso:'', supEx:'', supKgI:'', supRepsI:'', supKgA:'', supRepsA:'',
+         infEx:'', infKgI:'', infRepsI:'', infKgA:'', infRepsA:'',
+  areaMode:'manter', novaArea:null,
+  appAtivado:'',
+  novoInicio:'', proximaRevisao:'',
+  metasCombinadas:'', obs:'',
+};
+
+// ── INIT ─────────────────────────────────────────────────────
+function init(){
+  renderStepsBar();
+  renderExCards();
+  renderMetodos();
+  renderAreaList();
+  renderResumo();
+  // Set today
+  document.getElementById('f-data').value = st.data;
+  updateHeader();
+  updateNav();
+}
+
+function updateHeader(){
+  const titles = ['Identificação','Ajustes de Exercícios','Método de Treino','Testes Neuromusculares','Novo Ciclo 21 dias','Observações & Resumo'];
+  const subs = [
+    'Dados do aluno e da revisão',
+    'Registre os exercícios ajustados',
+    'Selecione o método aplicado',
+    'Compare com o teste inicial',
+    'Defina o próximo foco',
+    'Revise e salve o registro',
+  ];
+  document.getElementById('headerTitle').textContent = titles[st.step];
+  document.getElementById('headerSub').textContent = subs[st.step];
+  if(st.aluno) document.getElementById('headerCiclo').textContent = st.aluno + ' · Revisão de Treino';
+}
+
+// ── STEPS BAR ────────────────────────────────────────────────
+function renderStepsBar(){
+  const bar = document.getElementById('stepsBar');
+  bar.innerHTML = '';
+  STEPS.forEach((_,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'step-seg' + (i < st.step ? ' done' : i === st.step ? ' active' : '');
+    bar.appendChild(seg);
+  });
+}
+
+// ── EXERCÍCIOS ───────────────────────────────────────────────
+function renderExCards(){
+  const container = document.getElementById('exCards');
+  container.innerHTML = '';
+  st.exercicios.forEach((ex,i)=>{
+    const div = document.createElement('div');
+    div.className = 'ex-card';
+    div.id = 'ex-card-'+i;
+    const tipoAtual = ex.tipo || 'ajustar';
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="ex-num" style="margin-bottom:0">Ajuste ${i+1}</div>
+        ${i>=2?`<button onclick="removerExercicio(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 8px">✕</button>`:''}
+      </div>
+      <div class="ex-fields">
+        <div class="field">
+          <label>Tipo de ajuste</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            <button class="chip-opt ${tipoAtual==='adicionar'?'active':''}" onclick="setTipoEx(${i},'adicionar',this)">➕ Adicionar</button>
+            <button class="chip-opt ${tipoAtual==='retirar'?'active':''}" onclick="setTipoEx(${i},'retirar',this)">➖ Retirar</button>
+            <button class="chip-opt ${tipoAtual==='ajustar'?'active':''}" onclick="setTipoEx(${i},'ajustar',this)">🔄 Ajustar</button>
+          </div>
+        </div>
+        <div class="field" id="ex-de-${i}" style="${tipoAtual==='adicionar'?'display:none':'display:flex;flex-direction:column;gap:5px'}">
+          <label>${tipoAtual==='retirar'?'Exercício a retirar':'Exercício atual'}</label>
+          <select onchange="st.exercicios[${i}].de=this.value">
+            <option value="">Selecionar...</option>
+            ${EXERCICIOS_ANT.map(e=>`<option ${ex.de===e?'selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field" id="ex-para-${i}" style="${tipoAtual==='retirar'?'display:none':'display:flex;flex-direction:column;gap:5px'}">
+          <label>${tipoAtual==='adicionar'?'Exercício a adicionar':'Exercício substituto / ajuste'}</label>
+          <input type="text" placeholder="${tipoAtual==='adicionar'?'Ex: Rosca Scott com halteres':'Ex: Mesmo exercício com amplitude reduzida'}" value="${ex.para}" oninput="st.exercicios[${i}].para=this.value">
+        </div>
+        <div class="field">
+          <label>Observações</label>
+          <input type="text" placeholder="Detalhes do ajuste ou motivo..." value="${ex.motivo}" oninput="st.exercicios[${i}].motivo=this.value">
+        </div>
+      </div>`;
+    container.appendChild(div);
+  });
+  const btnAdd = document.getElementById('btnAddEx');
+  if(btnAdd) btnAdd.style.display = st.exercicios.length >= 5 ? 'none' : 'block';
+}
+
+function setTipoEx(i, tipo, btn){
+  st.exercicios[i].tipo = tipo;
+  const card = document.getElementById('ex-card-'+i);
+  if(card) card.querySelectorAll('.chip-opt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const deEl = document.getElementById('ex-de-'+i);
+  const paraEl = document.getElementById('ex-para-'+i);
+  if(deEl){ deEl.style.display = tipo==='adicionar'?'none':'flex'; deEl.style.flexDirection='column'; deEl.style.gap='5px'; }
+  if(paraEl){ paraEl.style.display = tipo==='retirar'?'none':'flex'; paraEl.style.flexDirection='column'; paraEl.style.gap='5px'; }
+  if(deEl) deEl.querySelector('label').textContent = tipo==='retirar'?'Exercício a retirar':'Exercício atual';
+  if(paraEl) paraEl.querySelector('label').textContent = tipo==='adicionar'?'Exercício a adicionar':'Exercício substituto / ajuste';
+}
+
+function adicionarExercicio(){
+  if(st.exercicios.length >= 5) return;
+  st.exercicios.push({de:'',para:'',motivo:'',tipo:'ajustar'});
+  renderExCards();
+}
+
+function removerExercicio(i){
+  st.exercicios.splice(i,1);
+  renderExCards();
+}
+
+// ── MÉTODOS ──────────────────────────────────────────────────
+function renderMetodos(){
+  const grid = document.getElementById('metodosGrid');
+  grid.innerHTML = '';
+  METODOS.forEach(m=>{
+    const btn = document.createElement('button');
+    btn.className = 'metodo-btn' + (st.metodosSel.includes(m.id) ? ' active' : '');
+    btn.innerHTML = `<div style="font-size:10px;color:var(--primary);font-weight:700;margin-bottom:2px">${m.abrev}</div>${m.label}`;
+    btn.onclick = () => toggleMetodo(m.id, m.desc);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleMetodo(id, desc){
+  if(st.metodosSel.includes(id)) st.metodosSel = st.metodosSel.filter(x=>x!==id);
+  else st.metodosSel.push(id);
+  renderMetodos();
+  const descEl = document.getElementById('metodoDESC');
+  const m = METODOS.find(x=>x.id===id);
+  if(st.metodosSel.includes(id) && m){
+    descEl.textContent = m.desc;
+    descEl.className = 'metodo-desc show';
+  } else if(st.metodosSel.length > 0){
+    const lastId = st.metodosSel[st.metodosSel.length-1];
+    const last = METODOS.find(x=>x.id===lastId);
+    if(last){ descEl.textContent = last.desc; descEl.className = 'metodo-desc show'; }
+  } else {
+    descEl.className = 'metodo-desc';
+  }
+}
+
+// ── ÍNDICES ──────────────────────────────────────────────────
+function calcIndices(){
+  const peso = parseFloat(st.peso)||0;
+  [
+    {kgI:'supKgI',rI:'supRepsI',kgA:'supKgA',rA:'supRepsA',idxI:'sup-idx-i',idxA:'sup-idx-a',evo:'sup-evolucao'},
+    {kgI:'infKgI',rI:'infRepsI',kgA:'infKgA',rA:'infRepsA',idxI:'inf-idx-i',idxA:'inf-idx-a',evo:'inf-evolucao'},
+  ].forEach(t=>{
+    const kgI=parseFloat(st[t.kgI])||0, rI=parseFloat(st[t.rI])||0;
+    const kgA=parseFloat(st[t.kgA])||0, rA=parseFloat(st[t.rA])||0;
+    const idxI = peso>0&&kgI>0&&rI>0 ? (kgI*rI/peso).toFixed(2) : '—';
+    const idxA = peso>0&&kgA>0&&rA>0 ? (kgA*rA/peso).toFixed(2) : '—';
+    const el1=document.getElementById(t.idxI), el2=document.getElementById(t.idxA);
+    if(el1) el1.textContent=idxI;
+    if(el2) el2.textContent=idxA;
+    const evoEl = document.getElementById(t.evo);
+    if(evoEl && idxI!=='—' && idxA!=='—'){
+      const diff = ((parseFloat(idxA)-parseFloat(idxI))/parseFloat(idxI)*100).toFixed(1);
+      const up = parseFloat(diff)>=0;
+      evoEl.innerHTML = `<span style="color:${up?'var(--green)':'var(--red)'}">
+        ${up?'▲':'▼'} ${Math.abs(diff)}% de evolução no índice neuromuscular</span>`;
+    }
+  });
+}
+
+// ── ÁREA LIST ─────────────────────────────────────────────────
+function renderAreaList(){
+  const c = document.getElementById('areaList');
+  c.innerHTML = '';
+  AREAS.forEach(area=>{
+    const div=document.createElement('div');
+    const selected = st.novaArea===area.id;
+    div.className='area-item'+(selected?' selected':'');
+    div.innerHTML=`<span class="area-emoji">${area.icon}</span><span class="area-name">${area.name}</span>${selected?'<span class="area-badge badge-foco">Foco</span>':''}`;
+    div.onclick=()=>{ st.novaArea=area.id; renderAreaList(); };
+    c.appendChild(div);
+  });
+}
+
+// ── PRÓXIMA REVISÃO ──────────────────────────────────────────
+function calcProximaRevisao(){
+  if(!st.novoInicio) return;
+  const start = new Date(st.novoInicio+'T12:00:00');
+  const raw = new Date(start); raw.setDate(raw.getDate()+21);
+  const dow = raw.getDay();
+  if(dow!==4&&dow!==5){
+    const daysToThu = (4-dow+7)%7 || 7;
+    const daysToFri = (5-dow+7)%7 || 7;
+    raw.setDate(raw.getDate()+Math.min(daysToThu,daysToFri));
+  }
+  st.proximaRevisao = raw.toISOString().slice(0,10);
+  const opts={weekday:'long',day:'numeric',month:'long'};
+  document.getElementById('f-proxima-revisao').value = raw.toLocaleDateString('pt-BR',opts);
+}
+
+// ── SELETORES ────────────────────────────────────────────────
+function selectStatus(v, btn){
+  st.status=v;
+  document.querySelectorAll('.chip-opt').forEach(b=>{
+    if(['✅ Realizada','📅 Reagendada','❌ Não realizada'].some(l=>b.textContent===l)){
+      b.classList.remove('active','green','red');
+    }
+  });
+  btn.classList.add('active');
+  if(v==='realizada') btn.classList.add('green');
+  if(v==='nao_realizada') btn.classList.add('red');
+}
+
+function selectAreaMode(v, btn){
+  st.areaMode=v;
+  document.querySelectorAll('#panel-4 .chip-opt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('areaSelectorDiv').style.display = v==='alterar'?'block':'none';
+  document.getElementById('areaManterDiv').style.display = v==='manter'?'block':'none';
+}
+
+function selectApp(v, btn){
+  st.appAtivado=v;
+  document.querySelectorAll('#panel-4 .field .chip-opt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── RESUMO ────────────────────────────────────────────────────
+function renderResumo(){
+  const c = document.getElementById('resumoCard');
+  if(!c) return;
+  const exFeitos = st.exercicios.filter(e=>e.de||e.para);
+  const metodos = st.metodosSel.map(id=>METODOS.find(m=>m.id===id)?.label).filter(Boolean);
+  const novaArea = AREAS.find(a=>a.id===st.novaArea);
+  const rows = [
+    {l:'Aluno', v:st.aluno||'—'},
+    {l:'Data', v:st.data||'—'},
+    {l:'Status', v:st.status==='realizada'?'✅ Realizada':st.status==='reagendada'?'📅 Reagendada':'❌ Não realizada'},
+    {l:'Realizada por', v:st.treinadorRevisao||st.treinadorResp||'—'},
+    {l:'Exercícios', v:exFeitos.length>0?`${exFeitos.length} ajuste(s)`:' Nenhum'},
+    {l:'Método(s)', v:metodos.length>0?metodos.join(', '):'—'},
+    {l:'Área foco', v:st.areaMode==='manter'?'Mantida':'Nova: '+(novaArea?novaArea.icon+' '+novaArea.name:'—')},
+    {l:'App ativado', v:st.appAtivado==='sim'?'✅ Sim':'❌ Não'},
+    {l:'Próxima revisão', v:st.proximaRevisao||'—'},
+  ];
+  c.innerHTML = rows.map(r=>`
+    <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;min-width:80px;flex-shrink:0;padding-top:2px">${r.l}</div>
+      <div style="font-size:13px;flex:1">${r.v}</div>
+    </div>`).join('').replace(/<div[^>]*>.*?<\/div>\s*<\/div>/s,'');
+  c.innerHTML = rows.map(r=>`<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;min-width:90px;flex-shrink:0">${r.l}</div><div style="font-size:12px;flex:1;color:var(--text)">${r.v}</div></div>`).join('');
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function navigate(dir){
+  const next = st.step+dir;
+  if(next<0||next>=STEPS.length) return;
+  if(next===5) renderResumo();
+  st.step=next;
+  STEPS.forEach((_,i)=>{
+    document.getElementById('panel-'+i).classList.toggle('active',i===st.step);
+  });
+  renderStepsBar();
+  updateHeader();
+  updateNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateNav(){
+  const prev = document.getElementById('btnPrev');
+  const next = document.getElementById('btnNext');
+  const info = document.getElementById('navInfo');
+  prev.disabled = st.step===0;
+  info.textContent = `${STEPS[st.step]} · ${st.step+1} de ${STEPS.length}`;
+  const isLast = st.step===STEPS.length-1;
+  next.className = isLast ? 'btn-next final' : 'btn-next';
+  next.textContent = isLast ? '✅ Revisar e salvar' : 'Próximo →';
+  if(isLast) next.onclick = ()=>{ document.querySelector('.btn-full')?.click(); };
+  else next.onclick = ()=>navigate(1);
+}
+
+function finalizarRevisao(){
+  salvarRevisaoSupabase();
+}
+
+async function salvarRevisaoSupabase(){
+  showToast('💾 Salvando revisão...');
+  
+  try {
+    if(typeof window.supabase !== 'undefined'){
+      const SUPABASE_URL = 'https://oevngnabqlxsensaohdv.supabase.co';
+      const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+      // Salvar revisão como tarefa pendente
+      const tarefas = st.exercicios
+        .filter(e => e.de || e.para)
+        .map(e => {
+          const tipo = e.tipo || 'ajustar';
+          let descricao = '';
+          if(tipo === 'adicionar') descricao = `Adicionar: ${e.para}`;
+          else if(tipo === 'retirar') descricao = `Retirar: ${e.de}`;
+          else descricao = `Ajustar: ${e.de} → ${e.para}`;
+          if(e.motivo) descricao += ` (${e.motivo})`;
+          return descricao;
+        });
+
+      if(tarefas.length > 0){
+        await sb.from('tarefas_treinador').insert([{
+          aluno_nome: st.aluno,
+          treinador_resp: st.treinadorResp,
+          treinador_revisao: st.treinadorRevisao,
+          data_revisao: st.data,
+          tarefas: tarefas,
+          metodos: st.metodosSel,
+          obs: st.obs,
+          status: 'pendente',
+        }]);
+      }
+    }
+  } catch(err){
+    console.warn('Erro ao salvar revisão:', err);
+  }
+
+  showToast('✅ Revisão salva!');
+  setTimeout(()=>{
+    if(confirm('Revisão registrada! As tarefas de ajuste aparecerão na Home do Treinador.\n\nDeseja iniciar uma nova revisão?')){
+      location.reload();
+    }
+  }, 1500);
+}
+
+// ── SUPABASE — CARREGAR TREINADORES ──────────────────────────
+async function carregarTreinadoresRevisao(){
+  try {
+    if(typeof window.supabase === 'undefined') return;
+    
+    const SUPABASE_URL = 'https://oevngnabqlxsensaohdv.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // Pegar academia do treinador logado via localStorage
+    const treinadorLocal = JSON.parse(localStorage.getItem('qg90_treinador')||'{}');
+    const academiaId = treinadorLocal.academia_id;
+    if(!academiaId) return;
+
+    const { data: lista } = await sb
+      .from('treinadores')
+      .select('id, nome, tipo')
+      .eq('academia_id', academiaId)
+      .order('nome');
+
+    if(!lista || lista.length === 0) return;
+
+    ['f-treinador-resp','f-treinador-revisao'].forEach(selId => {
+      const sel = document.getElementById(selId);
+      if(!sel) return;
+      const placeholder = selId === 'f-treinador-revisao' ? 'Selecionar (pode ser diferente)...' : 'Selecionar...';
+      sel.innerHTML = `<option value="">${placeholder}</option>`;
+      lista.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t.nome;
+        o.textContent = t.nome + (t.tipo ? ' ('+t.tipo+')' : '');
+        sel.appendChild(o);
+      });
+    });
+
+    // Pré-selecionar treinador logado
+    if(treinadorLocal.nome){
+      ['f-treinador-resp','f-treinador-revisao'].forEach(selId => {
+        const sel = document.getElementById(selId);
+        if(!sel) return;
+        for(let opt of sel.options){
+          if(opt.value === treinadorLocal.nome){
+            sel.value = treinadorLocal.nome;
+            break;
+          }
+        }
+      });
+    }
+
+  } catch(err){
+    console.warn('Erro ao carregar treinadores:', err);
+  }
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+init();
+// Carregar treinadores do banco após SDK carregar
+window.addEventListener('load', ()=>{
+  setTimeout(carregarTreinadoresRevisao, 500);
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>

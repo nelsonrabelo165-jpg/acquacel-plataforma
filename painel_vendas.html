@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Acquacel · Painel de Vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFF;--card:#FFFFFF;--card2:#F0F4FF;--border:#E2E8F0;--border2:#CBD5E1;
+  --primary:#1B4FD8;--primary-dim:rgba(27,79,216,.10);--primary-border:rgba(27,79,216,.25);
+  --text:#1A202C;--muted:#555;--dim:#222;
+  --green:#22C55E;--green-dim:rgba(34,197,94,.1);--green-border:rgba(34,197,94,.25);
+  --red:#EF4444;--red-dim:rgba(239,68,68,.1);--red-border:rgba(239,68,68,.25);
+  --yellow:#EAB308;--yellow-dim:rgba(234,179,8,.1);--yellow-border:rgba(234,179,8,.25);
+  --blue:#60A5FA;--blue-dim:rgba(96,165,250,.1);--blue-border:rgba(96,165,250,.25);
+  --purple:#A78BFA;--purple-dim:rgba(167,139,250,.1);--purple-border:rgba(167,139,250,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:80px}
+
+/* HEADER */
+.header{background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:50;backdrop-filter:blur(16px)}
+.header-row{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:var(--primary)}
+.logo-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.user-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--card);border:1px solid var(--border2);border-radius:20px;font-size:11px;cursor:pointer}
+.user-chip-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--card)}
+.tab{flex:1;padding:11px 8px;text-align:center;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.06em}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* CONTENT */
+.content{padding:14px 16px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center}
+.kpi-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.kpi-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SEÇÃO */
+.sec{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FOLLOW-UP CARD */
+.fu-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;transition:border-color .15s}
+.fu-card:hover{border-color:var(--primary-border)}
+.fu-card.urgente{border-left:3px solid var(--red)}
+.fu-card.hoje{border-left:3px solid var(--primary)}
+.fu-card.futuro{border-left:3px solid var(--border2)}
+.fu-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.fu-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.fu-nome{font-size:13px;font-weight:700}
+.fu-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.fu-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
+.fu-tipo{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.fu-tipo-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.fu-data{font-size:11px;color:var(--muted)}
+.fu-roteiro{background:var(--card2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;border-left:2px solid var(--border2)}
+.fu-roteiro b{color:var(--text)}
+.fu-actions{display:flex;gap:6px}
+
+/* EXP CARD */
+.exp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.exp-card:hover{border-color:var(--primary-border)}
+.exp-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.exp-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.exp-nome{font-size:13px;font-weight:700}
+.exp-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.exp-progress{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin:8px 0}
+.exp-progress-bar{height:100%;border-radius:2px;transition:width .4s}
+.exp-footer{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.funil-steps{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.funil-step{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:20px 18px 32px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.field input,.field select,.field textarea{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.funil-select{display:flex;flex-direction:column;gap:6px}
+.funil-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
+.funil-opt:hover{border-color:var(--primary-border)}
+.funil-opt.selected{border-color:var(--primary);background:var(--primary-dim)}
+.funil-opt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.funil-opt-label{font-size:12px;font-weight:600}
+.btn-primary{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),#3B82F6);color:#000;font-size:14px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;margin-top:6px}
+.btn-sec{padding:10px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s}
+.btn-sec:hover{border-color:var(--primary);color:var(--primary)}
+.btn-green{padding:10px 16px;border-radius:8px;border:1px solid var(--green-border);background:var(--green-dim);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
+.btn-red{padding:10px 16px;border-radius:8px;border:1px solid var(--red-border);background:var(--red-dim);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
+.datas-preview{background:var(--card2);border-radius:10px;padding:12px 14px;margin-top:4px;display:none}
+.datas-preview.show{display:block}
+.dp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.dp-row:last-child{border:none}
+.dp-label{color:var(--muted);min-width:80px}
+.dp-val{color:var(--text);font-weight:600;font-family:'DM Mono',monospace}
+.dp-tipo{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700}
+
+/* AGENDA */
+.agenda-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.agenda-day{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 4px;text-align:center;min-height:60px}
+.agenda-day.hoje{border-color:var(--primary)}
+.agenda-day-num{font-size:11px;font-weight:700;color:var(--muted)}
+.agenda-day.hoje .agenda-day-num{color:var(--primary)}
+.agenda-day-name{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.agenda-event{height:4px;border-radius:2px;margin-bottom:2px}
+
+/* EMPTY */
+.empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;background:var(--card);border-radius:10px;border:1px solid var(--border)}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--primary);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.login-icon{font-size:48px;margin-bottom:16px}
+.login-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;margin-bottom:6px;text-align:center}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:24px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;width:100%;max-width:380px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginView">
+  <div class="login-wrap">
+    <div class="login-icon">📊</div>
+    <div class="login-title">Painel de Vendas</div>
+    <div class="login-sub">Acquacel · Gestão de Experiências</div>
+    <div class="login-card">
+      <div class="field"><label>E-mail</label><input type="email" id="loginEmail" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
+      <div class="field"><label>Senha</label><input type="password" id="loginSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
+      <button class="btn-primary" onclick="fazerLogin()" id="btnLogin">Entrar</button>
+      <div id="loginErro" style="display:none;margin-top:10px;text-align:center;font-size:12px;color:var(--red)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appView" style="display:none">
+  <div class="header">
+    <div class="header-row">
+      <div><div class="logo">Acquacel · Vendas</div><div class="logo-sub" id="hAcademia">—</div></div>
+      <div class="user-chip" onclick="fazerLogout()">
+        <div class="user-chip-dot"></div>
+        <span id="hConsultor">—</span>
+        <span style="color:var(--muted)">· Sair</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-hoje" onclick="setTab('hoje')">Hoje</div>
+    <div class="tab" id="tab-exps" onclick="setTab('exps')">Experiências</div>
+    <div class="tab" id="tab-agenda" onclick="setTab('agenda')">Agenda</div>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB HOJE -->
+    <div id="secHoje">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="sec">⚠️ Follow-ups de hoje</div>
+      <div id="fuHoje"></div>
+      <div class="sec">📅 Próximos follow-ups</div>
+      <div id="fuProximos"></div>
+    </div>
+
+    <!-- TAB EXPERIÊNCIAS -->
+    <div id="secExps" style="display:none">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn-primary" style="flex:1;padding:11px;font-size:13px" onclick="abrirModalNovaExp()">+ Nova Experiência</button>
+        <select id="filtroStatus" onchange="renderExps()" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:11px 10px;color:var(--text);font-size:12px;outline:none;font-family:'Barlow',sans-serif">
+          <option value="">Todos os status</option>
+          <option value="agendada">Agendada</option>
+          <option value="comparecida">Comparecida</option>
+          <option value="reagendada">Reagendada</option>
+          <option value="nao_comparecida">Não compareceu</option>
+          <option value="convertida">Convertida</option>
+        </select>
+      </div>
+      <div id="listaExps"></div>
+    </div>
+
+    <!-- TAB AGENDA -->
+    <div id="secAgenda" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <button class="btn-sec" onclick="navSemana(-1)">‹</button>
+        <div style="font-size:13px;font-weight:600" id="agendaSemanaLabel">—</div>
+        <button class="btn-sec" onclick="navSemana(1)">›</button>
+      </div>
+      <!-- Legenda -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--yellow)"></div>Experiência</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--primary)"></div>Follow-up</div>
+      </div>
+      <div class="agenda-week" id="agendaWeek"></div>
+      <div id="agendaLista"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NOVA EXPERIÊNCIA -->
+<div class="modal-bg" id="modalExp">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalExpTitulo">Nova Experiência</span>
+      <button onclick="fecharModal('modalExp')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1">✕</button>
+    </div>
+
+    <div class="field"><label>Nome do lead *</label><input type="text" id="eNome" placeholder="Nome completo"></div>
+    <div class="field-row">
+      <div class="field"><label>Telefone</label><input type="text" id="eTelefone" placeholder="(11) 99999-9999"></div>
+      <div class="field"><label>Data de nascimento</label><input type="date" id="eNascimento"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Perfil identificado *</label>
+        <select id="ePerfil">
+          <option value="95">95% — Iniciante / Sedentário</option>
+          <option value="5">5% — Treinado / Autônomo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Duração da experiência</label>
+        <select id="eDuracao" onchange="calcularDatas()">
+          <option value="10" selected>10 dias (95%)</option>
+          <option value="12">12 dias (95%)</option>
+          <option value="5">5 dias (5%)</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Data de início *</label><input type="date" id="eInicio" oninput="calcularDatas()"></div>
+      <div class="field">
+        <label>Link mapeamento de sintomas</label>
+        <input type="url" id="eLinkMap" placeholder="https://...">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Agendado por</label>
+        <input type="text" id="eAgendadoPor" placeholder="Nome de quem agendou" readonly style="color:var(--muted)">
+      </div>
+      <div class="field">
+        <label>Consultor(a) responsável *</label>
+        <select id="eConsultorResp"></select>
+      </div>
+    </div>
+
+    <!-- Preview datas follow-up -->
+    <div class="datas-preview" id="datasPreview">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Follow-ups calculados automaticamente</div>
+      <div class="dp-row"><span class="dp-label">F1 — Feedback</span><span class="dp-val" id="dpF1">—</span><span class="dp-tipo" style="background:var(--primary-dim);color:var(--primary)">Dia seguinte</span></div>
+      <div class="dp-row"><span class="dp-label">F2 — Oferta</span><span class="dp-val" id="dpF2">—</span><span class="dp-tipo" style="background:var(--blue-dim);color:var(--blue)">1ª Sexta ≥ dia 3</span></div>
+      <div class="dp-row"><span class="dp-label">F3 — Fechamento</span><span class="dp-val" id="dpF3">—</span><span class="dp-tipo" style="background:var(--purple-dim);color:var(--purple)">Último dia</span></div>
+    </div>
+
+    <button class="btn-primary" onclick="salvarExp()" id="btnSalvarExp">Cadastrar experiência</button>
+  </div>
+</div>
+
+<!-- MODAL DETALHE EXPERIÊNCIA -->
+<div class="modal-bg" id="modalDetalhe">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="detalheNome">—</span>
+      <button onclick="fecharModal('modalDetalhe')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1">✕</button>
+    </div>
+    <div id="detalheBody"></div>
+  </div>
+</div>
+
+<!-- MODAL FOLLOW-UP -->
+<div class="modal-bg" id="modalFU">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="fuModalTitulo">Follow-up</span>
+      <button onclick="fecharModal('modalFU')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1">✕</button>
+    </div>
+    <div id="fuModalBody"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+
+let sb, consultor, academiaId;
+let todasExps = [], todosFollowUps = [];
+let semanaOffset = 0;
+let expEditandoId = null;
+
+const FUNIL = {
+  agendada:       {label:'Agendada',       color:'var(--blue)',   bg:'var(--blue-dim)',   border:'var(--blue-border)'},
+  comparecida:    {label:'Comparecida',    color:'var(--green)',  bg:'var(--green-dim)',  border:'var(--green-border)'},
+  reagendada:     {label:'Reagendada',     color:'var(--yellow)', bg:'var(--yellow-dim)', border:'var(--yellow-border)'},
+  nao_comparecida:{label:'Não compareceu', color:'var(--red)',    bg:'var(--red-dim)',    border:'var(--red-border)'},
+  convertida:     {label:'Convertida',     color:'var(--primary)', bg:'var(--primary-dim)', border:'var(--primary-border)'},
+};
+
+const FU_CONFIG = {
+  f1:{label:'Follow-up 1',   cor:'var(--primary)', roteiro:'Como foi o primeiro treino? Sentiu algo diferente? Ficou com alguma dúvida?'},
+  f2:{label:'Follow-up 2',   cor:'var(--blue)',   roteiro:'Como está sendo a semana? Já percebeu alguma mudança? [Apresentar Projeto Exclusivo se compareceu ≥2x]'},
+  f3:{label:'Follow-up 3',   cor:'var(--purple)', roteiro:'Chegamos ao último dia da experiência! Qual foi a sua impressão geral? Vamos conversar sobre o próximo passo?'},
+};
+
+// ── DATAS ─────────────────────────────────────────────────────
+function dStr(d){ return d.toISOString().slice(0,10); }
+function dBR(iso){ if(!iso) return '—'; const[a,m,d]=iso.split('-'); return `${d}/${m}/${a}`; }
+function dObj(iso){ const[a,m,d]=iso.split('-').map(Number); return new Date(a,m-1,d); }
+
+function calcF1(inicio){ const d=new Date(inicio+'T00:00:00'); d.setDate(d.getDate()+1); return dStr(d); }
+function calcF2(inicio){
+  const d=new Date(inicio+'T00:00:00');
+  const minDia=new Date(d); minDia.setDate(d.getDate()+3);
+  // Próxima sexta >= minDia
+  let sexta=new Date(d);
+  while(sexta.getDay()!==5) sexta.setDate(sexta.getDate()+1);
+  if(sexta<minDia) sexta=new Date(minDia);
+  // Garantir sexta
+  while(sexta.getDay()!==5) sexta.setDate(sexta.getDate()+1);
+  return dStr(sexta);
+}
+function calcF3(inicio, duracao){ const d=new Date(inicio+'T00:00:00'); d.setDate(d.getDate()+duracao-1); return dStr(d); }
+
+function calcularDatas(){
+  const inicio = document.getElementById('eInicio').value;
+  const duracao = parseInt(document.getElementById('eDuracao').value);
+  if(!inicio){ document.getElementById('datasPreview').classList.remove('show'); return; }
+  const f1=calcF1(inicio), f2=calcF2(inicio), f3=calcF3(inicio,duracao);
+  document.getElementById('dpF1').textContent = dBR(f1)+' ('+['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dObj(f1).getDay()]+')';
+  document.getElementById('dpF2').textContent = dBR(f2)+' ('+['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dObj(f2).getDay()]+')';
+  document.getElementById('dpF3').textContent = dBR(f3)+' ('+['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dObj(f3).getDay()]+')';
+  document.getElementById('datasPreview').classList.add('show');
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async()=>{
+  sb = window.supabase.createClient(SB_URL, SB_ANON);
+  const {data:{session}} = await sb.auth.getSession();
+  if(session) await loginSucesso(session.user);
+});
+
+async function fazerLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const senha=document.getElementById('loginSenha').value;
+  const btn=document.getElementById('btnLogin');
+  const erro=document.getElementById('loginErro');
+  if(!email||!senha){showErroLogin('Preencha e-mail e senha');return;}
+  btn.disabled=true; btn.textContent='Entrando...'; erro.style.display='none';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
+  if(error){showErroLogin('E-mail ou senha incorretos');btn.disabled=false;btn.textContent='Entrar';return;}
+  await loginSucesso(data.user);
+}
+
+async function loginSucesso(user){
+  // Buscar em consultores primeiro
+  let perfil=null;
+  const {data:c}=await sb.from('consultores').select('*').eq('user_id',user.id).single();
+  if(c) perfil=c;
+
+  // Fallback: treinadores
+  if(!perfil){
+    const {data:t}=await sb.from('treinadores').select('*').eq('user_id',user.id).single();
+    if(t) perfil=t;
+  }
+
+  if(!perfil){showErroLogin('Perfil não encontrado. Contate o gestor.');return;}
+
+  consultor=perfil;
+  academiaId=perfil.academia_id;
+
+  const {data:acad}=await sb.from('academias').select('nome').eq('id',academiaId).single();
+  document.getElementById('hAcademia').textContent=acad?.nome||'Academia';
+  document.getElementById('hConsultor').textContent=perfil.nome;
+
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('appView').style.display='block';
+
+  await carregarTudo();
+}
+
+function showErroLogin(msg){
+  const el=document.getElementById('loginErro');
+  el.textContent=msg; el.style.display='block';
+}
+
+async function fazerLogout(){
+  await sb.auth.signOut(); location.reload();
+}
+
+// ── CARREGAR DADOS ────────────────────────────────────────────
+async function carregarTudo(){
+  const [expsRes, fusRes] = await Promise.all([
+    sb.from('experiencias').select('*').eq('academia_id',academiaId).order('data_inicio',{ascending:false}),
+    sb.from('follow_ups').select('*').eq('academia_id',academiaId).order('data_prevista'),
+  ]);
+  todasExps = expsRes.data||[];
+  todosFollowUps = fusRes.data||[];
+  renderTudo();
+}
+
+function renderTudo(){
+  renderKPIs();
+  renderFollowUps();
+  renderExps();
+  renderAgenda();
+}
+
+// ── KPIs ──────────────────────────────────────────────────────
+function renderKPIs(){
+  const minhasExps = todasExps.filter(e=>e.consultor_responsavel_id===consultor.id||!e.consultor_responsavel_id);
+  const hoje = dStr(new Date());
+  const fusPendentes = todosFollowUps.filter(f=>!f.realizado&&f.data_prevista<=hoje&&(f.consultor_id===consultor.id||!f.consultor_id)).length;
+  const ativas = minhasExps.filter(e=>e.status_funil==='agendada'||e.status_funil==='comparecida').length;
+  const convertidas = minhasExps.filter(e=>e.status_funil==='convertida').length;
+  const total = minhasExps.filter(e=>e.status_funil!=='agendada').length;
+  const pct = total>0?Math.round(convertidas/total*100):0;
+
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-val" style="color:var(--red)">${fusPendentes}</div><div class="kpi-label">Follow-ups</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:var(--yellow)">${ativas}</div><div class="kpi-label">Em andamento</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:${pct>=50?'var(--green)':'var(--primary)'}">${pct}%</div><div class="kpi-label">Conversão</div></div>`;
+}
+
+// ── FOLLOW-UPS ────────────────────────────────────────────────
+function renderFollowUps(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const hojeStr = dStr(hoje);
+
+  const meusFollowUps = todosFollowUps.filter(f=>
+    !f.realizado && (f.consultor_id===consultor.id||!f.consultor_id)
+  );
+
+  const fuHoje = meusFollowUps.filter(f=>f.data_prevista===hojeStr);
+  const fuAtrasados = meusFollowUps.filter(f=>f.data_prevista<hojeStr);
+  const fuFuturos = meusFollowUps.filter(f=>f.data_prevista>hojeStr).slice(0,5);
+
+  const todosUrgentes = [...fuAtrasados, ...fuHoje];
+
+  const elHoje = document.getElementById('fuHoje');
+  const elProx = document.getElementById('fuProximos');
+
+  elHoje.innerHTML = todosUrgentes.length===0
+    ? '<div class="empty">✅ Nenhum follow-up pendente para hoje</div>'
+    : todosUrgentes.map(f=>renderFUCard(f, f.data_prevista<hojeStr?'urgente':'hoje')).join('');
+
+  elProx.innerHTML = fuFuturos.length===0
+    ? '<div class="empty">Sem follow-ups agendados nos próximos dias</div>'
+    : fuFuturos.map(f=>renderFUCard(f,'futuro')).join('');
+}
+
+function renderFUCard(f, urgencia){
+  const cfg = FU_CONFIG[f.tipo]||{label:f.tipo,cor:'var(--muted)',roteiro:''};
+  const exp = todasExps.find(e=>e.id===f.experiencia_id);
+  const nome = exp?.nome||'—';
+  const perfil = exp?.perfil;
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const dataPrev = new Date(f.data_prevista+'T00:00:00');
+  const diasAtraso = Math.floor((hoje-dataPrev)/(1000*60*60*24));
+  const av = nome.charAt(0).toUpperCase();
+
+  return `<div class="fu-card ${urgencia}">
+    <div class="fu-header">
+      <div class="fu-av" style="background:${cfg.cor}22;border:2px solid ${cfg.cor}44;color:${cfg.cor}">${av}</div>
+      <div style="flex:1">
+        <div class="fu-nome">${nome}</div>
+        <div class="fu-meta">Perfil ${perfil}% · ${exp?dBR(exp.data_inicio)+' → '+dBR(exp.data_fim):'—'}</div>
+      </div>
+      ${urgencia==='urgente'?`<span class="fu-badge" style="background:var(--red-dim);color:var(--red);border:1px solid var(--red-border)">${diasAtraso}d atrasado</span>`:''}
+      ${urgencia==='hoje'?`<span class="fu-badge" style="background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)">Hoje</span>`:''}
+      ${urgencia==='futuro'?`<span class="fu-badge" style="background:var(--card2);color:var(--muted);border:1px solid var(--border2)">${dBR(f.data_prevista)}</span>`:''}
+    </div>
+    <div class="fu-tipo">
+      <span class="fu-tipo-tag" style="background:${cfg.cor}15;color:${cfg.cor};border:1px solid ${cfg.cor}30">${cfg.label}</span>
+    </div>
+    <div class="fu-roteiro"><b>Roteiro:</b> ${cfg.roteiro}</div>
+    <div class="fu-actions">
+      <button class="btn-green" onclick="marcarFURealizado('${f.id}')">✓ Realizado</button>
+      <button class="btn-sec" onclick="abrirModalFU('${f.id}')">📝 Obs</button>
+      ${exp?`<a href="${exp.link_mapeamento||'#'}" target="_blank" style="display:${exp.link_mapeamento?'flex':'none'};align-items:center;padding:8px 10px;border-radius:8px;border:1px solid var(--blue-border);background:var(--blue-dim);color:var(--blue);font-size:11px;font-weight:700;text-decoration:none">🔗 Mapeamento</a>`:''}
+    </div>
+  </div>`;
+}
+
+// ── EXPERIÊNCIAS ──────────────────────────────────────────────
+function renderExps(){
+  const filtro = document.getElementById('filtroStatus')?.value||'';
+  let exps = todasExps;
+  if(filtro) exps = exps.filter(e=>e.status_funil===filtro);
+
+  const el = document.getElementById('listaExps');
+  if(exps.length===0){ el.innerHTML='<div class="empty">Nenhuma experiência encontrada</div>'; return; }
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  el.innerHTML = exps.map(e=>{
+    const f = FUNIL[e.status_funil]||FUNIL.agendada;
+    const inicio = new Date(e.data_inicio+'T00:00:00');
+    const fim = new Date(e.data_fim+'T00:00:00');
+    const dia = Math.max(1,Math.floor((hoje-inicio)/(1000*60*60*24))+1);
+    const pct = Math.min(100,Math.round(dia/e.duracao*100));
+    const fusPend = todosFollowUps.filter(fu=>fu.experiencia_id===e.id&&!fu.realizado).length;
+    const fusTotal = todosFollowUps.filter(fu=>fu.experiencia_id===e.id).length;
+    const idade = e.data_nascimento ? calcIdade(e.data_nascimento) : null;
+
+    return `<div class="exp-card" onclick="abrirDetalhe('${e.id}')">
+      <div class="exp-header">
+        <div class="exp-av" style="background:${f.bg};border:2px solid ${f.border};color:${f.color}">${e.nome.charAt(0)}</div>
+        <div style="flex:1">
+          <div class="exp-nome">${e.nome}</div>
+          <div class="exp-sub">${idade?idade+' anos · ':''}Perfil ${e.perfil}% · ${e.duracao} dias · Início ${dBR(e.data_inicio)}</div>
+        </div>
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${f.bg};color:${f.color};border:1px solid ${f.border};white-space:nowrap">${f.label}</span>
+      </div>
+      <div class="exp-progress"><div class="exp-progress-bar" style="width:${pct}%;background:${f.color}"></div></div>
+      <div class="exp-footer">
+        <span style="font-size:11px;color:var(--muted)">Dia ${Math.min(dia,e.duracao)} de ${e.duracao}</span>
+        ${fusPend>0?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--red-dim);color:var(--red);border:1px solid var(--red-border)">${fusPend} follow-up${fusPend>1?'s':''} pendente${fusPend>1?'s':''}</span>`:''}
+        ${fusTotal>0&&fusPend===0?`<span style="font-size:10px;color:var(--green)">✓ Follow-ups ok</span>`:''}
+        ${e.treinador_atendeu?`<span style="font-size:10px;color:var(--muted)">👟 ${e.treinador_atendeu}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function calcIdade(nascISO){
+  const nasc=new Date(nascISO+'T00:00:00');
+  const hoje=new Date();
+  let idade=hoje.getFullYear()-nasc.getFullYear();
+  const m=hoje.getMonth()-nasc.getMonth();
+  if(m<0||(m===0&&hoje.getDate()<nasc.getDate())) idade--;
+  return idade;
+}
+
+// ── DETALHE EXPERIÊNCIA ───────────────────────────────────────
+function abrirDetalhe(id){
+  const e = todasExps.find(x=>x.id===id);
+  if(!e) return;
+  const f = FUNIL[e.status_funil]||FUNIL.agendada;
+  const fus = todosFollowUps.filter(fu=>fu.experiencia_id===id);
+  const hoje = dStr(new Date());
+
+  document.getElementById('detalheNome').textContent = e.nome;
+  document.getElementById('detalheBody').innerHTML = `
+    <!-- Status funil -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Status do funil</div>
+      <div class="funil-select" id="funilSelect">
+        ${Object.entries(FUNIL).map(([k,v])=>`
+          <div class="funil-opt ${e.status_funil===k?'selected':''}" onclick="updateFunil('${id}','${k}')">
+            <div class="funil-opt-dot" style="background:${v.color}"></div>
+            <div class="funil-opt-label" style="color:${e.status_funil===k?v.color:'var(--text)'}">${v.label}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div style="background:var(--card2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:2">
+      <div style="display:flex;gap:6px"><span style="color:var(--muted);min-width:140px">Consultor responsável</span><span style="font-weight:600">${e.consultor_responsavel||'—'}</span></div>
+      <div style="display:flex;gap:6px"><span style="color:var(--muted);min-width:140px">Agendado por</span><span style="font-weight:600">${e.agendado_por||'—'}</span></div>
+      <div style="display:flex;gap:6px"><span style="color:var(--muted);min-width:140px">Treinador atendeu</span><span style="font-weight:600;color:${e.treinador_atendeu?'var(--green)':'var(--muted)'}">${e.treinador_atendeu||'Não preenchido ainda'}</span></div>
+      <div style="display:flex;gap:6px"><span style="color:var(--muted);min-width:140px">Engajamento</span><span style="font-weight:600;color:${e.engajamento==='bom'?'var(--green)':e.engajamento==='regular'?'var(--yellow)':e.engajamento==='baixo'?'var(--red)':'var(--muted)'}">${e.engajamento?e.engajamento.charAt(0).toUpperCase()+e.engajamento.slice(1):'Não avaliado'}</span></div>
+      ${e.obs_treinador?`<div style="display:flex;gap:6px"><span style="color:var(--muted);min-width:140px">Obs. treinador</span><span style="font-weight:600;font-style:italic">"${e.obs_treinador}"</span></div>`:''}
+      ${e.link_mapeamento?`<div style="margin-top:6px"><a href="${e.link_mapeamento}" target="_blank" style="font-size:11px;font-weight:700;color:var(--blue);text-decoration:none;padding:4px 10px;border:1px solid var(--blue-border);border-radius:6px;background:var(--blue-dim)">🔗 Ver mapeamento de sintomas</a></div>`:''}
+    </div>
+
+    <!-- Follow-ups -->
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Follow-ups</div>
+    ${fus.map(fu=>{
+      const cfg=FU_CONFIG[fu.tipo]||{label:fu.tipo,cor:'var(--muted)'};
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--card2);border-radius:8px;margin-bottom:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${fu.realizado?'var(--green)':fu.data_prevista<=hoje?'var(--red)':'var(--muted)'};flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600">${cfg.label}</div>
+          <div style="font-size:11px;color:var(--muted)">${dBR(fu.data_prevista)}${fu.realizado?' · ✓ Realizado':''}${fu.obs?' · "'+fu.obs+'"':''}</div>
+        </div>
+        ${!fu.realizado?`<button onclick="marcarFURealizado('${fu.id}')" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green-border);background:var(--green-dim);color:var(--green);font-size:10px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">✓</button>`:''}
+      </div>`;
+    }).join('')}
+
+    <button class="btn-primary" style="margin-top:10px" onclick="fecharModal('modalDetalhe')">Fechar</button>`;
+
+  document.getElementById('modalDetalhe').classList.add('open');
+}
+
+async function updateFunil(expId, novoStatus){
+  const {error}=await sb.from('experiencias').update({status_funil:novoStatus}).eq('id',expId);
+  if(error){showToast('Erro: '+error.message);return;}
+  const idx=todasExps.findIndex(e=>e.id===expId);
+  if(idx>-1) todasExps[idx].status_funil=novoStatus;
+  // Atualizar visual do funil no modal
+  document.querySelectorAll('#funilSelect .funil-opt').forEach(el=>{
+    const k=el.getAttribute('onclick').match(/'([^']+)'\)$/)?.[1];
+    const f=FUNIL[k];
+    el.classList.toggle('selected',k===novoStatus);
+    el.querySelector('.funil-opt-label').style.color = k===novoStatus?f.color:'var(--text)';
+  });
+  renderExps();
+  showToast('Status atualizado!');
+}
+
+// ── MODAL FOLLOW-UP (OBS) ─────────────────────────────────────
+function abrirModalFU(fuId){
+  const fu = todosFollowUps.find(f=>f.id===fuId);
+  if(!fu) return;
+  const cfg = FU_CONFIG[fu.tipo]||{label:fu.tipo};
+  document.getElementById('fuModalTitulo').textContent = cfg.label;
+  document.getElementById('fuModalBody').innerHTML = `
+    <div class="field"><label>Observação do contato</label><textarea id="fuObs" rows="4" placeholder="O que o lead falou? Objeções? Interesse no Projeto Exclusivo?">${fu.obs||''}</textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-green" style="flex:1" onclick="salvarFUObs('${fuId}',true)">✓ Marcar realizado</button>
+      <button class="btn-sec" style="flex:1" onclick="salvarFUObs('${fuId}',false)">Salvar obs</button>
+    </div>`;
+  document.getElementById('modalFU').classList.add('open');
+}
+
+async function salvarFUObs(fuId, marcarFeito){
+  const obs=document.getElementById('fuObs').value.trim();
+  const payload={obs};
+  if(marcarFeito){payload.realizado=true;payload.data_realizado=dStr(new Date());}
+  const {error}=await sb.from('follow_ups').update(payload).eq('id',fuId);
+  if(error){showToast('Erro: '+error.message);return;}
+  fecharModal('modalFU');
+  await carregarTudo();
+  showToast(marcarFeito?'✅ Follow-up realizado!':'Observação salva!');
+}
+
+async function marcarFURealizado(fuId){
+  const {error}=await sb.from('follow_ups').update({realizado:true,data_realizado:dStr(new Date())}).eq('id',fuId);
+  if(error){showToast('Erro: '+error.message);return;}
+  await carregarTudo();
+  showToast('✅ Follow-up realizado!');
+}
+
+// ── NOVA EXPERIÊNCIA ──────────────────────────────────────────
+async function abrirModalNovaExp(){
+  expEditandoId=null;
+  document.getElementById('modalExpTitulo').textContent='Nova Experiência';
+  document.getElementById('btnSalvarExp').textContent='Cadastrar experiência';
+  // Limpar campos
+  ['eNome','eTelefone','eLinkMap','eObs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('eNascimento').value='';
+  document.getElementById('eInicio').value=dStr(new Date());
+  document.getElementById('ePerfil').value='95';
+  document.getElementById('eDuracao').value='10';
+  document.getElementById('eAgendadoPor').value=consultor.nome;
+
+  // Carregar consultores para o select
+  const {data:conss}=await sb.from('consultores').select('id,nome').eq('academia_id',academiaId).eq('ativo',true);
+  // Também treinadores se necessário
+  const sel=document.getElementById('eConsultorResp');
+  sel.innerHTML='<option value="">Selecionar...</option>';
+  (conss||[]).forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.id+'|'+c.nome; o.textContent=c.nome;
+    if(c.id===consultor.id) o.selected=true;
+    sel.appendChild(o);
+  });
+
+  calcularDatas();
+  document.getElementById('modalExp').classList.add('open');
+}
+
+async function salvarExp(){
+  const nome=document.getElementById('eNome').value.trim();
+  const inicio=document.getElementById('eInicio').value;
+  const duracao=parseInt(document.getElementById('eDuracao').value);
+  if(!nome){showToast('Preencha o nome do lead');return;}
+  if(!inicio){showToast('Preencha a data de início');return;}
+
+  const consVal=document.getElementById('eConsultorResp').value;
+  const [consId,consNome]=consVal?consVal.split('|'):['',''];
+  const nascimento=document.getElementById('eNascimento').value||null;
+  const linkMap=document.getElementById('eLinkMap').value.trim()||null;
+  const tel=document.getElementById('eTelefone').value.trim()||null;
+  const perfil=document.getElementById('ePerfil').value;
+  const dataFim=new Date(inicio+'T00:00:00');
+  dataFim.setDate(dataFim.getDate()+duracao-1);
+
+  const btn=document.getElementById('btnSalvarExp');
+  btn.disabled=true; btn.textContent='Salvando...';
+
+  try {
+    const payload={
+      academia_id:academiaId,
+      nome, telefone:tel,
+      data_nascimento:nascimento,
+      perfil, duracao,
+      data_inicio:inicio,
+      data_fim:dStr(dataFim),
+      status:'andamento',
+      status_funil:'agendada',
+      convertido:false,
+      agendado_por:consultor.nome,
+      consultor_responsavel:consNome||consultor.nome,
+      consultor_responsavel_id:consId||consultor.id,
+      link_mapeamento:linkMap,
+    };
+
+    const {data:expSalva,error}=await sb.from('experiencias').insert([payload]).select().single();
+    if(error) throw new Error(error.message);
+
+    // Criar os 3 follow-ups automaticamente
+    const f1=calcF1(inicio), f2=calcF2(inicio), f3=calcF3(inicio,duracao);
+    const fus=[
+      {academia_id:academiaId,experiencia_id:expSalva.id,consultor_id:consId||consultor.id,consultor_nome:consNome||consultor.nome,tipo:'f1',data_prevista:f1},
+      {academia_id:academiaId,experiencia_id:expSalva.id,consultor_id:consId||consultor.id,consultor_nome:consNome||consultor.nome,tipo:'f2',data_prevista:f2},
+      {academia_id:academiaId,experiencia_id:expSalva.id,consultor_id:consId||consultor.id,consultor_nome:consNome||consultor.nome,tipo:'f3',data_prevista:f3},
+    ];
+    await sb.from('follow_ups').insert(fus);
+
+    fecharModal('modalExp');
+    await carregarTudo();
+    showToast('✅ Experiência cadastrada com 3 follow-ups!');
+  } catch(err){
+    showToast('Erro: '+err.message);
+  } finally {
+    btn.disabled=false; btn.textContent=expEditandoId?'Salvar alterações':'Cadastrar experiência';
+  }
+}
+
+// ── AGENDA ────────────────────────────────────────────────────
+function navSemana(dir){ semanaOffset+=dir; renderAgenda(); }
+
+function renderAgenda(){
+  const hoje=new Date(); hoje.setHours(0,0,0,0);
+  const diaSem=hoje.getDay();
+  const seg=new Date(hoje); seg.setDate(hoje.getDate()-(diaSem===0?6:diaSem-1)+(semanaOffset*7));
+  const dom=new Date(seg); dom.setDate(seg.getDate()+6);
+
+  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  document.getElementById('agendaSemanaLabel').textContent=
+    `${seg.getDate()} ${meses[seg.getMonth()]} — ${dom.getDate()} ${meses[dom.getMonth()]}`;
+
+  const dias=['S','T','Q','Q','S','S','D'];
+  const semDias=[];
+  for(let i=0;i<7;i++){const d=new Date(seg);d.setDate(seg.getDate()+i);semDias.push(d);}
+
+  // Montar eventos da semana
+  const eventos=[];
+  todasExps.forEach(e=>{
+    semDias.forEach(d=>{
+      const ds=dStr(d);
+      if(ds>=e.data_inicio&&ds<=e.data_fim) eventos.push({dia:ds,tipo:'exp',label:e.nome,exp:e});
+    });
+  });
+  todosFollowUps.filter(f=>!f.realizado&&(f.consultor_id===consultor.id||!f.consultor_id)).forEach(f=>{
+    eventos.push({dia:f.data_prevista,tipo:'fu',label:FU_CONFIG[f.tipo]?.label||f.tipo,fu:f,exp:todasExps.find(e=>e.id===f.experiencia_id)});
+  });
+
+  // Renderizar grid
+  document.getElementById('agendaWeek').innerHTML=semDias.map((d,i)=>{
+    const ds=dStr(d);
+    const isHoje=ds===dStr(new Date());
+    const evsDia=eventos.filter(ev=>ev.dia===ds);
+    const temExp=evsDia.some(ev=>ev.tipo==='exp');
+    const temFU=evsDia.some(ev=>ev.tipo==='fu');
+    return `<div class="agenda-day ${isHoje?'hoje':''}" onclick="filtrarAgendaDia('${ds}')">
+      <div class="agenda-day-name">${dias[d.getDay()]}</div>
+      <div class="agenda-day-num">${d.getDate()}</div>
+      ${temExp?`<div class="agenda-event" style="background:var(--yellow)"></div>`:''}
+      ${temFU?`<div class="agenda-event" style="background:var(--primary)"></div>`:''}
+    </div>`;
+  }).join('');
+
+  // Lista da semana
+  const evsSemana=eventos.filter(ev=>ev.dia>=dStr(seg)&&ev.dia<=dStr(dom));
+  evsSemana.sort((a,b)=>a.dia>b.dia?1:-1);
+
+  if(evsSemana.length===0){
+    document.getElementById('agendaLista').innerHTML='<div class="empty">Sem compromissos nesta semana</div>';
+    return;
+  }
+
+  const dias2=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  let html='', diaAtual='';
+  evsSemana.forEach(ev=>{
+    if(ev.dia!==diaAtual){
+      diaAtual=ev.dia;
+      const d=new Date(ev.dia+'T00:00:00');
+      html+=`<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:10px 0 6px">${dias2[d.getDay()]}, ${d.getDate()}</div>`;
+    }
+    if(ev.tipo==='exp'){
+      const f=FUNIL[ev.exp.status_funil]||FUNIL.agendada;
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:8px;margin-bottom:4px;font-size:12px">
+        <span style="font-size:16px">📅</span>
+        <div style="flex:1"><div style="font-weight:600">${ev.exp.nome}</div><div style="color:var(--muted);font-size:11px">Experiência · Dia ${Math.max(1,Math.floor((new Date(ev.dia+'T00:00:00')-new Date(ev.exp.data_inicio+'T00:00:00'))/(1000*60*60*24))+1)} de ${ev.exp.duracao}</div></div>
+        <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:${f.bg};color:${f.color}">${f.label}</span>
+      </div>`;
+    } else {
+      const cfg=FU_CONFIG[ev.fu.tipo]||{label:ev.fu.tipo,cor:'var(--primary)'};
+      html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border:1px solid var(--border);border-left:3px solid ${cfg.cor};border-radius:8px;margin-bottom:4px;font-size:12px">
+        <span style="font-size:16px">📞</span>
+        <div style="flex:1"><div style="font-weight:600">${ev.exp?.nome||'—'}</div><div style="color:var(--muted);font-size:11px">${cfg.label} · ${ev.exp?.perfil}%</div></div>
+        <button onclick="marcarFURealizado('${ev.fu.id}')" style="padding:4px 8px;border-radius:6px;border:1px solid var(--green-border);background:var(--green-dim);color:var(--green);font-size:10px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">✓</button>
+      </div>`;
+    }
+  });
+  document.getElementById('agendaLista').innerHTML=html;
+}
+
+function filtrarAgendaDia(dia){
+  // Scroll para os eventos do dia na lista
+  const els=document.getElementById('agendaLista').querySelectorAll('[data-dia="'+dia+'"]');
+  if(els.length) els[0].scrollIntoView({behavior:'smooth'});
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function setTab(tab){
+  ['hoje','exps','agenda'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('sec'+t.charAt(0).toUpperCase()+t.slice(1)).style.display=t===tab?'block':'none';
+  });
+  if(tab==='agenda') renderAgenda();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function fecharModal(id){ document.getElementById(id).classList.remove('open'); }
+function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500); }
+</script>
+</body>
+</html>

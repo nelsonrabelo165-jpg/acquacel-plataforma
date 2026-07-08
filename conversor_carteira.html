@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquacel · Conversor de Carteira</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F8FAFF; --card:#FFFFFF; --card2:#F0F4FF; --border:#E2E8F0; --border2:#CBD5E1;
+  --primary:#1B4FD8; --primary-dim:rgba(27,79,216,.10); --primary-border:rgba(27,79,216,.25);
+  --text:#1A202C; --muted:#555; --dim:#222;
+  --green:#22C55E; --green-dim:rgba(34,197,94,.1); --green-border:rgba(34,197,94,.25);
+  --red:#EF4444; --red-dim:rgba(239,68,68,.1);
+  --yellow:#EAB308; --yellow-dim:rgba(234,179,8,.1);
+  --blue:#60A5FA; --blue-dim:rgba(96,165,250,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;max-width:900px;margin:0 auto;padding:0 0 60px}
+
+.header{background:rgba(10,10,10,.96);border-bottom:1px solid var(--border);padding:14px 24px;position:sticky;top:0;z-index:50;backdrop-filter:blur(16px)}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--primary)}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:1px}
+
+.content{padding:24px}
+
+/* ── DROP ZONE ── */
+.drop-zone{border:2px dashed var(--border2);border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:20px;position:relative}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--primary);background:var(--primary-dim)}
+.drop-icon{font-size:40px;margin-bottom:12px}
+.drop-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px}
+.drop-sub{font-size:13px;color:var(--muted);line-height:1.6}
+.drop-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.sistemas{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.sistema-tag{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--card2);border:1px solid var(--border2);color:var(--muted)}
+
+/* ── STEPS ── */
+.steps{display:flex;gap:0;margin-bottom:24px}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.step::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:1px;background:var(--border2);z-index:0}
+.step:last-child::after{display:none}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--dim);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);position:relative;z-index:1;transition:all .3s}
+.step.active .step-num{background:var(--primary);border-color:var(--primary);color:#000}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:#000}
+.step-label{font-size:10px;color:var(--muted);text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.step.active .step-label{color:var(--primary)}
+.step.done .step-label{color:var(--green)}
+
+/* ── MAPEAMENTO ── */
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px}
+.map-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.map-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.map-row{display:grid;grid-template-columns:1fr 24px 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.map-campo{font-size:12px;font-weight:600;color:var(--text);padding:8px 12px;background:var(--card2);border-radius:8px;border:1px solid var(--border);text-align:center}
+.map-campo.destino{background:var(--primary-dim);border-color:var(--primary-border);color:var(--primary)}
+.map-campo.opcional{opacity:.6}
+.map-arrow{color:var(--muted);font-size:14px;text-align:center}
+.map-select{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.map-select:focus{border-color:var(--primary)}
+.map-select.mapeado{border-color:var(--green);color:var(--green)}
+
+/* ── PLANO MAPEAMENTO ── */
+.plano-map{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px}
+.plano-row{display:grid;grid-template-columns:1fr 24px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.plano-row:last-child{margin-bottom:0}
+.plano-val{font-size:12px;font-family:'DM Mono',monospace;color:var(--yellow);padding:6px 10px;background:#F8FAFF;border-radius:6px;border:1px solid var(--border2)}
+.plano-select{background:#F8FAFF;border:1px solid var(--border2);border-radius:6px;padding:6px 8px;color:var(--text);font-size:12px;outline:none;font-family:'Barlow',sans-serif;width:100%}
+
+/* ── PREVIEW TABLE ── */
+.preview-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:#131313;border-bottom:1px solid var(--border)}
+th{padding:9px 12px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:left;white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:rgba(255,255,255,.01)}
+.td-ok{color:var(--green)}
+.td-warn{color:var(--yellow)}
+.td-err{color:var(--red)}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.stat-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* ── BTNS ── */
+.btn-primary{padding:13px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),#3B82F6);color:#000;font-size:14px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:opacity .2s}
+.btn-primary:hover{opacity:.9}
+.btn-secondary{padding:11px 20px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary)}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── ALERTA ── */
+.alert{padding:10px 14px;border-radius:8px;font-size:12px;line-height:1.6;margin-bottom:12px}
+.alert-warn{background:var(--yellow-dim);border:1px solid rgba(234,179,8,.25);color:var(--yellow)}
+.alert-ok{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green)}
+.alert-err{background:var(--red-dim);border:1px solid rgba(239,68,68,.25);color:var(--red)}
+.alert-info{background:var(--blue-dim);border:1px solid rgba(96,165,250,.25);color:var(--blue)}
+
+/* ── SECTION ── */
+.section{display:none}
+.section.active{display:block}
+
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--primary);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="logo">Acquacel · Conversor de Carteira</div>
+      <div class="logo-sub">Transforme qualquer exportação no formato do sistema</div>
+    </div>
+    <a href="sistema_integrado_v3.html" style="font-size:12px;color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--border2);border-radius:7px">← Voltar</a>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- STEPS -->
+  <div class="steps" id="stepsBar">
+    <div class="step active" id="step1"><div class="step-num">1</div><div class="step-label">Upload</div></div>
+    <div class="step" id="step2"><div class="step-num">2</div><div class="step-label">Mapear</div></div>
+    <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">Revisar</div></div>
+    <div class="step" id="step4"><div class="step-num">4</div><div class="step-label">Exportar</div></div>
+  </div>
+
+  <!-- SEÇÃO 1: UPLOAD -->
+  <div class="section active" id="sec1">
+    <div class="drop-zone" id="dropZone">
+      <input type="file" class="drop-input" id="fileInput" accept=".csv,.xlsx,.xls,.txt" onchange="processarArquivo(this.files[0])">
+      <div class="drop-icon">📂</div>
+      <div class="drop-title">Arraste o arquivo aqui</div>
+      <div class="drop-sub">CSV, Excel (.xlsx/.xls) ou TXT<br>Qualquer separador: vírgula, ponto-e-vírgula ou tabulação</div>
+      <div class="sistemas">
+        <span class="sistema-tag">SCA</span>
+        <span class="sistema-tag">EVO</span>
+        <span class="sistema-tag">NextFit</span>
+        <span class="sistema-tag">Tecnofit</span>
+        <span class="sistema-tag">WA Fitness</span>
+        <span class="sistema-tag">Perfect Gym</span>
+        <span class="sistema-tag">Qualquer Excel</span>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      💡 <strong>Dica:</strong> Exporte do seu sistema de gestão em qualquer formato. O conversor detecta automaticamente as colunas e sugere o mapeamento correto.
+    </div>
+
+    <div class="map-card">
+      <div class="map-title">Formato de saída do Acquacel</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--primary);padding:10px 14px;background:#F8FAFF;border-radius:8px;line-height:1.8">
+        nome,matricula,plano,vencimento,idade,telefone<br>
+        <span style="color:var(--muted)">João Silva,2847,anual,31/12/2025,35,(11)99999-9999</span>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.7">
+        <span style="color:var(--primary)">*</span> obrigatório: <strong style="color:var(--text)">nome</strong> &nbsp;·&nbsp;
+        opcional: matrícula, plano, vencimento, idade, telefone &nbsp;·&nbsp;
+        plano: <strong style="color:var(--text)">anual / mensal / recorrencia</strong> &nbsp;·&nbsp;
+        vencimento: <strong style="color:var(--text)">dd/mm/aaaa</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2: MAPEAMENTO -->
+  <div class="section" id="sec2">
+    <div class="map-card">
+      <div class="map-title">Mapeamento de colunas</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">O sistema detectou as colunas do seu arquivo. Confirme ou ajuste o mapeamento:</div>
+      <div id="mapRows"></div>
+    </div>
+
+    <div id="planoMapCard" style="display:none">
+      <div class="map-card">
+        <div class="map-title">Mapeamento de planos</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Valores encontrados na coluna de plano — confirme a equivalência:</div>
+        <div class="plano-map" id="planoMapRows"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="irPara(1)">← Voltar</button>
+      <button class="btn-primary" onclick="aplicarMapeamento()">Converter → Revisar</button>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3: REVISÃO -->
+  <div class="section" id="sec3">
+    <div class="stats-row" id="statsRow"></div>
+    <div id="alertasRevisao"></div>
+
+    <div class="map-card">
+      <div class="map-title">Preview — primeiros 10 registros</div>
+      <div class="preview-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nome</th><th>Matrícula</th><th>Plano</th><th>Vencimento</th><th>Idade</th><th>Telefone</th><th>Status</th></tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="irPara(2)">← Voltar</button>
+      <button class="btn-primary" onclick="irPara(4)">✅ Aprovar e exportar</button>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4: EXPORTAR -->
+  <div class="section" id="sec4">
+    <div class="alert alert-ok" id="exportOk"></div>
+
+    <div class="map-card">
+      <div class="map-title">Download do arquivo convertido</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px">
+        Arquivo pronto no formato Acquacel. Faça o download e use na tela de importação do sistema.<br>
+        <span style="color:var(--text);font-weight:600">Como usar:</span> Sistema → Home do Treinador → 📤 CSV → selecione este arquivo.
+      </div>
+      <button class="btn-primary" id="btnDownload" onclick="baixarCSV()" style="width:100%;padding:16px;font-size:15px">
+        📥 Baixar CSV convertido
+      </button>
+    </div>
+
+    <div class="map-card">
+      <div class="map-title">Preview completo</div>
+      <div class="preview-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Nome</th><th>Matrícula</th><th>Plano</th><th>Vencimento</th><th>Idade</th><th>Telefone</th></tr></thead>
+          <tbody id="previewFull"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn-secondary" onclick="irPara(1); resetar()">🔄 Converter outro arquivo</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────────────
+let rawRows = [];       // linhas brutas do arquivo
+let headers = [];       // cabeçalhos detectados
+let mapeamento = {};    // { campoDestino: indiceColuna }
+let planoMap = {};      // { valorOriginal: valorPadrao }
+let dadosConvertidos = [];
+let separador = ',';
+
+const CAMPOS_DESTINO = [
+  { key:'nome',       label:'Nome',       obrigatorio:true  },
+  { key:'matricula',  label:'Matrícula',  obrigatorio:false },
+  { key:'plano',      label:'Plano',      obrigatorio:false },
+  { key:'vencimento', label:'Vencimento', obrigatorio:false },
+  { key:'idade',      label:'Idade',      obrigatorio:false },
+  { key:'telefone',   label:'Telefone',   obrigatorio:false },
+];
+
+// Palavras-chave para auto-detectar colunas
+const AUTO_MAP = {
+  nome:       ['nome','name','aluno','cliente','student','membro'],
+  matricula:  ['matricula','matrícula','mat','código','codigo','code','id','registro','número'],
+  plano:      ['plano','plan','modalidade','produto','contrato','tipo','categoria'],
+  vencimento: ['vencimento','venc','validade','expira','expiry','fim','data_fim','data venc','dt_venc','data_vencimento','prazo'],
+  idade:      ['idade','age','anos'],
+  telefone:   ['telefone','fone','celular','whatsapp','tel','phone','contato','cel'],
+};
+
+const PLANOS_PADRAO = ['anual','mensal','recorrencia'];
+const PLANO_KEYWORDS = {
+  anual:       ['anual','annual','ano','12 mes','12mes','yearly','year'],
+  mensal:      ['mensal','mes','monthly','month','mês'],
+  recorrencia: ['recorr','recurrence','recur','debito','débito','auto','automatico'],
+};
+
+// ── UPLOAD ───────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e=>{ e.preventDefault(); dropZone.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) processarArquivo(f); });
+
+function processarArquivo(file){
+  if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+
+  if(ext==='csv'||ext==='txt'){
+    reader.onload = e => parseCSV(e.target.result);
+    reader.readAsText(file, 'UTF-8');
+  } else if(ext==='xlsx'||ext==='xls'){
+    reader.onload = e => parseExcel(e.target.result);
+    reader.readAsArrayBuffer(file);
+  } else {
+    showToast('Formato não suportado. Use CSV, XLSX ou TXT');
+  }
+}
+
+function parseCSV(text){
+  // Detectar separador
+  const firstLine = text.split('\n')[0];
+  if(firstLine.split(';').length > firstLine.split(',').length) separador = ';';
+  else if(firstLine.split('\t').length > firstLine.split(',').length) separador = '\t';
+  else separador = ',';
+
+  const lines = text.split('\n').map(l=>l.trim()).filter(l=>l);
+  if(lines.length < 2){ showToast('Arquivo vazio ou inválido'); return; }
+
+  headers = parseLinha(lines[0]);
+  rawRows = lines.slice(1).map(l=>parseLinha(l)).filter(r=>r.some(c=>c));
+  iniciarMapeamento();
+}
+
+function parseLinha(linha){
+  // Suporta campos com aspas
+  const result = [];
+  let field = '', inQuotes = false;
+  for(let i=0;i<linha.length;i++){
+    const c = linha[i];
+    if(c==='"') inQuotes=!inQuotes;
+    else if((c===separador||c===';'||c===',')&&!inQuotes){ result.push(field.trim()); field=''; }
+    else field+=c;
+  }
+  result.push(field.trim());
+  return result;
+}
+
+function parseExcel(buffer){
+  // Fallback: avisar para salvar como CSV
+  showToast('Excel detectado — salve como CSV e tente novamente');
+  document.getElementById('dropZone').querySelector('.drop-sub').innerHTML =
+    '⚠️ Para Excel: Arquivo → Salvar como → CSV UTF-8<br>Então faça o upload do CSV';
+}
+
+// ── MAPEAMENTO ───────────────────────────────────────────────
+function iniciarMapeamento(){
+  // Auto-detectar mapeamento
+  mapeamento = {};
+  CAMPOS_DESTINO.forEach(campo => {
+    const keywords = AUTO_MAP[campo.key] || [];
+    headers.forEach((h, idx) => {
+      const hLower = h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if(keywords.some(k => hLower.includes(k))){
+        if(mapeamento[campo.key] === undefined) mapeamento[campo.key] = idx;
+      }
+    });
+  });
+
+  renderMapeamento();
+  irPara(2);
+}
+
+function renderMapeamento(){
+  const container = document.getElementById('mapRows');
+  container.innerHTML = CAMPOS_DESTINO.map(campo => {
+    const sel = mapeamento[campo.key];
+    const mapeado = sel !== undefined;
+    return `
+    <div class="map-row">
+      <div class="map-campo destino ${!campo.obrigatorio?'opcional':''}">${campo.label}${campo.obrigatorio?' *':''}</div>
+      <div class="map-arrow">←</div>
+      <select class="map-select ${mapeado?'mapeado':''}" id="map-${campo.key}" onchange="atualizarMap('${campo.key}',this)">
+        <option value="-1">${campo.obrigatorio?'— selecionar —':'— não mapear —'}</option>
+        ${headers.map((h,i)=>`<option value="${i}" ${sel===i?'selected':''}>${h}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+
+  // Preview das primeiras linhas
+  renderPlanoMap();
+}
+
+function atualizarMap(campo, sel){
+  const val = parseInt(sel.value);
+  mapeamento[campo] = val >= 0 ? val : undefined;
+  sel.className = 'map-select' + (val>=0?' mapeado':'');
+  if(campo==='plano') renderPlanoMap();
+}
+
+function renderPlanoMap(){
+  const planoIdx = mapeamento['plano'];
+  if(planoIdx === undefined){ document.getElementById('planoMapCard').style.display='none'; return; }
+
+  // Coletar valores únicos de plano
+  const valoresPlano = [...new Set(rawRows.map(r=>r[planoIdx]).filter(Boolean))];
+  if(valoresPlano.length === 0){ document.getElementById('planoMapCard').style.display='none'; return; }
+
+  // Auto-mapear
+  valoresPlano.forEach(v => {
+    if(!planoMap[v]){
+      const vl = v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      for(const [padrao, keys] of Object.entries(PLANO_KEYWORDS)){
+        if(keys.some(k=>vl.includes(k))){ planoMap[v]=padrao; break; }
+      }
+      if(!planoMap[v]) planoMap[v]='mensal';
+    }
+  });
+
+  document.getElementById('planoMapCard').style.display='block';
+  document.getElementById('planoMapRows').innerHTML = valoresPlano.map(v=>`
+    <div class="plano-row">
+      <div class="plano-val">${v}</div>
+      <div class="map-arrow" style="text-align:center;color:var(--muted)">→</div>
+      <select class="plano-select" onchange="planoMap['${v}']=this.value">
+        ${PLANOS_PADRAO.map(p=>`<option value="${p}" ${planoMap[v]===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+
+// ── CONVERTER ────────────────────────────────────────────────
+function aplicarMapeamento(){
+  if(mapeamento['nome'] === undefined){ showToast('⚠️ Mapeie a coluna Nome antes de continuar'); return; }
+
+  dadosConvertidos = rawRows.map((row, i) => {
+    const get = key => {
+      const idx = mapeamento[key];
+      return idx !== undefined ? (row[idx]||'').trim() : '';
+    };
+
+    const nome = get('nome');
+    if(!nome) return null;
+
+    // Normalizar plano
+    let plano = get('plano');
+    if(plano && planoMap[plano]) plano = planoMap[plano];
+    else if(plano){
+      const pl = plano.toLowerCase();
+      for(const [padrao,keys] of Object.entries(PLANO_KEYWORDS)){
+        if(keys.some(k=>pl.includes(k))){ plano=padrao; break; }
+      }
+    }
+    if(!PLANOS_PADRAO.includes(plano)) plano = plano ? 'mensal' : '';
+
+    // Normalizar vencimento
+    let venc = get('vencimento');
+    venc = normalizarData(venc);
+
+    // Normalizar telefone
+    let tel = get('telefone').replace(/[^\d()\-+ ]/g,'');
+
+    // Normalizar idade
+    let idade = get('idade').replace(/\D/g,'');
+
+    return { nome, matricula:get('matricula'), plano, vencimento:venc, idade, telefone:tel, _linha:i+2 };
+  }).filter(Boolean);
+
+  renderRevisao();
+  irPara(3);
+}
+
+function normalizarData(val){
+  if(!val) return '';
+  val = val.trim();
+
+  // Formatos comuns
+  const formatos = [
+    /^(\d{2})\/(\d{2})\/(\d{4})$/, // dd/mm/aaaa ✓ já está certo
+    /^(\d{4})-(\d{2})-(\d{2})$/,   // aaaa-mm-dd (ISO)
+    /^(\d{2})-(\d{2})-(\d{4})$/,   // dd-mm-aaaa
+    /^(\d{2})\.(\d{2})\.(\d{4})$/, // dd.mm.aaaa
+    /^(\d{2})\/(\d{2})\/(\d{2})$/, // dd/mm/aa
+  ];
+
+  let match;
+
+  // dd/mm/aaaa - já certo
+  if((match=val.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))){
+    return val;
+  }
+  // aaaa-mm-dd
+  if((match=val.match(/^(\d{4})-(\d{2})-(\d{2})$/))){
+    return `${match[3]}/${match[2]}/${match[1]}`;
+  }
+  // dd-mm-aaaa
+  if((match=val.match(/^(\d{2})-(\d{2})-(\d{4})$/))){
+    return `${match[1]}/${match[2]}/${match[3]}`;
+  }
+  // dd.mm.aaaa
+  if((match=val.match(/^(\d{2})\.(\d{2})\.(\d{4})$/))){
+    return `${match[1]}/${match[2]}/${match[3]}`;
+  }
+  // dd/mm/aa
+  if((match=val.match(/^(\d{2})\/(\d{2})\/(\d{2})$/))){
+    const ano = parseInt(match[3]) < 50 ? '20'+match[3] : '19'+match[3];
+    return `${match[1]}/${match[2]}/${ano}`;
+  }
+  // Número serial Excel (dias desde 1900-01-01)
+  if(/^\d{5}$/.test(val)){
+    const d = new Date((parseInt(val)-25569)*86400*1000);
+    return d.toLocaleDateString('pt-BR');
+  }
+
+  return val; // retorna como está se não reconhecer
+}
+
+// ── REVISÃO ──────────────────────────────────────────────────
+function renderRevisao(){
+  const total = dadosConvertidos.length;
+  const semNome = dadosConvertidos.filter(r=>!r.nome).length;
+  const semPlano = dadosConvertidos.filter(r=>!r.plano).length;
+  const semVenc = dadosConvertidos.filter(r=>!r.vencimento).length;
+  const vencidos = dadosConvertidos.filter(r=>{
+    if(!r.vencimento) return false;
+    const [d,m,a] = r.vencimento.split('/').map(Number);
+    return new Date(a,m-1,d) < new Date();
+  }).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat"><div class="stat-val" style="color:var(--green)">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-val" style="color:${semPlano>0?'var(--yellow)':'var(--green)'}">${total-semPlano}</div><div class="stat-label">Com plano</div></div>
+    <div class="stat"><div class="stat-val" style="color:${semVenc>0?'var(--yellow)':'var(--green)'}">${total-semVenc}</div><div class="stat-label">Com venc.</div></div>
+    <div class="stat"><div class="stat-val" style="color:${vencidos>0?'var(--red)':'var(--green)'}">${vencidos}</div><div class="stat-label">Vencidos</div></div>`;
+
+  const alertas = document.getElementById('alertasRevisao');
+  alertas.innerHTML = '';
+  if(semPlano>0) alertas.innerHTML += `<div class="alert alert-warn">⚠️ ${semPlano} aluno(s) sem plano identificado — serão importados como "mensal"</div>`;
+  if(semVenc>0)  alertas.innerHTML += `<div class="alert alert-warn">⚠️ ${semVenc} aluno(s) sem data de vencimento — campo ficará vazio</div>`;
+  if(vencidos>0) alertas.innerHTML += `<div class="alert alert-warn">⚠️ ${vencidos} plano(s) já vencido(s) — serão importados normalmente, verifique</div>`;
+  if(total>0 && semPlano===0 && semVenc===0) alertas.innerHTML += `<div class="alert alert-ok">✅ Todos os registros estão completos e prontos para importar</div>`;
+
+  const tbody = document.getElementById('previewBody');
+  tbody.innerHTML = dadosConvertidos.slice(0,10).map((r,i)=>{
+    const vencOk = r.vencimento && /^\d{2}\/\d{2}\/\d{4}$/.test(r.vencimento);
+    const [d,m,a] = vencOk ? r.vencimento.split('/').map(Number) : [];
+    const vencido = vencOk && new Date(a,m-1,d) < new Date();
+    return `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td class="td-ok">${r.nome}</td>
+      <td style="color:var(--muted)">${r.matricula||'—'}</td>
+      <td class="${r.plano?'td-ok':'td-warn'}">${r.plano||'mensal*'}</td>
+      <td class="${vencido?'td-err':vencOk?'td-ok':'td-warn'}">${r.vencimento||'—'}</td>
+      <td style="color:var(--muted)">${r.idade||'—'}</td>
+      <td style="color:var(--muted)">${r.telefone||'—'}</td>
+      <td class="${vencido?'td-err':'td-ok'}">${vencido?'⚠️ Vencido':'✅'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EXPORTAR ─────────────────────────────────────────────────
+function irPara(n){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('sec'+i).classList.toggle('active',i===n);
+    const step=document.getElementById('step'+i);
+    step.classList.toggle('active',i===n);
+    step.classList.toggle('done',i<n);
+  });
+  if(n===4) prepararExport();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function prepararExport(){
+  const total = dadosConvertidos.length;
+  document.getElementById('exportOk').innerHTML =
+    `✅ <strong>${total} aluno(s)</strong> prontos para importar no sistema Acquacel`;
+
+  const tbody = document.getElementById('previewFull');
+  tbody.innerHTML = dadosConvertidos.map((r,i)=>`<tr>
+    <td style="color:var(--muted)">${i+1}</td>
+    <td>${r.nome}</td>
+    <td style="color:var(--muted)">${r.matricula||'—'}</td>
+    <td>${r.plano||'mensal'}</td>
+    <td>${r.vencimento||'—'}</td>
+    <td style="color:var(--muted)">${r.idade||'—'}</td>
+    <td style="color:var(--muted)">${r.telefone||'—'}</td>
+  </tr>`).join('');
+}
+
+function baixarCSV(){
+  const header = 'nome,matricula,plano,vencimento,idade,telefone\n';
+  const rows = dadosConvertidos.map(r =>
+    [r.nome, r.matricula||'', r.plano||'mensal', r.vencimento||'', r.idade||'', r.telefone||'']
+    .map(v => v.includes(',') ? `"${v}"` : v)
+    .join(',')
+  ).join('\n');
+
+  const blob = new Blob(['\ufeff'+header+rows], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url;
+  a.download='carteira_qg90_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ CSV baixado com sucesso!');
+}
+
+function resetar(){
+  rawRows=[]; headers=[]; mapeamento={}; planoMap={}; dadosConvertidos=[];
+  document.getElementById('fileInput').value='';
+  document.getElementById('mapRows').innerHTML='';
+  document.getElementById('previewBody').innerHTML='';
+  document.getElementById('previewFull').innerHTML='';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Acquacel · Seu Desafio</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFF;--card:#FFFFFF;--card2:#F0F4FF;--border:#E2E8F0;--border2:#CBD5E1;
+  --accent:#1B4FD8;--accent-dim:rgba(27,79,216,.12);--accent-border:rgba(27,79,216,.28);
+  --text:#1A202C;--muted:#718096;--dim:#2A2A2A;
+  --green:#22C55E;--green-dim:rgba(34,197,94,.1);
+  --red:#EF4444;--red-dim:rgba(239,68,68,.1);
+  --yellow:#EAB308;--blue:#60A5FA;--purple:#A78BFA;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:90px}
+
+/* ── LOADING ── */
+.loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;padding:24px}
+.loading-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--accent)}
+.loading-sub{font-size:13px;color:var(--muted);text-align:center}
+.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ERROR ── */
+.error-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;padding:24px;text-align:center}
+.error-icon{font-size:48px}
+.error-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--red)}
+.error-sub{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ── APP CONTENT ── */
+.app-content{display:none}
+
+/* ── HEADER ── */
+.app-header{background:rgba(10,10,10,.92);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:50;backdrop-filter:blur(16px)}
+.header-top{display:flex;align-items:center;justify-content:space-between}
+.header-logo{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;color:var(--accent)}
+.header-nome{font-size:11px;color:var(--muted);margin-top:2px}
+.dia-badge{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent)}
+
+/* ── TABS ── */
+.app-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:57px;z-index:49}
+.tab-btn{flex:1;padding:10px 4px;font-size:11px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-family:'Barlow',sans-serif}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── TAB PANELS ── */
+.tab-panel{display:none;padding:16px}
+.tab-panel.active{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+
+/* ── PROGRESSO RING ── */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px}
+.ring-container{position:relative;width:140px;height:140px;margin-bottom:12px}
+.ring-svg{transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--border2);stroke-width:10}
+.ring-fill{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-dia{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--accent);line-height:1}
+.ring-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.ring-sub{font-size:13px;color:var(--muted);text-align:center}
+
+/* ── TREINO DO DIA ── */
+.treino-card{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:14px;padding:16px;margin-bottom:12px}
+.treino-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.treino-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800}
+.treino-check{width:36px;height:36px;border-radius:50%;border:2px solid var(--accent);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s;color:var(--accent)}
+.treino-check.done{background:var(--accent);color:#000;border-color:var(--accent)}
+.treino-dias{display:flex;gap:4px;flex-wrap:wrap}
+.treino-dia{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.treino-dia.ativo{background:var(--accent);color:#000}
+.treino-dia.inativo{background:var(--dim);color:var(--muted)}
+.treino-dia.hoje{border:2px solid var(--accent)}
+
+/* ── MISSÕES ── */
+.missao-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;background:var(--card2);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .2s}
+.missao-item.done{background:var(--green-dim);border-color:rgba(34,197,94,.3)}
+.missao-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all .2s}
+.missao-item.done .missao-check{background:var(--green);border-color:var(--green);color:#000}
+.missao-text{font-size:13px;line-height:1.4;flex:1}
+.missao-item.done .missao-text{color:var(--muted);text-decoration:line-through}
+
+/* ── JORNADA ── */
+.jornada-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.jornada-dia{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:default}
+.jornada-dia.passado{background:var(--green);color:#000}
+.jornada-dia.hoje{background:var(--accent);color:#000;border:2px solid #fff}
+.jornada-dia.futuro{background:var(--dim);color:var(--muted)}
+.jornada-dia.revisao{background:var(--purple);color:#000}
+.jornada-dia.sem-treino{background:transparent;border:1px solid var(--border2);color:var(--dim)}
+
+/* ── NOTA DO DIA ── */
+.nota-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.nota-btn{padding:10px;border-radius:10px;border:1px solid var(--border2);background:#F8FAFF;font-size:16px;cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif}
+.nota-btn.active{background:var(--accent-dim);border-color:var(--accent)}
+
+/* ── ORIENTAÇÕES ── */
+.orientacao-box{background:var(--card2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:10px;font-size:13px;line-height:1.6;color:var(--text)}
+.pesquisa-box{background:#F0F4FF;border:1px solid var(--border2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;font-style:italic}
+
+/* ── NPS ── */
+.nps-pergunta{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.nps-num{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.nps-texto{font-size:14px;font-weight:600;margin-bottom:12px;line-height:1.4}
+.nps-opt{width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;margin-bottom:6px;transition:all .15s}
+.nps-opt.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.nps-scale{display:flex;gap:4px;flex-wrap:wrap}
+.nps-num-btn{flex:1;min-width:30px;padding:8px 4px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;text-align:center;font-family:'Barlow',sans-serif;transition:all .15s}
+.nps-num-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+
+.btn-enviar{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#3B82F6);color:#000;font-size:15px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;margin-top:8px}
+.btn-enviar:disabled{background:var(--dim);color:var(--muted);cursor:default}
+
+/* ── PROGRESSO KPIs ── */
+.kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi-box{background:var(--card2);border-radius:10px;padding:12px;text-align:center}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--accent)}
+.kpi-label{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(10,10,10,.95);border-top:1px solid var(--border);padding:10px 24px 24px;display:flex;justify-content:space-around;backdrop-filter:blur(16px);z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px;font-weight:600;font-family:'Barlow',sans-serif;padding:4px 8px;transition:color .2s;text-transform:uppercase;letter-spacing:.06em}
+.nav-btn .nav-icon{font-size:20px}
+.nav-btn.active{color:var(--accent)}
+
+/* ── SUCCESS ── */
+.success-screen{display:none;padding:32px 20px;text-align:center}
+.success-icon{font-size:60px;margin-bottom:16px}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px;color:var(--green)}
+.success-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.codigo-box{background:var(--card2);border:1px solid var(--accent-border);border-radius:12px;padding:16px;margin-bottom:16px}
+.codigo-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--accent);letter-spacing:.2em}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">Acquacel</div>
+  <div class="spinner"></div>
+  <div class="loading-sub">Carregando seu desafio...</div>
+</div>
+
+<!-- ERROR -->
+<div class="error-screen" id="errorScreen">
+  <div class="error-icon">⚠️</div>
+  <div class="error-title">Link inválido</div>
+  <div class="error-sub">Este link de desafio não foi encontrado ou expirou.<br>Peça ao seu treinador um novo QR Code.</div>
+</div>
+
+<!-- APP -->
+<div class="app-content" id="appContent">
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="header-top">
+      <div>
+        <div class="header-logo">Acquacel · Seu Desafio</div>
+        <div class="header-nome" id="headerNome">Carregando...</div>
+      </div>
+      <div class="dia-badge" id="diaBadge">Dia 1</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="app-tabs">
+    <button class="tab-btn active" onclick="showTab('inicio',this)">🏠 Início</button>
+    <button class="tab-btn" onclick="showTab('progresso',this)">📈 Progresso</button>
+    <button class="tab-btn" onclick="showTab('orientacoes',this)">💡 Orientações</button>
+    <button class="tab-btn" onclick="showTab('avalie',this)">⭐ Avalie</button>
+  </div>
+
+  <!-- TAB: INÍCIO -->
+  <div class="tab-panel active" id="tab-inicio">
+
+    <!-- Anel de progresso -->
+    <div class="card">
+      <div class="ring-wrap">
+        <div class="ring-container">
+          <svg class="ring-svg" width="140" height="140" viewBox="0 0 140 140">
+            <circle class="ring-track" cx="70" cy="70" r="60"/>
+            <circle class="ring-fill" id="ringFill" cx="70" cy="70" r="60"
+              stroke-dasharray="377" stroke-dashoffset="377"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-dia" id="ringDia">1</div>
+            <div class="ring-label">de 21 dias</div>
+          </div>
+        </div>
+        <div class="ring-sub" id="ringSub">Seu desafio está começando!</div>
+      </div>
+    </div>
+
+    <!-- Treino do dia -->
+    <div class="treino-card" id="treinoCard">
+      <div class="treino-header">
+        <div class="treino-title" id="treinoTitulo">Treino de hoje</div>
+        <button class="treino-check" id="btnTreino" onclick="toggleTreino()">○</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px" id="treinoInfo">Carregando...</div>
+      <div class="treino-dias" id="treinoDias"></div>
+    </div>
+
+    <!-- Missões do dia -->
+    <div class="card">
+      <div class="card-title">🎯 Missões do dia</div>
+      <div id="missoesContainer"></div>
+    </div>
+
+    <!-- Nota do dia -->
+    <div class="card" id="notaDiaCard">
+      <div class="card-title">😊 Como foi seu dia?</div>
+      <div class="nota-grid" id="notaGrid"></div>
+      <div id="notaFeedback" style="font-size:12px;color:var(--muted);text-align:center;margin-top:4px"></div>
+      <div style="margin-top:10px">
+        <input type="text" id="comprometimento" placeholder="Meu comprometimento para amanhã..."
+          style="width:100%;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+      </div>
+      <button onclick="salvarNota()" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:none;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">
+        Salvar nota do dia
+      </button>
+    </div>
+
+    <!-- Mensagem do treinador -->
+    <div class="card">
+      <div class="card-title">💬 Seu treinador</div>
+      <div style="font-size:13px;color:var(--muted);font-style:italic;line-height:1.6" id="msgTreinador">
+        "Você chegou até aqui por um motivo. Cada treino é um passo em direção à melhor versão de você."
+      </div>
+      <div style="font-size:11px;color:var(--accent);margin-top:8px;font-weight:600" id="nomeTreinador"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB: PROGRESSO -->
+  <div class="tab-panel" id="tab-progresso">
+    <div class="kpi-row">
+      <div class="kpi-box"><div class="kpi-val" id="kpiTreinos">0</div><div class="kpi-label">Treinos</div></div>
+      <div class="kpi-box"><div class="kpi-val" id="kpiMissoes">0</div><div class="kpi-label">Missões</div></div>
+      <div class="kpi-box"><div class="kpi-val" id="kpiDias">0</div><div class="kpi-label">Dias ativos</div></div>
+    </div>
+
+    <!-- Jornada 21 dias -->
+    <div class="card">
+      <div class="card-title">📅 Jornada 21 dias</div>
+      <div class="jornada-grid" id="jornadaGrid"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--green)"></div>Treino feito</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>Hoje</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--dim)"></div>Futuro</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--purple)"></div>Revisão</div>
+      </div>
+    </div>
+
+    <!-- Programa -->
+    <div class="card">
+      <div class="card-title">🎯 Seu programa</div>
+      <div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px" id="progNome">—</div>
+      <div style="font-size:13px;color:var(--muted)" id="progFoco">Área foco: —</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px" id="progRevisao"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ORIENTAÇÕES -->
+  <div class="tab-panel" id="tab-orientacoes">
+    <div class="card">
+      <div class="card-title">💡 Orientação da área foco</div>
+      <div class="orientacao-box" id="orientacaoTexto">Carregando orientações...</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔬 Base científica</div>
+      <div class="pesquisa-box" id="pesquisaTexto">Carregando...</div>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ Hábitos recomendados</div>
+      <div id="habitosList"></div>
+    </div>
+  </div>
+
+  <!-- TAB: AVALIE -->
+  <div class="tab-panel" id="tab-avalie">
+    <!-- NPS Dia 1 -->
+    <div id="npsDiv1">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+        Sua opinião é muito importante. Leva menos de <strong style="color:var(--accent)">2 minutos</strong>.
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">1 de 5 · Diferencial percebido</div>
+        <div class="nps-texto">Antes de vir aqui, você já teve um plano de treino assim — com dias definidos, área de saúde e metas?</div>
+        <button class="nps-opt" onclick="setNPS('q1','nunca_tive',this)">Nunca tive nada parecido</button>
+        <button class="nps-opt" onclick="setNPS('q1','algo_similar',this)">Tive algo similar</button>
+        <button class="nps-opt" onclick="setNPS('q1','ja_tive',this)">Sim, já tive antes</button>
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">2 de 5 · Clareza do plano</div>
+        <div class="nps-texto">Saindo daqui, você sabe exatamente o que vai fazer nos próximos 21 dias?</div>
+        <button class="nps-opt" onclick="setNPS('q2','muito_claro',this)">Sim, tenho tudo clarissimo</button>
+        <button class="nps-opt" onclick="setNPS('q2','mais_ou_menos',this)">Mais ou menos</button>
+        <button class="nps-opt" onclick="setNPS('q2','tenho_duvidas',this)">Ainda tenho dúvidas</button>
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">3 de 5 · Avaliação do treinador</div>
+        <div class="nps-texto">Como você avalia o profissionalismo e o conhecimento do seu treinador nessa consultoria?</div>
+        <div style="display:flex;gap:10px;justify-content:center;font-size:28px;margin-top:8px" id="starsRow">
+          <span style="cursor:pointer" onclick="setEstrelas(1)" id="star-1">☆</span>
+          <span style="cursor:pointer" onclick="setEstrelas(2)" id="star-2">☆</span>
+          <span style="cursor:pointer" onclick="setEstrelas(3)" id="star-3">☆</span>
+          <span style="cursor:pointer" onclick="setEstrelas(4)" id="star-4">☆</span>
+          <span style="cursor:pointer" onclick="setEstrelas(5)" id="star-5">☆</span>
+        </div>
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">4 de 5 · Sentimento de acompanhamento</div>
+        <div class="nps-texto">Você se sente acompanhado — como se não fosse treinar sozinho nesse desafio?</div>
+        <button class="nps-opt" onclick="setNPS('q4','totalmente',this)">Sim, totalmente</button>
+        <button class="nps-opt" onclick="setNPS('q4','um_pouco',this)">Um pouco</button>
+        <button class="nps-opt" onclick="setNPS('q4','ainda_nao',this)">Ainda não sei dizer</button>
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">5 de 5 · Expectativa</div>
+        <div class="nps-texto">Esse formato te dá mais confiança de que vai ter resultado?</div>
+        <button class="nps-opt" onclick="setNPS('q5','mais_confianca',this)">Sim, me dá mais confiança</button>
+        <button class="nps-opt" onclick="setNPS('q5','um_pouco',this)">Um pouco</button>
+        <button class="nps-opt" onclick="setNPS('q5','nao_sei',this)">Ainda não sei</button>
+      </div>
+
+      <div class="nps-pergunta">
+        <div class="nps-num">NPS Global</div>
+        <div class="nps-texto">De 0 a 10, qual a chance de você indicar essa metodologia para alguém que você quer bem?</div>
+        <div class="nps-scale" id="npsScale1"></div>
+        <div id="npsLabel1" style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px"></div>
+      </div>
+
+      <button class="btn-enviar" id="btnEnviarNPS1" onclick="enviarNPS1()" disabled>
+        Enviar avaliação
+      </button>
+    </div>
+
+    <!-- Sucesso NPS -->
+    <div class="success-screen" id="npsSuccessDiv">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Obrigado!</div>
+      <div class="success-sub">Sua avaliação foi registrada. Vamos continuar juntos nesse desafio de 21 dias!</div>
+    </div>
+  </div>
+
+</div><!-- /app-content -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+
+const AREAS = [
+  {id:1,name:"Energia & Atividade",icon:"⚡",orientacoes:"Melhora da disposição e redução da fadiga crônica. Foco: ativação progressiva e gestão do estresse.",pesquisa:"Exercício aeróbico 3x/semana reduz fadiga em 65% em indivíduos sedentários (Puetz et al., 2008).",habitos:["Durma 7-8h por noite","Evite telas 1h antes de dormir","Hidrate-se bem ao longo do dia"]},
+  {id:2,name:"Articulações & Músculos",icon:"💪",orientacoes:"Fortalecimento e mobilidade articular. Foco: exercícios de resistência com amplitude controlada.",pesquisa:"Treino de força 2x/semana reduz dor articular crônica em 43% (Roddy et al., 2005).",habitos:["Alongue-se após cada treino","Evite ficar sentado por mais de 1h","Mantenha postura correta ao sentar"]},
+  {id:3,name:"Trato Urinário",icon:"💧",orientacoes:"Hidratação e saúde renal. Foco: exercícios de baixo impacto e hidratação adequada.",pesquisa:"2L de água/dia reduz risco de infecção urinária em 48% (Hooton et al., 2018).",habitos:["Beba 2L de água por dia","Reduza o consumo de cafeína","Evite bebidas alcoólicas em excesso"]},
+  {id:4,name:"Trato Digestivo",icon:"🌿",orientacoes:"Saúde intestinal e digestão. Foco: atividade física regular e alimentação rica em fibras.",pesquisa:"30 min de caminhada diária melhora trânsito intestinal em 62% (De Schryver et al., 2005).",habitos:["Coma devagar e mastigue bem","Inclua fibras nas refeições","Evite alimentos ultraprocessados"]},
+  {id:5,name:"Saúde Pulmonar",icon:"🫁",orientacoes:"Capacidade respiratória e resistência cardiovascular. Foco: exercícios aeróbicos progressivos.",pesquisa:"Treinamento aeróbico 3x/semana aumenta VO2 máx em 15-20% em 12 semanas (ACSM, 2018).",habitos:["Pratique respiração profunda diariamente","Evite ambientes com fumaça","Faça exercício ao ar livre quando possível"]},
+  {id:6,name:"Saúde Nasal",icon:"👃",orientacoes:"Respiração nasal e qualidade do ar. Foco: exercícios respiratórios e condicionamento aeróbico leve.",pesquisa:"Exercício moderado reduz episódios de rinite alérgica em 40% (Hallstrand et al., 2000).",habitos:["Lave o nariz com solução salina","Evite ambientes secos","Mantenha boa ventilação em casa"]},
+  {id:7,name:"Saúde da Pele",icon:"✨",orientacoes:"Circulação e oxigenação da pele. Foco: cardio moderado e hidratação.",pesquisa:"Exercício aeróbico regular melhora microcirculação cutânea em 30% (Crane et al., 2015).",habitos:["Hidrate-se bastante","Use protetor solar diariamente","Durma bem para recuperação celular"]},
+  {id:8,name:"Boca & Garganta",icon:"👄",orientacoes:"Saúde bucal e imunidade. Foco: exercício moderado para fortalecer o sistema imunológico.",pesquisa:"Exercício moderado reduz infecções respiratórias superiores em 29% (Nieman, 2011).",habitos:["Escove os dentes 3x ao dia","Hidrate-se bem","Evite respirar pela boca durante exercícios"]},
+  {id:9,name:"Hormônios",icon:"🔬",orientacoes:"Equilíbrio hormonal. Foco: treino resistido e cardio moderado regulam cortisol e hormônios em geral.",pesquisa:"Treinamento de força 3x/semana eleva testosterona livre em 20-25% e reduz cortisol crônico (JCEM, 2020).",habitos:["Priorize 7-8h de sono por noite","Reduza o açúcar refinado","Inclua proteína em todas as refeições"]},
+  {id:10,name:"Sono",icon:"🌙",orientacoes:"Qualidade do sono e recuperação. Foco: exercício regular no período da manhã ou tarde.",pesquisa:"Exercício aeróbico 3x/semana melhora qualidade do sono em 65% (Reid et al., 2010).",habitos:["Durma e acorde no mesmo horário","Evite telas 1h antes de dormir","Mantenha o quarto fresco e escuro"]},
+  {id:11,name:"Equilíbrio Emocional",icon:"🧠",orientacoes:"Saúde mental e bem-estar. Foco: exercício aeróbico e atividades de relaxamento.",pesquisa:"30 min de exercício 3x/semana reduz sintomas de ansiedade e depressão em 47% (Carek et al., 2011).",habitos:["Reserve momentos de lazer diários","Pratique gratidão antes de dormir","Conecte-se com pessoas queridas"]},
+  {id:12,name:"Ouvidos",icon:"👂",orientacoes:"Saúde auditiva e equilíbrio. Foco: exercícios de equilíbrio e coordenação.",pesquisa:"Exercício regular melhora perfusão coclear e pode reduzir zumbido em 35% (Neri et al., 2019).",habitos:["Evite volumes altos por longos períodos","Proteja os ouvidos em ambientes barulhentos","Mantenha higiene auricular adequada"]},
+  {id:13,name:"Olhos",icon:"👁️",orientacoes:"Saúde ocular e circulação. Foco: exercício cardiovascular para melhora da circulação ocular.",pesquisa:"Atividade física regular reduz risco de degeneração macular em 70% (Williams, 2009).",habitos:["Faça pausas de 20min para descanso visual","Use óculos de sol com proteção UV","Mantenha distância adequada de telas"]},
+  {id:14,name:"Coração",icon:"❤️",orientacoes:"Saúde cardiovascular. Foco: cardio progressivo e fortalecimento muscular.",pesquisa:"150 min/semana de atividade moderada reduz risco cardiovascular em 35% (WHO, 2020).",habitos:["Monitore sua frequência cardíaca","Reduza o sódio na alimentação","Evite longos períodos sentado"]},
+  {id:15,name:"Clareza Mental",icon:"🎯",orientacoes:"Função cognitiva e foco. Foco: exercício aeróbico e atividades de coordenação.",pesquisa:"Exercício aeróbico 3x/semana aumenta volume do hipocampo em 2% e melhora memória (Erickson et al., 2011).",habitos:["Pratique meditação ou respiração consciente","Leia ou aprenda algo novo diariamente","Durma bem para consolidar memórias"]},
+];
+
+const MISSOES_DB = {
+  1:["Suba escadas em vez de elevador hoje","Faça uma caminhada de 10 minutos antes do treino","Estique-se por 5 minutos ao acordar"],
+  2:["Faça 10 minutos de alongamento antes de dormir","Ajuste sua postura a cada hora hoje","Pratique agachamento livre com peso corporal: 3x15"],
+  3:["Beba 8 copos de água hoje e marque cada um","Reduza o café para no máximo 2 xícaras","Evite bebidas açucaradas hoje"],
+  4:["Adicione uma porção de legumes em uma refeição","Coma devagar e mastigue bem no almoço","Faça uma caminhada de 20 minutos após o jantar"],
+  5:["Pratique 5 minutos de respiração profunda","Faça cardio leve por 20 minutos hoje","Abra as janelas de casa por 10 minutos"],
+  6:["Lave o nariz com solução salina pela manhã","Evite ar condicionado por longos períodos","Hidrate-se bem ao longo do dia"],
+  7:["Beba 2L de água hoje","Use protetor solar ao sair","Durma 7-8h esta noite"],
+  8:["Escove os dentes após cada refeição","Beba água morna com limão pela manhã","Evite alimentos muito quentes ou frios"],
+  9:["Durma antes da meia-noite hoje","Evite açúcar no café da manhã","Inclua proteína em todas as refeições"],
+  10:["Desligue as telas 1h antes de dormir","Mantenha o quarto fresco e escuro","Acorde no mesmo horário de amanhã"],
+  11:["Escreva 3 coisas pelas quais é grato hoje","Ligue para alguém que você gosta","Reserve 10 minutos só para você hoje"],
+  12:["Use fone de ouvido com volume moderado","Faça uma pausa do celular por 1 hora","Pratique exercícios de equilíbrio: 2x30s em cada pé"],
+  13:["Faça pausas de 20min para descanso visual","Olhe para longe por 20 segundos a cada hora","Evite telas em ambientes escuros"],
+  14:["Faça 30 minutos de atividade cardiovascular","Reduza o sal nas refeições de hoje","Suba escadas sempre que possível"],
+  15:["Leia por 15 minutos antes de dormir","Faça uma atividade nova que exija concentração","Medite por 5 minutos pela manhã"],
+};
+
+// ── STATE ─────────────────────────────────────────────────────
+let plannerData = null;
+let sb = null;
+let diaAtual = 1;
+let treinoFeito = false;
+let missoesDone = new Set();
+let notaDia = null;
+let npsState = {q1:null,q2:null,q3:null,q4:null,q5:null,nps:null};
+let estrelas = 0;
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Pegar planner ID da URL
+  const params = new URLSearchParams(window.location.search);
+  const plannerId = params.get('planner');
+
+  if(!plannerId){
+    showError();
+    return;
+  }
+
+  // Carregar dados do planner
+  try {
+    const { data, error } = await sb
+      .from('planners')
+      .select(`
+        *,
+        alunos(nome, idade),
+        treinadores!treinador_resp_id(nome)
+      `)
+      .eq('id', plannerId)
+      .single();
+
+    if(error || !data){
+      showError();
+      return;
+    }
+
+    plannerData = data;
+    calcDiaAtual();
+    renderApp();
+
+  } catch(err){
+    console.error(err);
+    showError();
+  }
+});
+
+function showError(){
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('errorScreen').style.display = 'flex';
+}
+
+function calcDiaAtual(){
+  if(!plannerData.inicio_desafio){ diaAtual = 1; return; }
+  const inicio = new Date(plannerData.inicio_desafio + 'T00:00:00');
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  const diff = Math.floor((hoje - inicio) / (1000*60*60*24)) + 1;
+  diaAtual = Math.max(1, Math.min(diff, 21));
+}
+
+function renderApp(){
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('appContent').style.display = 'block';
+
+  const aluno = plannerData.alunos;
+  const treinador = plannerData.treinadores;
+  const area = AREAS.find(a => a.id === plannerData.area_foco_id) || AREAS[0];
+  const missoes = MISSOES_DB[area.id] || MISSOES_DB[1];
+
+  // Header
+  document.getElementById('headerNome').textContent = aluno?.nome || 'Aluno';
+  document.getElementById('diaBadge').textContent = `Dia ${diaAtual}`;
+
+  // Ring
+  const pct = diaAtual / 21;
+  const circumference = 377;
+  document.getElementById('ringFill').style.strokeDashoffset = circumference * (1 - pct);
+  document.getElementById('ringDia').textContent = diaAtual;
+  document.getElementById('ringSub').textContent = diaAtual === 1 ? 'Seu desafio está começando!' :
+    diaAtual === 21 ? '🎉 Último dia do ciclo!' : `${21 - diaAtual} dias restantes`;
+
+  // Treino do dia
+  const DAYS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const hoje = new Date().getDay();
+  const diasTreino = plannerData.dias_treino || [];
+  const ehDiaTreino = diasTreino[hoje === 0 ? 6 : hoje - 1] || false;
+
+  document.getElementById('treinoTitulo').textContent = ehDiaTreino ? '💪 Dia de treino!' : '😴 Dia de descanso';
+  document.getElementById('treinoInfo').textContent = ehDiaTreino ?
+    `Programa: ${getProgramaNome(plannerData.programa)} · Foco: ${area.name}` :
+    'Dia de descanso no seu plano. Mas se quiser treinar, registre como treino adicional!';
+
+  // Botão de treino adicional para dias de descanso
+  if(!ehDiaTreino){
+    const treinoCard = document.getElementById('treinoCard');
+    const extraBtn = document.createElement('button');
+    extraBtn.id = 'btnTreinoExtra';
+    extraBtn.style.cssText = 'width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1px solid rgba(96,165,250,.4);background:rgba(96,165,250,.1);color:#60A5FA;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .2s';
+    extraBtn.textContent = '⚡ Marcar treino adicional';
+    extraBtn.onclick = () => {
+      treinoFeito = !treinoFeito;
+      extraBtn.textContent = treinoFeito ? '✅ Treino adicional realizado!' : '⚡ Marcar treino adicional';
+      extraBtn.style.background = treinoFeito ? 'rgba(34,197,94,.1)' : 'rgba(96,165,250,.1)';
+      extraBtn.style.borderColor = treinoFeito ? 'rgba(34,197,94,.4)' : 'rgba(96,165,250,.4)';
+      extraBtn.style.color = treinoFeito ? 'var(--green)' : '#60A5FA';
+      document.getElementById('kpiTreinos').textContent = treinoFeito ? '1' : '0';
+    };
+    treinoCard.appendChild(extraBtn);
+  }
+
+  const diasEl = document.getElementById('treinoDias');
+  ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].forEach((d,i) => {
+    const btn = document.createElement('div');
+    btn.className = 'treino-dia ' + (diasTreino[i] ? 'ativo' : 'inativo') + (i === (hoje === 0 ? 6 : hoje-1) ? ' hoje' : '');
+    btn.textContent = d;
+    diasEl.appendChild(btn);
+  });
+
+  // Missões
+  const missoesEl = document.getElementById('missoesContainer');
+  missoes.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'missao-item';
+    div.id = `missao-${i}`;
+    div.onclick = () => toggleMissao(i);
+    div.innerHTML = `<div class="missao-check" id="check-${i}"></div><div class="missao-text">${m}</div>`;
+    missoesEl.appendChild(div);
+  });
+
+  // Nota do dia
+  const notaEl = document.getElementById('notaGrid');
+  ['😞','😕','😐','🙂','😊','😄','🤩'].forEach((emoji, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nota-btn';
+    btn.textContent = emoji;
+    btn.onclick = () => selectNota(i+1, btn);
+    notaEl.appendChild(btn);
+  });
+
+  // Treinador
+  document.getElementById('nomeTreinador').textContent = '— ' + (treinador?.nome || 'Seu treinador');
+
+  // Progresso
+  document.getElementById('kpiDias').textContent = diaAtual;
+  document.getElementById('progNome').textContent = getProgramaNome(plannerData.programa);
+  document.getElementById('progFoco').textContent = `Área foco: ${area.icon} ${area.name}`;
+  if(plannerData.revisao_treino_data){
+    const rev = new Date(plannerData.revisao_treino_data + 'T00:00:00');
+    document.getElementById('progRevisao').textContent = `Revisão de treino: ${rev.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'})}`;
+  }
+
+  // Jornada grid
+  const jornadaEl = document.getElementById('jornadaGrid');
+  const inicio = plannerData.inicio_desafio ? new Date(plannerData.inicio_desafio + 'T00:00:00') : new Date();
+  for(let i = 0; i < 21; i++){
+    const d = new Date(inicio);
+    d.setDate(d.getDate() + i);
+    const div = document.createElement('div');
+    const isHoje = i + 1 === diaAtual;
+    const isPassado = i + 1 < diaAtual;
+    const isRevisao = plannerData.revisao_treino_data &&
+      d.toISOString().slice(0,10) === plannerData.revisao_treino_data;
+    div.className = 'jornada-dia ' + (isRevisao ? 'revisao' : isHoje ? 'hoje' : isPassado ? 'passado' : 'futuro');
+    div.textContent = i + 1;
+    jornadaEl.appendChild(div);
+  }
+
+  // Orientações
+  document.getElementById('orientacaoTexto').textContent = area.orientacoes;
+  document.getElementById('pesquisaTexto').textContent = area.pesquisa;
+  const habitosEl = document.getElementById('habitosList');
+  area.habitos.forEach(h => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)';
+    div.innerHTML = `<span style="color:var(--accent);flex-shrink:0">✓</span>${h}`;
+    habitosEl.appendChild(div);
+  });
+
+  // NPS Scale
+  const scaleEl = document.getElementById('npsScale1');
+  [0,1,2,3,4,5,6,7,8,9,10].forEach(n => {
+    const btn = document.createElement('button');
+    btn.className = 'nps-num-btn';
+    btn.textContent = n;
+    btn.onclick = () => setNPSNota(n, btn);
+    scaleEl.appendChild(btn);
+  });
+}
+
+function getProgramaNome(p){
+  const map = {
+    imunidade: 'Metabolismo & Imunidade',
+    emagrecer: 'Emagrecer com Saúde',
+    performance: 'Performance & Esporte',
+    funcional: 'Saúde Funcional',
+  };
+  return map[p] || p || '—';
+}
+
+// ── INTERAÇÕES ────────────────────────────────────────────────
+function toggleTreino(){
+  treinoFeito = !treinoFeito;
+  const btn = document.getElementById('btnTreino');
+  btn.className = 'treino-check' + (treinoFeito ? ' done' : '');
+  btn.textContent = treinoFeito ? '✓' : '○';
+  document.getElementById('kpiTreinos').textContent = treinoFeito ? '1' : '0';
+}
+
+function toggleMissao(i){
+  const item = document.getElementById(`missao-${i}`);
+  const check = document.getElementById(`check-${i}`);
+  if(missoesDone.has(i)){
+    missoesDone.delete(i);
+    item.classList.remove('done');
+    check.textContent = '';
+  } else {
+    missoesDone.add(i);
+    item.classList.add('done');
+    check.textContent = '✓';
+  }
+  document.getElementById('kpiMissoes').textContent = missoesDone.size;
+}
+
+function selectNota(n, btn){
+  notaDia = n;
+  document.querySelectorAll('.nota-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const labels = ['','😞 Dia difícil','😕 Abaixo do esperado','😐 Na média','🙂 Bom dia','😊 Muito bom!','😄 Excelente!','🤩 Dia incrível!'];
+  document.getElementById('notaFeedback').textContent = labels[n] || '';
+}
+
+function salvarNota(){
+  if(!notaDia){ alert('Selecione uma nota antes de salvar!'); return; }
+  showToast('✅ Nota do dia salva!');
+}
+
+// ── NPS ───────────────────────────────────────────────────────
+function setNPS(key, val, btn){
+  npsState[key] = val;
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.nps-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  checkNPS1();
+}
+
+function setEstrelas(n){
+  estrelas = n;
+  npsState.q3 = n;
+  for(let i=1; i<=5; i++){
+    document.getElementById('star-'+i).textContent = i <= n ? '⭐' : '☆';
+  }
+  checkNPS1();
+}
+
+function setNPSNota(n, btn){
+  npsState.nps = n;
+  document.querySelectorAll('#npsScale1 .nps-num-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const labels = ['😞 Detrator','😞','😞','😕','😕','😐 Neutro','😐','🙂','🙂 Promotor','😊','🤩 Promotor!'];
+  document.getElementById('npsLabel1').textContent = labels[n] || '';
+  checkNPS1();
+}
+
+function checkNPS1(){
+  const ok = npsState.q1 && npsState.q2 && npsState.q3 && npsState.q4 && npsState.q5 && npsState.nps !== null;
+  document.getElementById('btnEnviarNPS1').disabled = !ok;
+}
+
+async function enviarNPS1(){
+  try {
+    if(plannerData){
+      await sb.from('nps_dia1').insert([{
+        planner_id: plannerData.id,
+        aluno_id: plannerData.aluno_id,
+        treinador_id: plannerData.treinador_resp_id,
+        q1_diferencial: npsState.q1,
+        q2_clareza: npsState.q2,
+        q3_estrelas: npsState.q3,
+        q4_acompanhado: npsState.q4,
+        q5_expectativa: npsState.q5,
+        nps_nota: npsState.nps,
+      }]);
+    }
+  } catch(e){ console.warn('NPS save error:', e); }
+
+  document.getElementById('npsDiv1').style.display = 'none';
+  document.getElementById('npsSuccessDiv').style.display = 'block';
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg){
+  let t = document.getElementById('_toast');
+  if(!t){ t = document.createElement('div'); t.id='_toast'; t.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--accent);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;max-width:280px;text-align:center'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => t.style.transform = 'translateX(-50%) translateY(-80px)', 2500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquacel · Central de Inteligência</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg: #080810;
+  --bg2: #0D0D18;
+  --card: #11111E;
+  --card2: #161626;
+  --border: rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.1);
+  --primary:#1B4FD8;
+  --orange2: #3B82F6;
+  --primary-dim:rgba(27,79,216,.10);
+  --orange-glow: rgba(27,79,216,.25);
+  --text: #F0EEF8;
+  --text2: #9896B0;
+  --text3: #4A4860;
+  --green: #2DD4A0;
+  --green-dim: rgba(45,212,160,.1);
+  --red: #FF4D6D;
+  --red-dim: rgba(255,77,109,.1);
+  --yellow: #FFD166;
+  --yellow-dim: rgba(255,209,102,.1);
+  --blue: #7EB8FF;
+  --blue-dim: rgba(126,184,255,.1);
+  --purple: #B09FFF;
+  --purple-dim: rgba(176,159,255,.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:'Barlow',sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .4;
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,16,.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  padding: 0 32px;
+}
+.header-inner {
+  max-width: 1600px; margin: 0 auto;
+  height: 60px; display: flex; align-items: center; gap: 20px;
+}
+.logo-wrap { display: flex; align-items: center; gap: 12px; }
+.logo-img { width: 34px; height: 34px; border-radius: 10px; object-fit: cover; }
+.logo-text { }
+.logo-name { font-family:'Barlow Condensed',sans-serif; font-size: 15px; font-weight: 800; line-height: 1; }
+.logo-sub { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .12em; margin-top: 2px; }
+
+.header-title {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--text2);
+  padding-left: 20px;
+  border-left: 1px solid var(--border2);
+}
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--green);
+  padding: 4px 10px; border-radius: 20px;
+  background: var(--green-dim);
+  border: 1px solid rgba(45,212,160,.2);
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+
+.period-btns { display: flex; gap: 3px; }
+.p-btn {
+  padding: 5px 12px; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border2);
+  background: transparent; color: var(--text2);
+  cursor: pointer; font-family:'Barlow',sans-serif;
+  transition: all .15s;
+}
+.p-btn:hover { border-color:var(--primary); color: var(--primary); }
+.p-btn.active { background: var(--primary-dim); border-color:var(--primary); color: var(--primary); }
+
+.clock {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; color: var(--text3);
+}
+
+/* ── LAYOUT ── */
+.content { max-width: 1600px; margin: 0 auto; padding: 28px 32px 80px; position: relative; z-index: 1; }
+
+/* ── SECTION ── */
+.sec-hdr {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px; margin-top: 36px;
+}
+.sec-hdr:first-child { margin-top: 0; }
+.sec-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--text3);
+  border: 1px solid var(--border2);
+  border-radius: 4px; padding: 2px 7px;
+}
+.sec-title {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text2);
+}
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── GRID LAYOUTS ── */
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+
+/* ── CARD BASE ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border2); }
+.card.accent-top::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.card.orange::before { background:linear-gradient(90deg,var(--primary),transparent); }
+.card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
+.card.blue::before { background: linear-gradient(90deg, var(--blue), transparent); }
+.card.purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+.card.yellow::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+.card.red::before { background: linear-gradient(90deg, var(--red), transparent); }
+
+.card-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: .12em; margin-bottom: 10px;
+}
+.card-val {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 42px; font-weight: 800;
+  line-height: 1; margin-bottom: 4px;
+}
+.card-sub { font-size: 12px; color: var(--text2); }
+.card-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700;
+  margin-top: 8px; padding: 3px 8px; border-radius: 5px;
+}
+.delta-up { background: var(--green-dim); color: var(--green); }
+.delta-down { background: var(--red-dim); color: var(--red); }
+.delta-neutral { background: var(--border); color: var(--text2); }
+
+/* ── MACRO CARD (academia) ── */
+.macro-card {
+  background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px;
+  position: relative; overflow: hidden;
+}
+.macro-card::after {
+  content: '';
+  position: absolute; right: -40px; top: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.macro-num {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 56px; font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--primary), var(--orange2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.macro-label { font-size: 13px; color: var(--text2); margin-top: 4px; }
+.macro-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── VINCULAÇÃO RING ── */
+.ring-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  display: flex; align-items: center; gap: 20px;
+}
+.ring-wrap { position: relative; flex-shrink: 0; }
+.ring-svg { transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--border2); stroke-width: 8; }
+.ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease; }
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ring-pct { font-family:'Barlow Condensed',sans-serif; font-size: 22px; font-weight: 900; }
+.ring-lbl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; }
+
+/* ── BAR CHART ── */
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 11px; color: var(--text2); width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
+.bar-val { font-size: 11px; font-weight: 700; width: 38px; text-align: right; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+/* ── NPS GAUGE ── */
+.nps-big {
+  text-align: center;
+}
+.nps-num {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size: 52px; font-weight: 900; line-height: 1;
+}
+.nps-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.nps-bars { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.nps-bar-row { display: flex; align-items: center; gap: 8px; }
+.nps-bar-lbl { font-size: 10px; color: var(--text2); width: 62px; flex-shrink: 0; }
+.nps-bar-track { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+.nps-bar-fill { height: 100%; border-radius: 3px; }
+.nps-bar-pct { font-size: 10px; font-weight: 700; width: 30px; text-align: right; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+
+/* ── PERCEPCAO 2x2 ── */
+.perc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; }
+.perc-cell { background: var(--card); padding: 16px; }
+.perc-moment { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; color: var(--text3); }
+.perc-pct { font-family:'Barlow Condensed',sans-serif; font-size: 30px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.perc-text { font-size: 11px; color: var(--text2); line-height: 1.45; }
+.gap-alert {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--yellow-dim);
+  border: 1px solid rgba(255,209,102,.2);
+  border-radius: 10px;
+  font-size: 11px; color: var(--yellow); line-height: 1.5;
+}
+
+/* ── TRAINER CARDS ── */
+.trainer-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.trainer-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+  cursor: pointer; transition: all .2s;
+}
+.trainer-card:hover { border-color: var(--orange-glow); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+.trainer-card.open { border-color:var(--primary); }
+.trainer-top { padding: 16px; }
+.trainer-avatar {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family:'Barlow Condensed',sans-serif; font-size: 16px; font-weight: 800;
+  color: #000; margin-bottom: 12px;
+}
+.trainer-name { font-family:'Barlow Condensed',sans-serif; font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+.trainer-type { font-size: 10px; color: var(--text3); }
+.trainer-score-row { display: flex; align-items: flex-end; gap: 6px; margin-top: 12px; }
+.trainer-score { font-family:'Barlow Condensed',sans-serif; font-size: 36px; font-weight: 900; line-height: 1; }
+.trainer-score-lbl { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+.trainer-medal { font-size: 18px; margin-bottom: 4px; }
+
+.trainer-mini-row {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  border-top: 1px solid var(--border);
+}
+.trainer-mini-cell { padding: 10px 8px; text-align: center; border-right: 1px solid var(--border); }
+.trainer-mini-cell:last-child { border-right: none; }
+.trainer-mini-val { font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.trainer-mini-lbl { font-size: 8px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+.trainer-detail { display: none; padding: 14px 16px; border-top: 1px solid var(--border); background: var(--bg2); }
+.trainer-card.open .trainer-detail { display: block; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.detail-row:last-child { border: none; padding-bottom: 0; }
+.detail-lbl { color: var(--text2); }
+.detail-val { font-weight: 700; font-family: 'DM Mono', monospace; }
+
+.eng-section { margin-top: 12px; }
+.eng-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.eng-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.eng-lbl { font-size: 10px; color: var(--text2); width: 80px; flex-shrink: 0; }
+.eng-track { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
+.eng-fill { height: 100%; border-radius: 3px; }
+.eng-val { font-size: 10px; font-weight: 700; width: 28px; text-align: right; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+
+/* ── DESAFIOS ── */
+.desafios-list { display: flex; flex-direction: column; gap: 6px; }
+.desafio-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; transition: border-color .15s;
+}
+.desafio-row.risco { border-color: rgba(255,209,102,.25); background: rgba(255,209,102,.03); }
+.desafio-row.critico { border-color: rgba(255,77,109,.25); background: rgba(255,77,109,.03); }
+.desafio-av {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #000; flex-shrink: 0;
+}
+.desafio-info { flex: 1; min-width: 0; }
+.desafio-nome { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desafio-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.desafio-prog { margin-top: 5px; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+.desafio-prog-fill { height: 100%; border-radius: 2px; }
+.desafio-right { text-align: right; flex-shrink: 0; }
+.desafio-dia { font-family:'Barlow Condensed',sans-serif; font-size: 15px; font-weight: 800; }
+.desafio-status { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
+.desafio-stats { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── INDICAÇÕES ── */
+.ind-big { font-family:'Barlow Condensed',sans-serif; font-size: 48px; font-weight: 900; line-height: 1; }
+.ind-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.ind-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+
+/* ── FILTER CHIPS ── */
+.chips { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.chip {
+  padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border2); background: transparent; color: var(--text2);
+  cursor: pointer; font-family:'Barlow',sans-serif; transition: all .15s;
+}
+.chip.active { background: var(--primary-dim); border-color:var(--primary); color: var(--primary); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--primary); color: #000; padding: 10px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 700;
+  z-index: 999; transition: transform .3s; max-width: 280px; text-align: center;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── STATUS DROPDOWN ── */
+.status-wrap { position: relative; display: inline-block; }
+.status-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer; border: 1px solid;
+  font-family:'Barlow',sans-serif;
+  transition: all .15s; white-space: nowrap;
+}
+.status-btn .status-arrow { font-size: 8px; opacity: .7; }
+.status-dropdown {
+  display: none; position: absolute;
+  top: calc(100% + 4px); right: 0;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 4px;
+  min-width: 140px; z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.status-dropdown.open { display: block; }
+.status-option {
+  display: block; width: 100%;
+  padding: 7px 10px; border-radius: 5px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; border: none;
+  background: transparent; text-align: left;
+  font-family:'Barlow',sans-serif;
+  color: var(--text2); transition: background .1s;
+}
+.status-option:hover { background: var(--border); }
+.status-divider { height: 1px; background: var(--border); margin: 3px 4px; }
+.status-option.desfazer { color: var(--text3); font-size: 10px; }
+.score-high { color: var(--green); }
+.score-mid  { color: var(--primary); }
+.score-low  { color: var(--red); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1200px) {
+  .trainer-grid { grid-template-columns: repeat(2,1fr); }
+  .grid-4 { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width:768px) {
+  .content { padding: 16px; }
+  .header-inner { padding: 0; }
+  .trainer-grid { grid-template-columns: 1fr; }
+  .grid-2,.grid-2-1,.grid-1-2 { grid-template-columns: 1fr; }
+  .perc-grid { grid-template-columns: 1fr; }
+}
+</style>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const sbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+</script>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div id="academiaLogoBox" style="width:38px;height:38px;border-radius:10px;overflow:hidden;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" title="Clique para trocar o logo" onclick="document.getElementById('logoUploadInput').click()">
+        <img id="academiaLogoImg" src="" alt="Logo" style="width:100%;height:100%;object-fit:cover;display:none">
+        <span id="academiaLogoLetter" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:var(--primary)">A</span>
+        <input type="file" id="logoUploadInput" accept="image/*" style="display:none" onchange="loadAcademiaLogo(this)">
+      </div>
+      <div class="logo-text">
+        <div class="logo-name" id="academiaNome">Academia</div>
+        <div class="logo-sub">Depto. Técnico</div>
+      </div>
+    </div>
+    <div class="header-title">Central de Gestão · Depto. Técnico</div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>Ao vivo</div>
+      <div class="period-btns">
+        <button class="p-btn active" onclick="setPeriod('semana',this)">Semana</button>
+        <button class="p-btn" onclick="setPeriod('mes',this)">Mês</button>
+        <button class="p-btn" onclick="setPeriod('trimestre',this)">Trim.</button>
+      </div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 1 — ACADEMIA · VISÃO MACRO
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">01</div>
+  <div class="sec-title">Academia — Visão Macro</div>
+  <div class="sec-line"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1.6fr 1.4fr;gap:12px;margin-bottom:12px">
+
+  <!-- Alunos Ativos -->
+  <div class="macro-card accent-top orange">
+    <div class="card-label">Alunos Ativos</div>
+    <div class="macro-num">530</div>
+    <div class="macro-label">Total matriculados</div>
+    <div class="macro-sub">↑ +42 novos este mês</div>
+  </div>
+
+  <!-- Com Treinador / Planner -->
+  <div class="macro-card accent-top green" style="background:linear-gradient(135deg,var(--card),var(--card2))">
+    <div class="card-label">Com Treinador + Planner</div>
+    <div class="macro-num" style="background:linear-gradient(135deg,var(--green),#7FFFD4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">265</div>
+    <div class="macro-label">Vinculados ao método</div>
+    <div class="macro-sub">↑ +8 vs mês anterior</div>
+  </div>
+
+  <!-- Novos no mês + ativação -->
+  <div class="macro-card" style="background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border)">
+    <div class="card-label">Novos Alunos no Mês</div>
+    <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:12px">
+      <div>
+        <div class="macro-num" style="background:linear-gradient(135deg,var(--blue),#B0D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:48px">42</div>
+        <div class="macro-label">entraram este mês</div>
+      </div>
+      <div style="padding-bottom:4px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--green)">28</div>
+        <div style="font-size:11px;color:var(--text2)">já com planner</div>
+      </div>
+      <div style="padding-bottom:4px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:var(--red)">14</div>
+        <div style="font-size:11px;color:var(--text2)">sem planner ainda</div>
+      </div>
+    </div>
+    <!-- Barra de ativação -->
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Taxa de ativação dos novos</span>
+        <span style="font-size:11px;font-weight:700;color:var(--green)">67%</span>
+      </div>
+      <div style="height:6px;background:var(--border2);border-radius:3px;overflow:hidden">
+        <div style="width:67%;height:100%;background:linear-gradient(90deg,var(--green),#7FFFD4);border-radius:3px"></div>
+      </div>
+    </div>
+    <!-- Alerta se abaixo de 60% -->
+    <div style="font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px">
+      <span>✅</span><span>Ativação acima da meta (60%) — bom ritmo!</span>
+    </div>
+  </div>
+
+  <!-- Anel de vinculação -->
+  <div class="ring-card">
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-track" cx="55" cy="55" r="44"/>
+        <circle class="ring-fill" cx="55" cy="55" r="44"
+          stroke="url(#ringGrad)"
+          stroke-dasharray="276.5"
+          stroke-dashoffset="138"/>
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1B4FD8"/>
+            <stop offset="100%" stop-color="#3B82F6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" style="color:var(--primary)">50%</div>
+        <div class="ring-lbl">vinculados</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;margin-bottom:6px">Índice de<br>Vinculação</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px">50% dos alunos ativos estão no método Acquacel</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px">
+        <div style="height:4px;flex:1;background:var(--border2);border-radius:2px;overflow:hidden">
+          <div style="width:50%;height:100%;background:linear-gradient(90deg,var(--primary),var(--orange2));border-radius:2px"></div>
+        </div>
+        <span style="color:var(--primary);font-weight:700">Meta: 70%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 1.5 — EVOLUÇÃO ANUAL
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">01.5</div>
+  <div class="sec-title">Evolução do Ano — Alunos & Retenção</div>
+  <div class="sec-line"></div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--primary)"></div>Alunos Ativos</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--green)"></div>Com Treinador + Planner</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:4px;border-radius:2px;background:var(--blue)"></div>Novos no Mês</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><div style="width:10px;height:4px;border-radius:2px;background:var(--red)"></div>Não Renovados</div>
+    </div>
+    <div style="font-size:11px;color:var(--text3)">Ano vigente · 2026</div>
+  </div>
+  <canvas id="evolucaoChart" style="width:100%;height:220px"></canvas>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 2 — KPIs DO DEPTO. TÉCNICO
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">02</div>
+  <div class="sec-title">KPIs do Depto. Técnico</div>
+  <div class="sec-line"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 3fr;gap:12px;margin-bottom:12px">
+
+<!-- Coluna esquerda: cards KPI -->
+<div style="display:flex;flex-direction:column;gap:10px">
+
+  <!-- App + Planos a Renovar ficam aqui -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="card accent-top orange">
+      <div class="card-label">Ativos no App</div>
+      <div class="card-val" style="font-size:32px;color:var(--primary)">89</div>
+      <div style="display:flex;flex-direction:column;gap:3px;margin-top:6px">
+        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text3)">🆕 Onboarding</span><span style="font-weight:700;color:var(--blue)">33</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px"><span style="color:var(--text3)">🔥 Desafio</span><span style="font-weight:700;color:var(--green)">56</span></div>
+      </div>
+      <div class="card-delta delta-up">▲ +12 esta semana</div>
+    </div>
+    <div class="card accent-top blue">
+      <div class="card-label">Consultorias</div>
+      <div class="card-val" style="font-size:32px;color:var(--blue)">51</div>
+      <div class="card-sub">meta: 60</div>
+      <div class="card-delta delta-neutral">85% da meta</div>
+    </div>
+    <div class="card accent-top purple">
+      <div class="card-label">Revisões</div>
+      <div class="card-val" style="font-size:32px;color:var(--purple)">23</div>
+      <div class="card-sub">de 28 agendadas</div>
+      <div class="card-delta delta-up">82%</div>
+    </div>
+    <div class="card accent-top yellow">
+      <div class="card-label">Experiências</div>
+      <div class="card-val" style="font-size:32px;color:var(--yellow)">38</div>
+      <div class="card-sub">26 convertidas</div>
+      <div class="card-delta delta-up">68% conv.</div>
+    </div>
+  </div>
+
+  <div class="card accent-top red">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div><div class="card-label">Alunos em Risco</div><div class="card-val" style="font-size:32px;color:var(--red)">7</div><div class="card-sub">sem treino há 3+ dias</div></div>
+      <div style="font-size:28px;opacity:.25">⚠️</div>
+    </div>
+    <div class="card-delta delta-down">▼ requer atenção imediata</div>
+  </div>
+
+</div>
+
+<!-- Coluna direita: gráfico engajamento -->
+<div class="card accent-top orange">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+    <div>
+      <div class="card-label" style="margin-bottom:4px">Índice de Engajamento do Time</div>
+      <div style="font-size:12px;color:var(--text2)">Evolução semanal — últimas 8 semanas</div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)"><div style="width:16px;height:2px;background:var(--primary);border-radius:1px"></div>Treinos</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)"><div style="width:16px;height:2px;background:var(--blue);border-radius:1px"></div>Missões</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)"><div style="width:16px;height:2px;background:var(--purple);border-radius:1px"></div>Nota do dia</div>
+    </div>
+  </div>
+  <canvas id="engajamentoChart" style="width:100%;height:200px"></canvas>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:46px;font-weight:900;color:var(--primary);line-height:1">78%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.08em">Treinos marcados</div>
+    </div>
+    <div style="text-align:center;padding:8px 0;border-left:1px solid var(--border);border-right:1px solid var(--border)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:46px;font-weight:900;color:var(--blue);line-height:1">60%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.08em">Missões concluídas</div>
+    </div>
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:46px;font-weight:900;color:var(--purple);line-height:1">53%</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.08em">Nota do dia</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Planos a Renovar + Lista (full width) -->
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:12px">
+<div>
+
+  <div class="card accent-top yellow" style="grid-column:1">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="card-label" style="margin-bottom:4px">Planos a Renovar</div>
+        <div style="display:flex;gap:4px" id="cicloSelector">
+          <button class="chip active" onclick="setCiclo(30,this)" style="font-size:10px;padding:3px 10px">30 dias</button>
+          <button class="chip" onclick="setCiclo(60,this)" style="font-size:10px;padding:3px 10px">60 dias</button>
+          <button class="chip" onclick="setCiclo(90,this)" style="font-size:10px;padding:3px 10px">90 dias</button>
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px dashed rgba(255,209,102,.4);cursor:pointer;font-size:11px;color:var(--yellow);transition:all .15s" onmouseover="this.style.background='rgba(255,209,102,.08)'" onmouseout="this.style.background='transparent'">
+        📂 CSV
+        <input type="file" accept=".csv" style="display:none" onchange="uploadCicloCSV(this)">
+      </label>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px" id="cicloUploadStatus">Formato: nome, matrícula, vencimento</div>
+    <div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:16px;align-items:center;margin-bottom:12px">
+      <div style="text-align:center;padding-right:16px;border-right:1px solid var(--border)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:var(--yellow);line-height:1" id="cicloTotal">67</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px" id="cicloLabel">vencendo em 30 dias</div>
+      </div>
+      <div style="display:contents">
+        <div style="background:rgba(45,212,160,.06);border:1px solid rgba(45,212,160,.15);border-radius:8px;padding:7px 10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:10px;color:var(--text2)">🔥 Com app ativo</span>
+            <span style="font-size:11px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace"><span id="cicloComAppRenov">34</span><span style="color:var(--text3);font-weight:400">/<span id="cicloComApp">38</span></span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(45,212,160,.15);border-radius:2px;overflow:hidden"><div style="width:89%;height:100%;background:var(--green);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--green)" id="cicloComAppPct">89%</span></div>
+        </div>
+        <div style="background:rgba(255,209,102,.06);border:1px solid rgba(255,209,102,.15);border-radius:8px;padding:7px 10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:10px;color:var(--text2)">👤 Sem app</span>
+            <span style="font-size:11px;font-weight:800;color:var(--yellow);font-family:'DM Mono',monospace"><span id="cicloSemAppRenov">11</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemApp">17</span></span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(255,209,102,.15);border-radius:2px;overflow:hidden"><div style="width:64%;height:100%;background:var(--yellow);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--yellow)" id="cicloSemAppPct">64%</span></div>
+        </div>
+        <div style="background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.15);border-radius:8px;padding:7px 10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:10px;color:var(--text2)">⚠️ Sem treinador</span>
+            <span style="font-size:11px;font-weight:800;color:var(--red);font-family:'DM Mono',monospace"><span id="cicloSemTreinadorRenov">5</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemTreinador">12</span></span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(255,77,109,.15);border-radius:2px;overflow:hidden"><div style="width:41%;height:100%;background:var(--red);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--red)" id="cicloSemTreinadorPct">41%</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:5px;background:var(--border2);border-radius:3px;overflow:hidden;display:flex;gap:1px;margin-bottom:4px">
+      <div style="height:100%;background:var(--green);border-radius:3px 0 0 3px;transition:width .6s ease" id="barComApp"></div>
+      <div style="height:100%;background:var(--yellow);transition:width .6s ease" id="barSemApp"></div>
+      <div style="height:100%;background:var(--red);border-radius:0 3px 3px 0;transition:width .6s ease" id="barSemTreinador"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:10px">
+      <span id="barPct1">57% alto eng.</span><span id="barPct2">25% médio</span><span id="barPct3">18% sem vínculo</span>
+    </div>
+    <div style="padding:8px 12px;border-radius:8px;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);font-size:10px;color:var(--red);display:flex;align-items:center;gap:5px" id="cicloAlert">
+      ⚠️ <span id="cicloAlertText">12 sem treinador em risco</span>
+    </div>
+  </div>
+
+  <!-- Lista colapsável -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleCicloLista()">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="card-label" style="margin:0">Lista do Ciclo de Renovação</div>
+        <span style="font-size:10px;padding:2px 8px;background:var(--yellow-dim);border:1px solid rgba(255,209,102,.3);border-radius:4px;color:var(--yellow);font-weight:700">67 alunos</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--text3)">Clique para expandir</span>
+        <div id="cicloChevron" style="font-size:16px;color:var(--text3);transition:transform .25s">▾</div>
+      </div>
+    </div>
+    <div id="cicloListaBody" style="display:none;margin-top:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:4px;flex-wrap:wrap" id="cicloListFilter">
+          <button class="chip active" onclick="filterCicloList('todos',this)" style="font-size:10px;padding:3px 10px">Todos</button>
+          <button class="chip" onclick="filterCicloList('a_renovar',this)" style="font-size:10px;padding:3px 10px">🟡 A Renovar</button>
+          <button class="chip" onclick="filterCicloList('vencido',this)" style="font-size:10px;padding:3px 10px">🔴 Vencido</button>
+          <button class="chip" onclick="filterCicloList('nao_renovado',this)" style="font-size:10px;padding:3px 10px">⚫ Não Renovado</button>
+          <button class="chip" onclick="filterCicloList('renovado',this)" style="font-size:10px;padding:3px 10px">🟢 Renovado</button>
+          <button class="chip" onclick="filterCicloList('rematricula',this)" style="font-size:10px;padding:3px 10px">🔵 Rematrícula</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--primary-dim);border:1px solid var(--primary-border);border-radius:6px;font-size:10px;color:var(--primary)">
+          🔐 <span id="perfilAtual" style="font-weight:700;cursor:pointer" onclick="event.stopPropagation();togglePerfil()">Gestor (somente leitura)</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;gap:8px;padding:6px 12px;background:var(--card2);border-radius:8px;margin-bottom:6px">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Aluno</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Treinador</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Vencimento</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">App</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Status</div>
+      </div>
+      <div id="cicloListaAlunos" style="display:flex;flex-direction:column;gap:4px;max-height:500px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Carteira por treinador -->
+<div class="card" style="margin-bottom:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div class="card-label" style="margin:0">Carteira por Treinador(a) — % sobre total</div>
+    <div style="font-size:11px;color:var(--text3)">Total carteira: 146 alunos</div>
+  </div>
+  <div class="bar-chart" id="carteiraChart"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 3 — NPS & PERCEPÇÃO DE VALOR
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">03</div>
+  <div class="sec-title">NPS & Percepção de Valor</div>
+  <div class="sec-line"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px;margin-bottom:12px">
+
+  <!-- NPS Dia 1 -->
+  <div class="card accent-top green">
+    <div class="nps-big">
+      <div class="card-label">NPS Pós-Consultoria · Dia 1</div>
+      <div class="nps-num" style="color:var(--green)">8.4</div>
+      <div class="nps-label">média do time</div>
+    </div>
+    <div class="nps-bars">
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--green)">Promotores</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:68%;background:var(--green)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--green)">68%</div>
+      </div>
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--yellow)">Neutros</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:22%;background:var(--yellow)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--yellow)">22%</div>
+      </div>
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--red)">Detratores</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:10%;background:var(--red)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--red)">10%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NPS Dia 21 -->
+  <div class="card accent-top orange">
+    <div class="nps-big">
+      <div class="card-label">NPS Pós-Ciclo · Dia 21</div>
+      <div class="nps-num" style="color:var(--primary)">9.1</div>
+      <div class="nps-label">média do time</div>
+    </div>
+    <div class="nps-bars">
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--green)">Promotores</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:81%;background:var(--green)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--green)">81%</div>
+      </div>
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--yellow)">Neutros</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:14%;background:var(--yellow)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--yellow)">14%</div>
+      </div>
+      <div class="nps-bar-row">
+        <div class="nps-bar-lbl" style="color:var(--red)">Detratores</div>
+        <div class="nps-bar-track"><div class="nps-bar-fill" style="width:5%;background:var(--red)"></div></div>
+        <div class="nps-bar-pct" style="color:var(--red)">5%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Percepção 2x2 -->
+  <div class="card">
+    <div class="card-label" style="margin-bottom:12px">Percepção de Valor — Dia 1 vs Dia 21</div>
+    <div class="perc-grid">
+      <div class="perc-cell">
+        <div class="perc-moment">📍 Dia 1 — Diferencial</div>
+        <div class="perc-pct" style="color:var(--green)">76%</div>
+        <div class="perc-text">"Nunca tive esse acompanhamento em outra academia"</div>
+      </div>
+      <div class="perc-cell">
+        <div class="perc-moment">📍 Dia 1 — Expectativa</div>
+        <div class="perc-pct" style="color:var(--blue)">84%</div>
+        <div class="perc-text">"Esse formato me dá mais confiança de ter resultado"</div>
+      </div>
+      <div class="perc-cell">
+        <div class="perc-moment">🏁 Dia 21 — Validação</div>
+        <div class="perc-pct" style="color:var(--primary)">71%</div>
+        <div class="perc-text">"Sinto que essa academia evoluiu na forma de me acompanhar"</div>
+      </div>
+      <div class="perc-cell">
+        <div class="perc-moment">🏁 Dia 21 — Entrega</div>
+        <div class="perc-pct" style="color:var(--purple)">78%</div>
+        <div class="perc-text">"Me ajudou a ter mais resultado do que teria sozinho"</div>
+      </div>
+    </div>
+    <div class="gap-alert">
+      ⚠️ <strong>Gap detectado:</strong> Expectativa Dia 1 (84%) está 6pts acima da entrega percebida Dia 21 (78%). Reforçar acompanhamento ativo durante os 21 dias.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 4 — RANKING DE TREINADORES
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">04</div>
+  <div class="sec-title">Ranking de Treinadores</div>
+  <div class="sec-line"></div>
+  <div style="font-size:11px;color:var(--text3)">Clique no card para expandir o detalhe</div>
+</div>
+
+<div class="trainer-grid" id="trainerGrid"></div>
+
+<!-- ══════════════════════════════════════════════
+     BLOCO 5 — DESAFIOS ATIVOS & INDICAÇÕES
+══════════════════════════════════════════════ -->
+<div class="sec-hdr">
+  <div class="sec-num">05</div>
+  <div class="sec-title">Desafios Ativos & Indicações</div>
+  <div class="sec-line"></div>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+
+  <!-- Desafios -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="card-label" style="margin:0">Status dos alunos em desafio</div>
+      <div class="chips" style="margin:0" id="desafioChips">
+        <button class="chip active" onclick="filterDesafios('todos',this)">Todos (8)</button>
+        <button class="chip" onclick="filterDesafios('risco',this)">⚠️ Em risco (2)</button>
+        <button class="chip" onclick="filterDesafios('critico',this)">🔴 Crítico (1)</button>
+        <button class="chip" onclick="filterDesafios('ok',this)">✅ No prazo (5)</button>
+      </div>
+    </div>
+    <div class="desafios-list" id="desafiosList"></div>
+  </div>
+
+  <!-- Indicações -->
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="card accent-top orange">
+        <div class="card-label">Gerados</div>
+        <div class="ind-big" style="color:var(--primary)">23</div>
+        <div class="ind-label">códigos ativos</div>
+      </div>
+      <div class="card accent-top green">
+        <div class="card-label">Convertidos</div>
+        <div class="ind-big" style="color:var(--green)">8</div>
+        <div class="ind-label">novas matrículas</div>
+      </div>
+    </div>
+    <div class="card" style="flex:1">
+      <div class="card-label">Taxa de conversão</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:var(--blue);margin-bottom:6px">35%</div>
+      <div style="height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:14px">
+        <div style="width:35%;height:100%;background:linear-gradient(90deg,var(--blue),#B0D4FF);border-radius:3px"></div>
+      </div>
+      <div class="card-label" style="margin-bottom:8px">Por treinador</div>
+      <div id="indRankingList"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const TREINADORES = [
+  { id:1, nome:"Ana Costa", tipo:"Interno", color:"#1B4FD8", score:94,
+    kpis:{ carteira:48, carteiraPct:33, desafios:12, onboarding:5, consultorias:18, meta:20,
+           revisoes:8, revisoesAg:9, retencao:82, expAtend:14, expConv:11, expConvPct:79,
+           nps1:9.1, nps21:9.4, estrelas:4.9, indicacoes:9,
+           eng:{ treinos:88, missoes:72, nota:65 } } },
+  { id:2, nome:"Bruno Silva", tipo:"Interno", color:"#7EB8FF", score:74,
+    kpis:{ carteira:41, carteiraPct:28, desafios:9, onboarding:3, consultorias:14, meta:20,
+           revisoes:6, revisoesAg:8, retencao:71, expAtend:10, expConv:6, expConvPct:60,
+           nps1:7.8, nps21:8.4, estrelas:4.2, indicacoes:5,
+           eng:{ treinos:70, missoes:55, nota:48 } } },
+  { id:3, nome:"Carlos Mendes", tipo:"Interno", color:"#2DD4A0", score:64,
+    kpis:{ carteira:35, carteiraPct:24, desafios:7, onboarding:2, consultorias:11, meta:20,
+           revisoes:5, revisoesAg:7, retencao:65, expAtend:8, expConv:4, expConvPct:50,
+           nps1:7.2, nps21:7.9, estrelas:3.8, indicacoes:3,
+           eng:{ treinos:62, missoes:45, nota:38 } } },
+  { id:4, nome:"Daniela Rocha", tipo:"Externo", color:"#B09FFF", score:88,
+    kpis:{ carteira:22, carteiraPct:15, desafios:5, onboarding:4, consultorias:8, meta:12,
+           revisoes:4, revisoesAg:5, retencao:78, expAtend:6, expConv:5, expConvPct:83,
+           nps1:8.6, nps21:9.0, estrelas:4.7, indicacoes:6,
+           eng:{ treinos:82, missoes:68, nota:60 } } },
+];
+
+const DESAFIOS = [
+  {nome:"Carlos Eduardo", treinador:"Ana Costa", dia:8,  status:"ok",      prog:"Performance & Esporte", treinos:6, missoes:2},
+  {nome:"Maria Fernanda", treinador:"Ana Costa", dia:14, status:"ok",      prog:"Emagrecer com Saúde",   treinos:10,missoes:3},
+  {nome:"João Paulo",     treinador:"Bruno Silva",dia:5, status:"risco",   prog:"Metabolismo",           treinos:2, missoes:0},
+  {nome:"Luciana Matos",  treinador:"Carlos Mendes",dia:18,status:"ok",    prog:"Saúde Funcional",       treinos:13,missoes:3},
+  {nome:"Roberto Dias",   treinador:"Carlos Mendes",dia:12,status:"critico",prog:"Performance",          treinos:3, missoes:0},
+  {nome:"Patrícia Lima",  treinador:"Daniela Rocha",dia:3, status:"risco", prog:"Emagrecer",             treinos:1, missoes:0},
+  {nome:"Felipe Souza",   treinador:"Ana Costa",dia:21,   status:"ok",     prog:"Performance",           treinos:17,missoes:3},
+  {nome:"Amanda Costa",   treinador:"Bruno Silva",dia:7,  status:"ok",     prog:"Metabolismo",           treinos:5, missoes:2},
+];
+
+// ── CLOCK ────────────────────────────────────────────────────
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── CARTEIRA CHART ────────────────────────────────────────────
+function renderCarteiraChart(){
+  const c = document.getElementById('carteiraChart');
+  TREINADORES.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label">${t.nome.split(' ')[0]}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${t.kpis.carteiraPct}%;background:${t.color}"></div>
+      </div>
+      <div class="bar-val" style="color:${t.color}">${t.kpis.carteira}</div>
+      <div style="font-size:10px;color:var(--text3);width:32px;text-align:right;flex-shrink:0">${t.kpis.carteiraPct}%</div>`;
+    c.appendChild(row);
+  });
+}
+
+// ── TRAINER CARDS ─────────────────────────────────────────────
+function renderTrainers(){
+  const grid = document.getElementById('trainerGrid');
+  const sorted = [...TREINADORES].sort((a,b) => b.score - a.score);
+  const medals = ['🥇','🥈','🥉',''];
+
+  sorted.forEach((t, i) => {
+    const k = t.kpis;
+    const scoreColor = t.score >= 85 ? 'var(--green)' : t.score >= 70 ? 'var(--primary)' : 'var(--red)';
+    const stars = [1,2,3,4,5].map(n =>
+      `<span style="font-size:12px">${k.estrelas >= n ? '⭐' : '☆'}</span>`
+    ).join('');
+
+    const div = document.createElement('div');
+    div.className = 'trainer-card';
+    div.id = 'tc-'+t.id;
+    div.innerHTML = `
+      <div class="trainer-top" onclick="toggleTrainer(${t.id})">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div class="trainer-avatar" style="background:${t.color}">${t.nome.charAt(0)}</div>
+          <div class="trainer-medal">${medals[i]}</div>
+        </div>
+        <div class="trainer-name">${t.nome}</div>
+        <div class="trainer-type">${t.tipo} · ${k.carteira} alunos (${k.carteiraPct}%)</div>
+        <div class="trainer-score-row">
+          <div class="trainer-score" style="color:${scoreColor}">${t.score}</div>
+          <div class="trainer-score-lbl">score<br>composto</div>
+        </div>
+      </div>
+      <div class="trainer-mini-row">
+        <div class="trainer-mini-cell">
+          <div class="trainer-mini-val" style="color:${k.nps1>=8?'var(--green)':k.nps1>=6?'var(--yellow)':'var(--red)'}">${k.nps1}</div>
+          <div class="trainer-mini-lbl">NPS D1</div>
+        </div>
+        <div class="trainer-mini-cell">
+          <div class="trainer-mini-val" style="color:${k.nps21>=8?'var(--green)':k.nps21>=6?'var(--yellow)':'var(--red)'}">${k.nps21}</div>
+          <div class="trainer-mini-lbl">NPS D21</div>
+        </div>
+        <div class="trainer-mini-cell">
+          <div class="trainer-mini-val" style="color:var(--primary)">${k.desafios}</div>
+          <div class="trainer-mini-lbl">🔥 Desafios</div>
+        </div>
+        <div class="trainer-mini-cell">
+          <div class="trainer-mini-val" style="color:var(--blue)">${k.onboarding}</div>
+          <div class="trainer-mini-lbl">🆕 Onboard</div>
+        </div>
+      </div>
+      <div class="trainer-detail">
+        <div class="detail-row"><span class="detail-lbl">Avaliação alunos</span><span>${stars} ${k.estrelas}/5</span></div>
+        <div class="detail-row"><span class="detail-lbl">🔥 Desafio em curso</span><span class="detail-val" style="color:var(--primary)">${k.desafios} alunos</span></div>
+        <div class="detail-row"><span class="detail-lbl">🆕 Em onboarding</span><span class="detail-val" style="color:var(--blue)">${k.onboarding} alunos</span></div>
+        <div class="detail-row"><span class="detail-lbl">Total no app</span><span class="detail-val" style="color:var(--green)">${k.desafios + k.onboarding} alunos ativos</span></div>
+        <div class="detail-row"><span class="detail-lbl">Retenção</span><span class="detail-val" style="color:${k.retencao>=75?'var(--green)':k.retencao>=55?'var(--yellow)':'var(--red)'}">${k.retencao}%</span></div>
+        <div class="detail-row"><span class="detail-lbl">Consultorias</span><span class="detail-val" style="color:${k.consultorias>=k.meta?'var(--green)':'var(--primary)'}">${k.consultorias}/${k.meta}</span></div>
+        <div class="detail-row"><span class="detail-lbl">Revisões</span><span class="detail-val">${k.revisoes}/${k.revisoesAg} (${Math.round(k.revisoes/k.revisoesAg*100)}%)</span></div>
+        <div class="detail-row"><span class="detail-lbl">Experiências conv.</span><span class="detail-val" style="color:${k.expConvPct>=70?'var(--green)':'var(--yellow)'}">${k.expConv}/${k.expAtend} · ${k.expConvPct}%</span></div>
+        <div class="detail-row"><span class="detail-lbl">Indicações</span><span class="detail-val" style="color:var(--primary)">${k.indicacoes}</span></div>
+        <div class="eng-section">
+          <div class="eng-title">Índice de Engajamento dos Alunos</div>
+          <div class="eng-row">
+            <div class="eng-lbl">Treinos feitos</div>
+            <div class="eng-track"><div class="eng-fill" style="width:${k.eng.treinos}%;background:var(--primary)"></div></div>
+            <div class="eng-val" style="color:var(--primary)">${k.eng.treinos}%</div>
+          </div>
+          <div class="eng-row">
+            <div class="eng-lbl">Missões</div>
+            <div class="eng-track"><div class="eng-fill" style="width:${k.eng.missoes}%;background:var(--blue)"></div></div>
+            <div class="eng-val" style="color:var(--blue)">${k.eng.missoes}%</div>
+          </div>
+          <div class="eng-row">
+            <div class="eng-lbl">Nota do dia</div>
+            <div class="eng-track"><div class="eng-fill" style="width:${k.eng.nota}%;background:var(--purple)"></div></div>
+            <div class="eng-val" style="color:var(--purple)">${k.eng.nota}%</div>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function toggleTrainer(id){
+  document.getElementById('tc-'+id).classList.toggle('open');
+}
+
+// ── DESAFIOS ─────────────────────────────────────────────────
+let currentFilter = 'todos';
+function renderDesafios(){
+  const c = document.getElementById('desafiosList'); c.innerHTML = '';
+  const filtered = DESAFIOS.filter(d => currentFilter === 'todos' || d.status === currentFilter);
+  const sc = {ok:'var(--green)',risco:'var(--yellow)',critico:'var(--red)'};
+  const sl = {ok:'No prazo',risco:'Em risco',critico:'Sem interação'};
+
+  filtered.forEach(d => {
+    const pct = Math.round(d.dia/21*100);
+    const row = document.createElement('div');
+    row.className = 'desafio-row ' + (d.status !== 'ok' ? d.status : '');
+    row.innerHTML = `
+      <div class="desafio-av" style="background:${sc[d.status]}">${d.nome.charAt(0)}</div>
+      <div class="desafio-info">
+        <div class="desafio-nome">${d.nome}</div>
+        <div class="desafio-sub">${d.treinador} · ${d.prog}</div>
+        <div class="desafio-prog"><div class="desafio-prog-fill" style="width:${pct}%;background:${sc[d.status]}"></div></div>
+      </div>
+      <div class="desafio-right">
+        <div class="desafio-dia" style="color:${sc[d.status]}">Dia ${d.dia}</div>
+        <div class="desafio-status" style="color:${sc[d.status]}">${sl[d.status]}</div>
+        <div class="desafio-stats">💪${d.treinos} ✅${d.missoes}</div>
+      </div>
+      <div class="status-dot" style="background:${sc[d.status]}"></div>`;
+    c.appendChild(row);
+  });
+}
+
+function filterDesafios(f, btn){
+  currentFilter = f;
+  document.querySelectorAll('#desafioChips .chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDesafios();
+}
+
+// ── INDICAÇÕES RANKING ────────────────────────────────────────
+function renderIndRanking(){
+  const c = document.getElementById('indRankingList');
+  [...TREINADORES].sort((a,b) => b.kpis.indicacoes - a.kpis.indicacoes).forEach(t => {
+    const pct = Math.round(t.kpis.indicacoes / 9 * 100);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px';
+    row.innerHTML = `
+      <div style="font-size:11px;color:var(--text2);width:70px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.nome.split(' ')[0]}</div>
+      <div style="flex:1;height:5px;background:var(--border2);border-radius:3px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${t.color};border-radius:3px"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;width:16px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace">${t.kpis.indicacoes}</div>`;
+    c.appendChild(row);
+  });
+}
+
+function toggleCicloLista(){
+  const body = document.getElementById('cicloListaBody');
+  const chevron = document.getElementById('cicloChevron');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  if(!isOpen) renderCicloLista();
+}
+
+// ── ENGAJAMENTO CHART ─────────────────────────────────────────
+function renderEngajamentoChart(){
+  const canvas = document.getElementById('engajamentoChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const semanas = ['S1','S2','S3','S4','S5','S6','S7','S8'];
+  const treinos =  [65, 70, 72, 75, 74, 78, 80, 78];
+  const missoes =  [42, 48, 52, 55, 53, 58, 62, 60];
+  const notaDia =  [30, 35, 40, 45, 42, 50, 55, 53];
+  const series = [
+    {data:treinos, color:'#1B4FD8', label:'Treinos'},
+    {data:missoes, color:'#7EB8FF', label:'Missões'},
+    {data:notaDia, color:'#B09FFF', label:'Nota do dia'},
+  ];
+
+  const dpr = window.devicePixelRatio||1;
+  const W = canvas.offsetWidth;
+  const H = 200;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.scale(dpr, dpr);
+
+  const pad = {top:14, right:16, bottom:28, left:36};
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const maxVal = 100;
+
+  // Grid & labels Y
+  ctx.textAlign = 'right';
+  [0,25,50,75,100].forEach(v => {
+    const y = pad.top + cH*(1 - v/maxVal);
+    ctx.strokeStyle = 'rgba(255,255,255,.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left+cW, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.25)';
+    ctx.font = '9px DM Mono';
+    ctx.fillText(v+'%', pad.left-4, y+3);
+  });
+
+  // Semana labels X
+  ctx.textAlign = 'center';
+  semanas.forEach((s,i) => {
+    const x = pad.left + (i/(semanas.length-1))*cW;
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    ctx.font = '9px DM Sans';
+    ctx.fillText(s, x, H-8);
+  });
+
+  // Area + Line per series
+  series.forEach(s => {
+    const pts = s.data.map((v,i) => ({
+      x: pad.left + (i/(semanas.length-1))*cW,
+      y: pad.top + cH*(1 - v/maxVal)
+    }));
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pad.top+cH);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(pts[pts.length-1].x, pad.top+cH);
+    ctx.closePath();
+    ctx.fillStyle = s.color.replace('#','') === s.color.replace('#','') ?
+      s.color + '18' : s.color;
+    // Parse hex to rgba
+    const r = parseInt(s.color.slice(1,3),16);
+    const g = parseInt(s.color.slice(3,5),16);
+    const b = parseInt(s.color.slice(5,7),16);
+    ctx.fillStyle = `rgba(${r},${g},${b},0.08)`;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // Dots
+    pts.forEach((p,i) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+      ctx.fillStyle = s.color;
+      ctx.fill();
+    });
+
+    // Last value label
+    const lp = pts[pts.length-1];
+    ctx.fillStyle = s.color;
+    ctx.font = 'bold 10px DM Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(s.data[s.data.length-1]+'%', lp.x+5, lp.y+3);
+  });
+}
+
+// ── EVOLUÇÃO ANUAL ────────────────────────────────────────────
+function renderEvolucaoChart(){
+  const canvas = document.getElementById('evolucaoChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const ativos =       [480,485,492,498,505,512,518,522,525,528,530,null];
+  const comTreinador = [210,218,225,234,242,250,255,259,262,264,265,null];
+  const novos =        [18, 22, 20, 24, 28, 32, 0,  0,  0,  0,  0,  null];
+  const naoRenovados = [12, 10, 14, 8,  11, 9,  0,  0,  0,  0,  0,  null];
+
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth;
+  const H = 220;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  const pad = { top:16, right:20, bottom:32, left:48 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const maxVal = 560;
+  const maxBar = 35;
+  const months = 6; // só até junho (dados disponíveis)
+  const barW = (cW / meses.length) * 0.35;
+  const barGap = barW * 0.15;
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,.05)';
+  ctx.lineWidth = 1;
+  [0,.25,.5,.75,1].forEach(p => {
+    const y = pad.top + cH * (1-p);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.25)';
+    ctx.font = '10px DM Mono';
+    ctx.fillText(Math.round(maxVal * p), 4, y + 4);
+  });
+
+  // Month labels
+  meses.forEach((m, i) => {
+    const x = pad.left + (i + 0.5) * (cW / meses.length);
+    ctx.fillStyle = i < months ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.2)';
+    ctx.font = '10px DM Sans';
+    ctx.textAlign = 'center';
+    ctx.fillText(m, x, H - 8);
+  });
+
+  // Draw bars (Novos e Não Renovados) — lado a lado
+  for(let i = 0; i < months; i++){
+    const xBase = pad.left + (i + 0.5) * (cW / meses.length) - barW - barGap/2;
+    // Novos
+    if(novos[i]){
+      const barH = (novos[i] / maxBar) * (cH * 0.5);
+      const y = pad.top + cH - barH;
+      ctx.fillStyle = 'rgba(126,184,255,.5)';
+      ctx.beginPath();
+      ctx.roundRect(xBase, y, barW, barH, [3,3,0,0]);
+      ctx.fill();
+    }
+    // Não Renovados
+    if(naoRenovados[i]){
+      const barH = (naoRenovados[i] / maxBar) * (cH * 0.5);
+      const y = pad.top + cH - barH;
+      ctx.fillStyle = 'rgba(255,77,109,.5)';
+      ctx.beginPath();
+      ctx.roundRect(xBase + barW + barGap, y, barW, barH, [3,3,0,0]);
+      ctx.fill();
+    }
+  }
+
+  // Draw lines (Ativos e Com Treinador)
+  const drawLine = (data, color, filled) => {
+    ctx.beginPath();
+    let started = false;
+    data.forEach((v, i) => {
+      if(v === null) return;
+      const x = pad.left + (i + 0.5) * (cW / meses.length);
+      const y = pad.top + cH * (1 - v / maxVal);
+      if(!started){ ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.setLineDash([]);
+    ctx.stroke();
+
+    // Dots
+    data.forEach((v, i) => {
+      if(v === null) return;
+      const x = pad.left + (i + 0.5) * (cW / meses.length);
+      const y = pad.top + cH * (1 - v / maxVal);
+      ctx.beginPath();
+      ctx.arc(x, y, 3.5, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      // Value label on last point
+      if(i === months-1){
+        ctx.fillStyle = color;
+        ctx.font = 'bold 11px DM Mono';
+        ctx.textAlign = 'right';
+        ctx.fillText(v, x-6, y-6);
+      }
+    });
+  };
+
+  drawLine(ativos, '#1B4FD8', false);
+  drawLine(comTreinador, '#2DD4A0', false);
+}
+
+// ── TOGGLE DROPDOWN ───────────────────────────────────────────
+const CICLO_ALUNOS = [
+  {nome:"Carlos Eduardo", treinador:"Ana Costa",    venc:"2026-06-05", app:true,  diasAposVenc:-5,  status:"a_renovar"},
+  {nome:"Maria Fernanda", treinador:"Ana Costa",    venc:"2026-06-08", app:true,  diasAposVenc:-8,  status:"a_renovar"},
+  {nome:"João Paulo",     treinador:"Bruno Silva",  venc:"2026-06-03", app:false, diasAposVenc:-3,  status:"a_renovar"},
+  {nome:"Luciana Matos",  treinador:"Carlos Mendes",venc:"2026-05-28", app:true,  diasAposVenc:2,   status:"renovado"},
+  {nome:"Roberto Dias",   treinador:"Carlos Mendes",venc:"2026-05-20", app:false, diasAposVenc:10,  status:"vencido"},
+  {nome:"Patrícia Lima",  treinador:"Daniela Rocha",venc:"2026-06-12", app:false, diasAposVenc:-12, status:"a_renovar"},
+  {nome:"Felipe Souza",   treinador:"Ana Costa",    venc:"2026-05-25", app:true,  diasAposVenc:5,   status:"vencido"},
+  {nome:"Amanda Costa",   treinador:"Bruno Silva",  venc:"2026-06-18", app:true,  diasAposVenc:-18, status:"a_renovar"},
+  {nome:"Ricardo Nunes",  treinador:null,           venc:"2026-06-02", app:false, diasAposVenc:-2,  status:"a_renovar"},
+  {nome:"Fernanda Alves", treinador:null,           venc:"2026-04-20", app:false, diasAposVenc:40,  status:"rematricula"},
+  {nome:"Bruno Torres",   treinador:"Ana Costa",    venc:"2026-05-15", app:true,  diasAposVenc:15,  status:"vencido"},
+  {nome:"Juliana Mendes", treinador:null,           venc:"2026-06-10", app:false, diasAposVenc:-10, status:"a_renovar"},
+];
+
+let cicloListaFiltro = 'todos';
+let modoConsultora = false;
+
+function togglePerfil(){
+  modoConsultora = !modoConsultora;
+  const el = document.getElementById('perfilAtual');
+  el.textContent = modoConsultora ? 'Consultora (pode editar)' : 'Gestor (somente leitura)';
+  document.getElementById('perfilAtual').parentElement.style.background = modoConsultora ? 'rgba(34,197,94,.1)' : 'var(--primary-dim)';
+  document.getElementById('perfilAtual').parentElement.style.borderColor = modoConsultora ? 'rgba(34,197,94,.3)' : 'var(--primary-border)';
+  document.getElementById('perfilAtual').parentElement.style.color = modoConsultora ? 'var(--green)' : 'var(--primary)';
+  renderCicloLista();
+  showToast(modoConsultora ? '🔓 Modo Consultora — pode atualizar status' : '🔒 Modo Gestor — somente leitura');
+}
+
+function filterCicloList(f, btn){
+  cicloListaFiltro = f;
+  document.querySelectorAll('#cicloListFilter .chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCicloLista();
+}
+
+function renderCicloLista(){
+  const c = document.getElementById('cicloListaAlunos');
+  c.innerHTML = '';
+
+  // Status automático baseado nos dias
+  CICLO_ALUNOS.forEach(a => {
+    if(a.status === 'renovado' || a.status === 'rematricula') return; // já resolvido
+    if(a.diasAposVenc <= 0)       a.status = 'a_renovar';
+    else if(a.diasAposVenc <= 31) a.status = 'vencido';
+    else                           a.status = 'nao_renovado';
+  });
+
+  const filtered = CICLO_ALUNOS.filter(a =>
+    cicloListaFiltro === 'todos' || a.status === cicloListaFiltro
+  );
+
+  if(!filtered.length){
+    c.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--text3)">Nenhum aluno neste filtro</div>';
+    return;
+  }
+
+  const statusCfg = {
+    a_renovar:   { label:'A Renovar',    bg:'rgba(255,209,102,.12)', border:'rgba(255,209,102,.3)',  color:'var(--yellow)' },
+    vencido:     { label:'Vencido',      bg:'rgba(255,77,109,.12)',  border:'rgba(255,77,109,.3)',   color:'var(--red)' },
+    nao_renovado:{ label:'Não Renovado', bg:'rgba(80,80,100,.2)',    border:'rgba(120,120,150,.3)',  color:'var(--text3)' },
+    renovado:    { label:'Renovado',     bg:'rgba(45,212,160,.12)',  border:'rgba(45,212,160,.3)',   color:'var(--green)' },
+    rematricula: { label:'Rematrícula',  bg:'rgba(126,184,255,.12)', border:'rgba(126,184,255,.3)',  color:'var(--blue)' },
+  };
+
+  filtered.forEach((a, idx) => {
+    const vencDate = new Date(a.venc);
+    const vencStr = vencDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const sc = statusCfg[a.status];
+
+    // Dropdown de status — só consultora vê as opções
+    const realIdx = CICLO_ALUNOS.indexOf(a);
+    let dropdownOpts = '';
+    if(modoConsultora){
+      const opts = {
+        a_renovar:   [{label:'✓ Marcar como Renovado', val:'renovado', color:'var(--green)'}],
+        vencido:     [{label:'✓ Marcar como Renovado', val:'renovado', color:'var(--green)'}],
+        nao_renovado:[{label:'↩ Marcar Rematrícula',   val:'rematricula', color:'var(--blue)'}],
+        renovado:    [{label:'↩ Desfazer',              val:'a_renovar', color:'var(--text3)', cls:'desfazer'}],
+        rematricula: [{label:'↩ Desfazer',              val:'a_renovar', color:'var(--text3)', cls:'desfazer'}],
+      };
+      const opcoes = opts[a.status] || [];
+      dropdownOpts = opcoes.map(o =>
+        `<button class="status-option ${o.cls||''}" style="color:${o.color}" onclick="event.stopPropagation();updateStatus(${realIdx},'${o.val}')">${o.label}</button>`
+      ).join('');
+    }
+
+    const statusCol = modoConsultora && dropdownOpts ? `
+      <div class="status-wrap" onclick="event.stopPropagation()">
+        <button class="status-btn" style="background:${sc.bg};border-color:${sc.border};color:${sc.color}"
+          onclick="toggleDropdown(this)">
+          ${sc.label} <span class="status-arrow">▾</span>
+        </button>
+        <div class="status-dropdown">
+          ${dropdownOpts}
+        </div>
+      </div>` :
+      `<span style="padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;background:${sc.bg};border:1px solid ${sc.border};color:${sc.color}">${sc.label}</span>`;
+
+    const row = document.createElement('div');
+    row.style.cssText = `display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;gap:8px;padding:8px 12px;border-radius:8px;background:var(--card2);border:1px solid ${['renovado','rematricula'].includes(a.status)?sc.border:'var(--border)'};align-items:center;transition:all .15s`;
+    row.innerHTML = `
+      <div>
+        <div style="font-size:12px;font-weight:600">${a.nome}</div>
+        ${!a.treinador ? '<div style="font-size:10px;color:var(--red);margin-top:1px">⚠️ Sem treinador</div>' : ''}
+      </div>
+      <div style="font-size:11px;color:var(--text2)">${a.treinador || '—'}</div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:${a.diasAposVenc>31?'var(--text3)':a.diasAposVenc>0?'var(--red)':'var(--text)'}">${vencStr}</div>
+        <div style="font-size:10px;color:var(--text3)">${a.diasAposVenc>0?a.diasAposVenc+'d vencido':Math.abs(a.diasAposVenc)+'d restantes'}</div>
+      </div>
+      <div style="font-size:12px">${a.app?'<span style="color:var(--green)">🔥 Ativo</span>':'<span style="color:var(--text3)">— Inativo</span>'}</div>
+      <div>${statusCol}</div>`;
+    c.appendChild(row);
+  });
+}
+
+function toggleDropdown(btn){
+  // Close all other dropdowns first
+  document.querySelectorAll('.status-dropdown.open').forEach(d => {
+    if(d !== btn.nextElementSibling) d.classList.remove('open');
+  });
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', () => {
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.classList.remove('open'));
+});
+
+function updateStatus(realIdx, novoStatus){
+  if(realIdx < 0 || realIdx >= CICLO_ALUNOS.length) return;
+  const aluno = CICLO_ALUNOS[realIdx];
+  CICLO_ALUNOS[realIdx].status = novoStatus;
+  // Close dropdowns
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.classList.remove('open'));
+  renderCicloLista();
+  const labels = {renovado:'Renovado ✅', rematricula:'Rematrícula 🔵', a_renovar:'Reaberto 🟡'};
+  showToast(`${aluno.nome} → ${labels[novoStatus]||novoStatus}`);
+}
+
+// ── CICLO RENOVAÇÃO ───────────────────────────────────────────
+const CICLO_DATA = {
+  30: { total:67, comApp:38, comAppRenov:34, semApp:17, semAppRenov:11, semTreinador:12, semTreinadorRenov:5 },
+  60: { total:124, comApp:68, comAppRenov:61, semApp:32, semAppRenov:20, semTreinador:24, semTreinadorRenov:10 },
+  90: { total:198, comApp:102, comAppRenov:91, semApp:55, semAppRenov:35, semTreinador:41, semTreinadorRenov:17 },
+};
+
+let cicloAtual = 30;
+let cicloCustom = null;
+
+function setCiclo(dias, btn){
+  cicloAtual = dias;
+  document.querySelectorAll('#cicloSelector .chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCiclo();
+}
+
+function renderCiclo(){
+  const data = cicloCustom || CICLO_DATA[cicloAtual];
+  const total = data.total;
+  const totalRenov = data.comAppRenov + data.semAppRenov + data.semTreinadorRenov;
+  const p1 = Math.round(data.comApp/total*100);
+  const p2 = Math.round(data.semApp/total*100);
+  const p3 = Math.round(data.semTreinador/total*100);
+  const r1 = Math.round(data.comAppRenov/data.comApp*100);
+  const r2 = Math.round(data.semAppRenov/data.semApp*100);
+  const r3 = Math.round(data.semTreinadorRenov/data.semTreinador*100);
+
+  document.getElementById('cicloTotal').textContent = total;
+  document.getElementById('cicloLabel').textContent = `vencendo em ${cicloAtual} dias`;
+
+  document.getElementById('cicloComApp').textContent = data.comApp;
+  document.getElementById('cicloComAppRenov').textContent = data.comAppRenov;
+  document.getElementById('cicloComAppPct').textContent = r1+'% retenção';
+
+  document.getElementById('cicloSemApp').textContent = data.semApp;
+  document.getElementById('cicloSemAppRenov').textContent = data.semAppRenov;
+  document.getElementById('cicloSemAppPct').textContent = r2+'% retenção';
+
+  document.getElementById('cicloSemTreinador').textContent = data.semTreinador;
+  document.getElementById('cicloSemTreinadorRenov').textContent = data.semTreinadorRenov;
+  document.getElementById('cicloSemTreinadorPct').textContent = r3+'% retenção';
+
+  document.getElementById('barComApp').style.width = p1+'%';
+  document.getElementById('barSemApp').style.width = p2+'%';
+  document.getElementById('barSemTreinador').style.width = p3+'%';
+  document.getElementById('barPct1').textContent = p1+'% alto eng.';
+  document.getElementById('barPct2').textContent = p2+'% médio';
+  document.getElementById('barPct3').textContent = p3+'% sem vínculo';
+
+  document.getElementById('cicloAlertText').textContent =
+    `${data.semTreinador} alunos sem treinador em risco · ${data.semTreinadorRenov} renovaram (${r3}%) — prioridade de contato`;
+}
+
+function uploadCicloCSV(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines = e.target.result.split('\n').filter(l => l.trim());
+    const total = lines.length - 1; // remove header
+    // Simulação: cruza com dados do sistema
+    // Na versão real, cruzaria com o banco Supabase
+    const comApp = Math.round(total * 0.52);
+    const semApp = Math.round(total * 0.28);
+    const semTreinador = total - comApp - semApp;
+    cicloCustom = { total, comApp, semApp, semTreinador };
+    document.getElementById('cicloUploadStatus').textContent =
+      `✅ ${total} planos carregados de "${file.name}"`;
+    document.getElementById('cicloUploadStatus').style.color = 'var(--green)';
+    renderCiclo();
+    showToast(`✅ ${total} planos carregados com sucesso!`);
+  };
+  reader.readAsText(file);
+}
+
+// ── PERIOD ────────────────────────────────────────────────────
+function setPeriod(p, btn){
+  document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showToast('Período: ' + btn.textContent + ' · dados de demonstração');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderCarteiraChart();
+renderTrainers();
+renderDesafios();
+renderIndRanking();
+renderCicloLista();
+renderEvolucaoChart();
+renderEngajamentoChart();
+</script>
+
+<!-- ── FOOTER ── -->
+<footer style="
+  position:fixed;bottom:0;left:0;right:0;
+  height:36px;
+  background:rgba(8,8,16,.95);
+  border-top:1px solid rgba(255,255,255,.05);
+  backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;z-index:100;
+">
+  <!-- Esquerdo: Acquacel -->
+  <div style="display:flex;align-items:center;gap:8px">
+    <img src="data:image/png;base64,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" style="width:20px;height:20px;object-fit:contain;opacity:.6" alt="Acquacel">
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.08em">Acquacel</span>
+    <span style="font-size:10px;color:rgba(255,255,255,.12);letter-spacing:.06em">· Método de Retenção</span>
+  </div>
+  <!-- Direito: GeFit -->
+  <div style="display:flex;align-items:center;gap:7px">
+    <span style="font-size:9px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em">powered by</span>
+    <img src="data:image/png;base64,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" style="height:16px;object-fit:contain;opacity:.35;filter:brightness(2)" alt="GeFit">
+  </div>
+</footer>
+
+<script>
+function loadAcademiaLogo(input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('academiaLogoImg');
+    const letter = document.getElementById('academiaLogoLetter');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    letter.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>

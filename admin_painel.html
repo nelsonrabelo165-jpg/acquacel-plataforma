@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquacel · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFF;--card:#FFFFFF;--card2:#F0F4FF;--border:#E2E8F0;--border2:#CBD5E1;
+  --primary:#1B4FD8;--primary-dim:rgba(27,79,216,.10);--primary-border:rgba(27,79,216,.25);
+  --text:#1A202C;--muted:#718096;--dim:#2A2A2A;
+  --green:#22C55E;--green-dim:rgba(34,197,94,.1);--green-border:rgba(34,197,94,.25);
+  --red:#EF4444;--red-dim:rgba(239,68,68,.1);
+  --blue:#60A5FA;--blue-dim:rgba(96,165,250,.1);
+  --yellow:#EAB308;--yellow-dim:rgba(234,179,8,.1);
+  --purple:#A78BFA;--purple-dim:rgba(167,139,250,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh}
+
+/* ── LOGIN ── */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),transparent)}
+.login-logo{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--muted);margin-bottom:28px;text-transform:uppercase;letter-spacing:.1em}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.field input{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.field input:focus{border-color:var(--primary)}
+.btn-login{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--primary),#3B82F6);color:#000;font-size:14px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;margin-top:4px;transition:opacity .2s}
+.btn-login:hover{opacity:.9}
+.login-error{color:var(--red);font-size:12px;margin-top:10px;text-align:center;display:none}
+
+/* ── APP (escondido até login) ── */
+.app-wrap{display:none}
+
+/* ── HEADER ── */
+.header{background:rgba(10,10,10,.96);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:1400px;margin:0 auto;height:56px;display:flex;align-items:center;gap:16px}
+.hlogo{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--primary)}
+.htitle{font-size:12px;color:var(--muted);padding-left:14px;border-left:1px solid var(--border2)}
+.hright{margin-left:auto;display:flex;align-items:center;gap:12px}
+.hadmin{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--primary-dim);border:1px solid var(--primary-border);color:var(--primary)}
+.hlogout{padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s}
+.hlogout:hover{border-color:var(--red);color:var(--red)}
+
+/* ── LAYOUT ── */
+.content{max-width:1400px;margin:0 auto;padding:24px}
+
+/* ── KPI CARDS ── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.orange::before{background:var(--primary)}
+.kpi.green::before{background:var(--green)}
+.kpi.blue::before{background:var(--blue)}
+.kpi.yellow::before{background:var(--yellow)}
+.kpi.purple::before{background:var(--purple)}
+.kpi-icon{font-size:20px;margin-bottom:8px}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:3px}
+.kpi-label{font-size:11px;color:var(--muted)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:8px 16px;border-radius:8px 8px 0 0;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Barlow',sans-serif;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--primary-dim)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── SECTION LABEL ── */
+.sec{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#131313;border-bottom:1px solid var(--border)}
+th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;text-align:left;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.badge.piloto{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(96,165,250,.25)}
+.badge.basico{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
+.badge.pro{background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-border)}
+.badge.ativo{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border)}
+.badge.inativo{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.badge.interno{background:var(--blue-dim);color:var(--blue)}
+.badge.externo{background:var(--purple-dim);color:var(--purple)}
+.badge.gestor{background:var(--primary-dim);color:var(--primary)}
+.badge.treinador{background:var(--blue-dim);color:var(--blue)}
+
+/* ── EXPAND ROW ── */
+.expand-btn{background:none;border:1px solid var(--border2);border-radius:5px;color:var(--muted);cursor:pointer;padding:3px 8px;font-size:11px;font-family:'Barlow',sans-serif;transition:all .15s}
+.expand-btn:hover{border-color:var(--primary);color:var(--primary)}
+.detail-row{display:none;background:var(--card2)}
+.detail-row.open{display:table-row}
+.detail-inner{padding:14px 20px;border-bottom:1px solid var(--border)}
+
+/* ── SEARCH ── */
+.search-row{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.search-input{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;min-width:220px}
+.search-input:focus{border-color:var(--primary)}
+.filter-btn{padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s}
+.filter-btn.active{background:var(--primary-dim);border-color:var(--primary);color:var(--primary)}
+
+/* ── AÇÕES ── */
+.btn-action{padding:5px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;margin-right:4px}
+.btn-action:hover{border-color:var(--primary);color:var(--primary)}
+.btn-action.danger:hover{border-color:var(--red);color:var(--red)}
+
+/* ── MINI STAT ── */
+.mini-stats{display:flex;gap:16px;margin-bottom:8px}
+.mini-stat{font-size:12px;color:var(--muted)}
+.mini-stat strong{color:var(--text);font-weight:600}
+
+/* ── RECEITA ── */
+.receita-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px}
+.receita-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.receita-row:last-child{border:none}
+.receita-total{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--green);margin-top:12px}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px}
+.modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.modal-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.modal-field input,.modal-field select{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif;width:100%}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--primary)}
+.modal-btns{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn-cancel{padding:9px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif}
+.btn-save{padding:9px 16px;border-radius:8px;border:none;background:var(--primary);color:#000;font-size:13px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--primary);color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;transition:transform .3s;max-width:300px;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  table{font-size:11px}
+  th,td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── LOGIN ── -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">Acquacel</div>
+    <div class="login-sub">Painel Administrativo</div>
+    <div class="field">
+      <label>Usuário</label>
+      <input type="text" id="loginUser" placeholder="admin" onkeydown="if(event.key==='Enter')fazerLogin()">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+    </div>
+    <button class="btn-login" onclick="fazerLogin()">Entrar</button>
+    <div class="login-error" id="loginError">Usuário ou senha incorretos</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div class="app-wrap" id="appWrap">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="hlogo">Acquacel</div>
+      <div class="htitle">Painel Admin — Gestão de Clientes</div>
+      <div class="hright">
+        <div class="hadmin">🔐 Nelson Rabelo</div>
+        <button class="hlogout" onclick="fazerLogout()">Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-row" id="kpiRow">
+      <div class="loading"><div class="spinner"></div>Carregando...</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('academias',this)">🏢 Academias</button>
+      <button class="tab" onclick="showTab('usuarios',this)">👤 Usuários</button>
+      <button class="tab" onclick="showTab('alunos',this)">🎓 Alunos</button>
+      <button class="tab" onclick="showTab('receita',this)">💰 Receita</button>
+      <button class="tab" onclick="showTab('nova',this)" style="color:var(--primary)">+ Nova Academia</button>
+    </div>
+
+    <!-- TAB: ACADEMIAS -->
+    <div class="tab-panel active" id="panel-academias">
+      <div class="search-row">
+        <input class="search-input" id="searchAcad" placeholder="Buscar academia..." oninput="filtrarAcademias()">
+        <button class="filter-btn active" onclick="filtroPlano('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filtroPlano('piloto',this)">Piloto</button>
+        <button class="filter-btn" onclick="filtroPlano('basico',this)">Básico</button>
+        <button class="filter-btn" onclick="filtroPlano('pro',this)">Pro</button>
+        <button class="btn-action" onclick="abrirModalNovaAcademia()" style="margin-left:auto;border-color:var(--primary);color:var(--primary)">+ Nova academia</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Academia</th>
+              <th>Cidade / Estado</th>
+              <th>Plano</th>
+              <th>Treinadores</th>
+              <th>Alunos</th>
+              <th>Planners</th>
+              <th>Status</th>
+              <th>Cadastro</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbAcademias">
+            <tr><td colspan="9" class="loading"><div class="spinner"></div>Carregando academias...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: USUÁRIOS -->
+    <div class="tab-panel" id="panel-usuarios">
+      <div class="search-row">
+        <input class="search-input" id="searchUser" placeholder="Buscar usuário..." oninput="filtrarUsuarios()">
+        <button class="filter-btn active" onclick="filtroTipoUser('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filtroTipoUser('treinador',this)">Treinadores</button>
+        <button class="filter-btn" onclick="filtroTipoUser('gestor',this)">Gestores</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Academia</th>
+              <th>Perfil</th>
+              <th>Tipo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbUsuarios">
+            <tr><td colspan="6" class="loading"><div class="spinner"></div>Carregando usuários...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: ALUNOS -->
+    <div class="tab-panel" id="panel-alunos">
+      <div class="search-row">
+        <input class="search-input" id="searchAluno" placeholder="Buscar aluno..." oninput="filtrarAlunos()">
+        <button class="filter-btn active" onclick="filtroAlunoStatus('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filtroAlunoStatus('ativo',this)">Ativos</button>
+        <button class="filter-btn" onclick="filtroAlunoStatus('inativo',this)">Inativos</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Aluno</th>
+              <th>Matrícula</th>
+              <th>Idade</th>
+              <th>Academia</th>
+              <th>Treinador</th>
+              <th>Planners</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbAlunos">
+            <tr><td colspan="7" class="loading"><div class="spinner"></div>Carregando alunos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: RECEITA -->
+    <div class="tab-panel" id="panel-receita">
+      <div class="sec">Resumo financeiro</div>
+      <div class="receita-card" id="receitaCard">
+        <div class="loading"><div class="spinner"></div>Carregando...</div>
+      </div>
+    </div>
+
+    <!-- TAB: NOVA ACADEMIA -->
+    <div class="tab-panel" id="panel-nova">
+      <div style="max-width:600px">
+        <div class="sec">Dados da academia</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">
+          <div class="modal-field"><label>Nome da academia *</label><input type="text" id="naNome" placeholder="Ex: Academia Força Total"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="modal-field"><label>Cidade *</label><input type="text" id="naCidade" placeholder="São Paulo"></div>
+            <div class="modal-field"><label>Estado</label>
+              <select id="naEstado">
+                <option>SP</option><option>RJ</option><option>MG</option><option>RS</option>
+                <option>PR</option><option>SC</option><option>BA</option><option>GO</option>
+                <option>DF</option><option>PE</option><option>CE</option><option>MA</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-field"><label>Plano</label>
+            <select id="naPlano">
+              <option value="piloto">Piloto (gratuito)</option>
+              <option value="basico">Básico — R$ 150/mês</option>
+              <option value="pro">Pro — R$ 300/mês</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sec">Gestor / responsável</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">
+          <div class="modal-field"><label>Nome completo *</label><input type="text" id="naGestorNome" placeholder="Ex: Carlos Silva"></div>
+          <div class="modal-field"><label>E-mail *</label><input type="email" id="naGestorEmail" placeholder="gestor@academia.com.br"></div>
+          <div class="modal-field"><label>Senha *</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="naGestorSenha" placeholder="Mínimo 8 caracteres" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+              <button onclick="gerarSenhaAdmin('naGestorSenha')" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🎲 Gerar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">Treinadores</div>
+        <div id="naTreinadoresContainer"></div>
+        <button onclick="naAddTreinador()" style="width:100%;padding:10px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;margin-bottom:16px">+ Adicionar treinador</button>
+
+        <!-- Progress -->
+        <div id="naProgress" style="display:none;margin-bottom:12px">
+          <div id="naStep1" style="padding:8px 12px;border-radius:8px;background:var(--card2);margin-bottom:6px;font-size:13px;color:var(--muted)">⏳ Criando academia...</div>
+          <div id="naStep2" style="padding:8px 12px;border-radius:8px;background:var(--card2);margin-bottom:6px;font-size:13px;color:var(--muted)">⏳ Criando gestor...</div>
+          <div id="naStep3" style="padding:8px 12px;border-radius:8px;background:var(--card2);margin-bottom:6px;font-size:13px;color:var(--muted)">⏳ Criando treinadores...</div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="naResultado" style="display:none;background:var(--green-dim);border:1px solid var(--green-border);border-radius:14px;padding:20px;margin-bottom:16px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--green);margin-bottom:8px">✅ Academia cadastrada!</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Credenciais para enviar via WhatsApp:</div>
+          <div id="naCredenciais" style="background:#F8FAFF;border-radius:8px;padding:14px;font-size:12px;line-height:1.8;font-family:'DM Mono',monospace;color:var(--text)"></div>
+          <button onclick="copiarCredenciais()" style="width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1px solid var(--green-border);background:var(--green-dim);color:var(--green);font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">📋 Copiar credenciais</button>
+          <button onclick="novoCadastroAdmin()" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif">+ Cadastrar outra academia</button>
+        </div>
+
+        <button id="naBtnCadastrar" onclick="naCadastrar()" style="width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--primary),#3B82F6);color:#000;font-size:15px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif">
+          🏋️ Cadastrar Academia
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NOVA ACADEMIA -->
+<div class="modal-bg" id="modalAcad">
+  <div class="modal">
+    <div class="modal-title">Nova Academia</div>
+    <div class="modal-field"><label>Nome *</label><input type="text" id="maNome" placeholder="Academia Força Total"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><label>Cidade *</label><input type="text" id="maCidade"></div>
+      <div class="modal-field"><label>Estado</label>
+        <select id="maEstado">
+          <option>SP</option><option>RJ</option><option>MG</option><option>RS</option>
+          <option>PR</option><option>SC</option><option>BA</option><option>GO</option>
+          <option>DF</option><option>PE</option><option>CE</option><option>MA</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field"><label>Plano</label>
+      <select id="maPlano">
+        <option value="piloto">Piloto (gratuito)</option>
+        <option value="basico">Básico — R$ 150/mês</option>
+        <option value="pro">Pro — R$ 300/mês</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal('modalAcad')">Cancelar</button>
+      <button class="btn-save" onclick="salvarNovaAcademia()">Criar academia</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MÓDULOS -->
+<div class="modal-bg" id="modalModulos">
+  <div class="modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="modal-title" style="margin:0">🔧 Módulos da Academia</div>
+      <button onclick="fecharModal('modalModulos')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px">✕</button>
+    </div>
+    <input type="hidden" id="mmAcadId">
+    <div class="modal-field" style="margin-bottom:16px">
+      <label>Academia</label>
+      <input type="text" id="mmAcadNome" readonly style="color:var(--muted)">
+    </div>
+
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Fase de ativação rápida</div>
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+      <button onclick="aplicarFase(1)" style="padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">Fase 1 — Onboarding</button>
+      <button onclick="aplicarFase(2)" style="padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">Fase 2 — Operação</button>
+      <button onclick="aplicarFase(3)" style="padding:7px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">Fase 3 — Completo</button>
+    </div>
+
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Módulos individuais</div>
+    <div id="mmModulosList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal('modalModulos')">Cancelar</button>
+      <button class="btn-save" onclick="salvarModulos()">Salvar módulos</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PLANO -->
+<div class="modal-bg" id="modalPlano">
+  <div class="modal">
+    <div class="modal-title">Alterar Plano</div>
+    <input type="hidden" id="mpAcadId">
+    <div class="modal-field"><label>Academia</label><input type="text" id="mpAcadNome" readonly style="color:var(--muted)"></div>
+    <div class="modal-field"><label>Plano</label>
+      <select id="mpPlano">
+        <option value="piloto">Piloto (gratuito)</option>
+        <option value="basico">Básico — R$ 150/mês</option>
+        <option value="pro">Pro — R$ 300/mês</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal('modalPlano')">Cancelar</button>
+      <button class="btn-save" onclick="salvarPlano()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GERENCIAR ACADEMIA (completo) -->
+<div class="modal-bg" id="modalEditAcad" style="align-items:flex-start;padding:20px;overflow-y:auto">
+  <div class="modal" style="max-width:620px;width:100%;margin:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div class="modal-title" id="editAcadTitle" style="margin:0">Gerenciar Academia</div>
+      <button onclick="fecharModal('modalEditAcad')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px">✕</button>
+    </div>
+
+    <input type="hidden" id="eaNome_id">
+
+    <!-- Dados da academia -->
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:8px">Dados da academia <span style="flex:1;height:1px;background:var(--border2);display:block"></span></div>
+    <div class="modal-field"><label>Nome *</label><input type="text" id="eaNome"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+      <div class="modal-field"><label>Cidade *</label><input type="text" id="eaCidade"></div>
+      <div class="modal-field"><label>Estado</label>
+        <select id="eaEstado">
+          <option>SP</option><option>RJ</option><option>MG</option><option>RS</option>
+          <option>PR</option><option>SC</option><option>BA</option><option>GO</option>
+          <option>DF</option><option>PE</option><option>CE</option><option>MA</option>
+          <option>MT</option><option>MS</option><option>ES</option><option>PA</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field" style="margin-bottom:14px"><label>Plano</label>
+      <select id="eaPlano">
+        <option value="piloto">Piloto (gratuito)</option>
+        <option value="basico">Básico — R$ 150/mês</option>
+        <option value="pro">Pro — R$ 300/mês</option>
+      </select>
+    </div>
+    <button onclick="salvarEditAcad()" class="btn-save" style="width:100%;padding:10px;margin-bottom:20px">Salvar dados da academia</button>
+
+    <!-- Usuários cadastrados -->
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:8px">Usuários cadastrados <span style="flex:1;height:1px;background:var(--border2);display:block"></span></div>
+    <div id="eaUsuariosList" style="margin-bottom:16px"></div>
+
+    <!-- Adicionar novo usuário -->
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:8px">Adicionar usuário <span style="flex:1;height:1px;background:var(--border2);display:block"></span></div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="filter-btn active" id="novoUserTipo-treinador" onclick="selectNovoUserTipo('treinador')">Treinador(a)</button>
+        <button class="filter-btn" id="novoUserTipo-gestor" onclick="selectNovoUserTipo('gestor')">Gestor(a)</button>
+        <button class="filter-btn" id="novoUserTipo-consultor" onclick="selectNovoUserTipo('consultor')">Consultor(a)</button>
+      </div>
+      <div class="modal-field"><label>Nome completo *</label><input type="text" id="nuNome" placeholder="Ex: Ana Costa"></div>
+      <div class="modal-field"><label>E-mail *</label><input type="email" id="nuEmail" placeholder="ana@academia.com.br"></div>
+      <div id="nuTipoWrap" class="modal-field"><label>Tipo</label>
+        <select id="nuTipo"><option value="interno">Interno</option><option value="externo">Externo / Personal</option></select>
+      </div>
+      <div class="modal-field"><label>Senha *</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="nuSenha" placeholder="Mínimo 8 caracteres" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+          <button onclick="gerarSenhaModal('nuSenha')" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🎲 Gerar</button>
+        </div>
+      </div>
+      <div id="nuResultado" style="display:none;background:var(--green-dim);border:1px solid var(--green-border);border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;line-height:1.8">
+        <div style="color:var(--green);font-weight:700;margin-bottom:4px">✅ Usuário criado!</div>
+        <div id="nuCredenciais" style="font-family:'DM Mono',monospace"></div>
+        <button onclick="copiarTexto(window._nuCredText||'')" style="margin-top:6px;padding:5px 10px;border-radius:6px;border:1px solid var(--green-border);background:transparent;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">📋 Copiar</button>
+      </div>
+      <button id="nuBtnSalvar" onclick="salvarNovoUsuario()" class="btn-save" style="width:100%;padding:10px">Criar usuário</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR TREINADOR -->
+<div class="modal-bg" id="modalAddTreinador">
+  <div class="modal">
+    <div class="modal-title">Adicionar Treinador</div>
+    <input type="hidden" id="atAcadId">
+    <div class="modal-field"><label>Academia</label><input type="text" id="atAcadNome" readonly style="color:var(--muted)"></div>
+    <div class="modal-field"><label>Nome completo *</label><input type="text" id="atNome" placeholder="Ex: Ana Costa"></div>
+    <div class="modal-field"><label>E-mail *</label><input type="email" id="atEmail" placeholder="ana@academia.com.br"></div>
+    <div class="modal-field"><label>Tipo</label>
+      <select id="atTipo">
+        <option value="interno">Interno</option>
+        <option value="externo">Externo / Personal</option>
+      </select>
+    </div>
+    <div class="modal-field"><label>Senha *</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="atSenha" placeholder="Mínimo 8 caracteres" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+        <button onclick="gerarSenhaModal('atSenha')" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🎲 Gerar</button>
+      </div>
+    </div>
+    <div id="atResultado" style="display:none;background:var(--green-dim);border:1px solid var(--green-border);border-radius:10px;padding:12px;margin-top:10px;font-size:12px;line-height:1.8">
+      <div style="color:var(--green);font-weight:700;margin-bottom:4px">✅ Treinador criado!</div>
+      <div id="atCredenciais"></div>
+      <button onclick="copiarTexto(document.getElementById('atCredenciais').innerText)" style="margin-top:8px;padding:6px 12px;border-radius:6px;border:1px solid var(--green-border);background:transparent;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif">📋 Copiar</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal('modalAddTreinador')">Fechar</button>
+      <button class="btn-save" id="atBtnSalvar" onclick="salvarNovoTreinador()">Criar treinador</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REDEFINIR SENHA -->
+<div class="modal-bg" id="modalSenha">
+  <div class="modal">
+    <div class="modal-title">Redefinir Senha</div>
+    <input type="hidden" id="rsSenhaEmail">
+    <div class="modal-field"><label>Usuário</label><input type="text" id="rsNomeDisplay" readonly style="color:var(--muted)"></div>
+    <div class="modal-field"><label>E-mail</label><input type="text" id="rsEmailDisplay" readonly style="color:var(--muted)"></div>
+    <div class="modal-field"><label>Nova senha *</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="rsSenha" placeholder="Mínimo 8 caracteres" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+        <button onclick="gerarSenhaModal('rsSenha')" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🎲 Gerar</button>
+      </div>
+    </div>
+    <div style="background:var(--yellow-dim);border:1px solid rgba(234,179,8,.25);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--yellow);margin-top:4px;line-height:1.5">
+      ⚠️ A nova senha será enviada via Supabase. O usuário precisará fazer logout e login novamente.
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal('modalSenha')">Cancelar</button>
+      <button class="btn-save" onclick="salvarNovaSenha()">Redefinir senha</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ── CREDENCIAIS ADMIN ─────────────────────────────────────────
+// ALTERE AQUI para definir usuário e senha do painel admin
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'acquacel2026';
+
+const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const SUPABASE_SERVICE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwdmVkaWhwZWppdm5rc3NyeWhjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTczMzY5MSwiZXhwIjoyMDk1MzA5NjkxfQ.9C-JwXbqyWC4cXHTNet20fOPfKI8rG0jDcZ_pQyLp7k';
+
+const PLANOS = {
+  piloto: { label:'Piloto', valor: 0 },
+  basico: { label:'Básico', valor: 150 },
+  pro:    { label:'Pro',    valor: 300 },
+};
+
+let sb = null;
+let allAcademias = [];
+let allTreinadores = [];
+let allGestores = [];
+let allConsultores = [];
+let allAlunos = [];
+let allPlanners = [];
+let filtroPlanoAtual = 'todos';
+let filtroTipoUserAtual = 'todos';
+let filtroAlunoStatusAtual = 'todos';
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function fazerLogin(){
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+
+  if(user === ADMIN_USER && pass === ADMIN_PASS){
+    sessionStorage.setItem('qg90_admin', '1');
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('appWrap').style.display = 'block';
+    errEl.style.display = 'none';
+    iniciarApp();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('loginPass').value = '';
+  }
+}
+
+function fazerLogout(){
+  sessionStorage.removeItem('qg90_admin');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('appWrap').style.display = 'none';
+}
+
+// Verificar sessão ao carregar
+window.addEventListener('DOMContentLoaded', () => {
+  if(sessionStorage.getItem('qg90_admin') === '1'){
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('appWrap').style.display = 'block';
+    iniciarApp();
+  }
+});
+
+// ── INIT ──────────────────────────────────────────────────────
+async function iniciarApp(){
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  await carregarTudo();
+}
+
+async function carregarTudo(){
+  try {
+    const [acadRes, treinRes, gestRes, consRes, alunoRes, plannerRes] = await Promise.all([
+      sb.from('academias').select('*').order('criado_em', {ascending:false}),
+      sb.from('treinadores').select('*').order('nome'),
+      sb.from('gestores').select('*').order('nome'),
+      sb.from('consultores').select('*').order('nome'),
+      sb.from('alunos').select('*').order('nome'),
+      sb.from('planners').select('id,academia_id,aluno_id,treinador_resp_id,status,criado_em').order('criado_em',{ascending:false}),
+    ]);
+
+    allAcademias   = acadRes.data   || [];
+    allTreinadores = treinRes.data  || [];
+    allGestores    = gestRes.data   || [];
+    allConsultores = consRes.data   || [];
+    allAlunos      = alunoRes.data  || [];
+    allPlanners    = plannerRes.data|| [];
+
+    renderKPIs();
+    renderAcademias();
+    renderUsuarios();
+    renderAlunos();
+    renderReceita();
+
+  } catch(err){
+    console.error('Erro ao carregar dados:', err);
+    showToast('Erro ao carregar dados do banco');
+  }
+}
+
+// ── KPIs ──────────────────────────────────────────────────────
+function renderKPIs(){
+  const receitaMensal = allAcademias.reduce((sum, a) => sum + (PLANOS[a.plano]?.valor || 0), 0);
+  const kpis = [
+    {icon:'🏢', val:allAcademias.length,   label:'Academias ativas', cls:'orange'},
+    {icon:'👤', val:allTreinadores.length,  label:'Treinadores',      cls:'blue'},
+    {icon:'🎓', val:allAlunos.length,       label:'Alunos cadastrados',cls:'green'},
+    {icon:'📋', val:allPlanners.length,     label:'Planners gerados', cls:'purple'},
+    {icon:'💰', val:`R$ ${receitaMensal}`,  label:'Receita mensal',   cls:'yellow'},
+  ];
+
+  document.getElementById('kpiRow').innerHTML = kpis.map(k=>`
+    <div class="kpi ${k.cls}">
+      <div class="kpi-icon">${k.icon}</div>
+      <div class="kpi-val">${k.val}</div>
+      <div class="kpi-label">${k.label}</div>
+    </div>`).join('');
+}
+
+// ── ACADEMIAS ─────────────────────────────────────────────────
+function renderAcademias(){
+  const search = (document.getElementById('searchAcad')?.value||'').toLowerCase();
+  const filtered = allAcademias.filter(a => {
+    const matchSearch = !search || a.nome.toLowerCase().includes(search) || (a.cidade||'').toLowerCase().includes(search);
+    const matchPlano = filtroPlanoAtual === 'todos' || a.plano === filtroPlanoAtual;
+    return matchSearch && matchPlano;
+  });
+
+  const tbody = document.getElementById('tbAcademias');
+  if(!filtered.length){ tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma academia encontrada</td></tr>'; return; }
+
+  tbody.innerHTML = filtered.map(a => {
+    const treinadores = allTreinadores.filter(t => t.academia_id === a.id);
+    const alunos = allAlunos.filter(al => al.academia_id === a.id);
+    const planners = allPlanners.filter(p => p.academia_id === a.id);
+    const plano = PLANOS[a.plano] || {label:a.plano, valor:0};
+    const data = new Date(a.criado_em).toLocaleDateString('pt-BR');
+
+    return `
+    <tr>
+      <td><div style="font-weight:600">${a.nome}</div></td>
+      <td style="color:var(--muted)">${a.cidade||'—'}${a.estado?' / '+a.estado:''}</td>
+      <td><span class="badge ${a.plano||'piloto'}">${plano.label}</span></td>
+      <td style="font-family:'DM Mono',monospace">${treinadores.length}</td>
+      <td style="font-family:'DM Mono',monospace">${alunos.length}</td>
+      <td style="font-family:'DM Mono',monospace">${planners.length}</td>
+      <td><span class="badge ativo">Ativa</span></td>
+      <td style="color:var(--muted);font-size:11px">${data}</td>
+      <td>
+        <button class="btn-action" onclick="abrirModalPlano('${a.id}','${a.nome}','${a.plano||'piloto'}')">Plano</button>
+        <button class="btn-action" onclick="abrirModalEditAcad('${a.id}','${a.nome}','${a.cidade||''}','${a.estado||'SP'}')">Editar</button>
+        <button class="btn-action" onclick="abrirModalModulos('${a.id}','${a.nome}',${JSON.stringify(a.modulos||[])})">🔧 Módulos</button>
+        <button class="btn-action" onclick="verDetalhesAcademia('${a.id}')">Ver</button>
+      </td>
+    </tr>
+    <tr class="detail-row" id="detail-${a.id}">
+      <td colspan="9">
+        <div class="detail-inner">
+          <div class="mini-stats">
+            <div class="mini-stat">Treinadores: <strong>${treinadores.map(t=>t.nome).join(', ')||'—'}</strong></div>
+          </div>
+          <div class="mini-stats">
+            <div class="mini-stat">Receita mensal: <strong style="color:var(--green)">R$ ${plano.valor}/mês</strong></div>
+            <div class="mini-stat">Academia ID: <strong style="font-family:'DM Mono',monospace;font-size:11px">${a.id}</strong></div>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function verDetalhesAcademia(id){
+  const row = document.getElementById('detail-'+id);
+  if(row) row.classList.toggle('open');
+}
+
+function filtrarAcademias(){ renderAcademias(); }
+
+function filtroPlano(p, btn){
+  filtroPlanoAtual = p;
+  document.querySelectorAll('#panel-academias .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAcademias();
+}
+
+// ── USUÁRIOS ──────────────────────────────────────────────────
+function renderUsuarios(){
+  const search = (document.getElementById('searchUser')?.value||'').toLowerCase();
+
+  // Combinar treinadores e gestores sem duplicar
+  const todos = [];
+  allTreinadores.forEach(t => {
+    const acad = allAcademias.find(a=>a.id===t.academia_id);
+    todos.push({...t, perfil:'treinador', acadNome:acad?.nome||'—'});
+  });
+  // Adicionar gestores que não são treinadores
+  allGestores.forEach(g => {
+    const jaExiste = todos.find(t=>t.user_id===g.user_id&&t.academia_id===g.academia_id&&t.perfil==='treinador');
+    if(!jaExiste){
+      const acad = allAcademias.find(a=>a.id===g.academia_id);
+      todos.push({...g, perfil:'gestor', tipo:'—', acadNome:acad?.nome||'—'});
+    } else {
+      jaExiste.temGestor = true;
+    }
+  });
+
+  const filtered = todos.filter(u => {
+    const matchSearch = !search || (u.nome||'').toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search) || u.acadNome.toLowerCase().includes(search);
+    const matchTipo = filtroTipoUserAtual === 'todos' || u.perfil === filtroTipoUserAtual;
+    return matchSearch && matchTipo;
+  });
+
+  const tbody = document.getElementById('tbUsuarios');
+  if(!filtered.length){ tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Nenhum usuário encontrado</td></tr>'; return; }
+
+  tbody.innerHTML = filtered.map(u => `
+    <tr>
+      <td><div style="font-weight:600">${u.nome||'—'}</div></td>
+      <td style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace">${u.email||'—'}</td>
+      <td style="font-size:12px">${u.acadNome}</td>
+      <td>
+        <span class="badge treinador" style="margin-right:4px">Treinador</span>
+        ${u.temGestor||u.perfil==='gestor'?'<span class="badge gestor">Gestor</span>':''}
+      </td>
+      <td><span class="badge ${u.tipo||'interno'}">${u.tipo||'—'}</span></td>
+      <td>
+        <button class="btn-action" onclick="copiarEmail('${u.email}')">Copiar e-mail</button>
+        <button class="btn-action" onclick="abrirModalSenha('${u.nome}','${u.email}')">🔑 Senha</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filtrarUsuarios(){ renderUsuarios(); }
+
+function filtroTipoUser(t, btn){
+  filtroTipoUserAtual = t;
+  document.querySelectorAll('#panel-usuarios .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderUsuarios();
+}
+
+// ── ALUNOS ────────────────────────────────────────────────────
+function renderAlunos(){
+  const search = (document.getElementById('searchAluno')?.value||'').toLowerCase();
+  const filtered = allAlunos.filter(al => {
+    const matchSearch = !search || (al.nome||'').toLowerCase().includes(search) || (al.matricula||'').includes(search);
+    const matchStatus = filtroAlunoStatusAtual === 'todos' || (filtroAlunoStatusAtual==='ativo'?al.ativo:!al.ativo);
+    return matchSearch && matchStatus;
+  });
+
+  const tbody = document.getElementById('tbAlunos');
+  if(!filtered.length){ tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Nenhum aluno encontrado</td></tr>'; return; }
+
+  tbody.innerHTML = filtered.map(al => {
+    const acad = allAcademias.find(a=>a.id===al.academia_id);
+    const planners = allPlanners.filter(p=>p.aluno_id===al.id);
+    // Buscar treinador responsável do último planner
+    const ultimoPlanner = planners[0];
+    const treinador = ultimoPlanner ? allTreinadores.find(t=>t.id===ultimoPlanner.treinador_resp_id) : null;
+
+    return `
+    <tr>
+      <td><div style="font-weight:600">${al.nome||'—'}</div></td>
+      <td style="font-family:'DM Mono',monospace;color:var(--muted)">${al.matricula||'—'}</td>
+      <td style="color:var(--muted)">${al.idade?al.idade+' anos':'—'}</td>
+      <td style="font-size:12px">${acad?.nome||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${treinador?.nome||'—'}</td>
+      <td style="font-family:'DM Mono',monospace">${planners.length}</td>
+      <td><span class="badge ${al.ativo?'ativo':'inativo'}">${al.ativo?'Ativo':'Inativo'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarAlunos(){ renderAlunos(); }
+
+function filtroAlunoStatus(s, btn){
+  filtroAlunoStatusAtual = s;
+  document.querySelectorAll('#panel-alunos .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAlunos();
+}
+
+// ── RECEITA ───────────────────────────────────────────────────
+function renderReceita(){
+  const por_plano = {piloto:[], basico:[], pro:[]};
+  allAcademias.forEach(a => {
+    const p = a.plano || 'piloto';
+    if(por_plano[p]) por_plano[p].push(a);
+  });
+
+  const totalMensal = allAcademias.reduce((s,a)=>s+(PLANOS[a.plano]?.valor||0),0);
+  const totalAnual = totalMensal * 12;
+
+  document.getElementById('receitaCard').innerHTML = `
+    <div class="receita-row">
+      <div><span class="badge piloto">Piloto</span> — ${por_plano.piloto.length} academia(s)</div>
+      <div style="color:var(--muted)">R$ 0/mês</div>
+    </div>
+    <div class="receita-row">
+      <div><span class="badge basico">Básico</span> — ${por_plano.basico.length} academia(s) × R$ 150</div>
+      <div style="color:var(--green);font-weight:600">R$ ${por_plano.basico.length * 150}/mês</div>
+    </div>
+    <div class="receita-row">
+      <div><span class="badge pro">Pro</span> — ${por_plano.pro.length} academia(s) × R$ 300</div>
+      <div style="color:var(--green);font-weight:600">R$ ${por_plano.pro.length * 300}/mês</div>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Receita mensal total</div>
+      <div class="receita-total">R$ ${totalMensal.toLocaleString('pt-BR')}/mês</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Projeção anual: <strong style="color:var(--text)">R$ ${totalAnual.toLocaleString('pt-BR')}</strong></div>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:var(--card2);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6">
+      💡 <strong style="color:var(--text)">Custo da plataforma:</strong> R$ 0/mês (Supabase free + GitHub Pages free)<br>
+      Break-even: com 1 academia Básico o custo já está coberto.<br>
+      Migrar para Supabase Pro (R$140/mês) quando atingir 3+ academias pagantes.
+    </div>`;
+}
+
+// ── MODAIS ────────────────────────────────────────────────────
+function abrirModalNovaAcademia(){
+  document.getElementById('modalAcad').classList.add('open');
+}
+
+function abrirModalPlano(id, nome, planoAtual){
+  document.getElementById('mpAcadId').value = id;
+  document.getElementById('mpAcadNome').value = nome;
+  document.getElementById('mpPlano').value = planoAtual;
+  document.getElementById('modalPlano').classList.add('open');
+}
+
+function fecharModal(id){
+  document.getElementById(id).classList.remove('open');
+}
+
+async function salvarNovaAcademia(){
+  const nome = document.getElementById('maNome').value.trim();
+  const cidade = document.getElementById('maCidade').value.trim();
+  const estado = document.getElementById('maEstado').value;
+  const plano = document.getElementById('maPlano').value;
+
+  if(!nome||!cidade){ showToast('Preencha nome e cidade'); return; }
+
+  const {error} = await sb.from('academias').insert([{
+    nome, cidade, estado, plano,
+    modulos: ['diario','carteira','experiencias','revisao']
+  }]);
+  if(error){ showToast('Erro: '+error.message); return; }
+
+  showToast('✅ Academia criada!');
+  fecharModal('modalAcad');
+  await carregarTudo();
+}
+
+async function salvarPlano(){
+  const id = document.getElementById('mpAcadId').value;
+  const plano = document.getElementById('mpPlano').value;
+
+  const {error} = await sb.from('academias').update({plano}).eq('id',id);
+  if(error){ showToast('Erro: '+error.message); return; }
+
+  showToast('✅ Plano atualizado!');
+  fecharModal('modalPlano');
+  await carregarTudo();
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── GERENCIAR ACADEMIA (completo) ─────────────────────────────
+let editAcadIdAtual = null;
+let novoUserTipoAtual = 'treinador';
+
+function abrirModalEditAcad(id, nome, cidade, estado){
+  editAcadIdAtual = id;
+  const acad = allAcademias.find(a=>a.id===id);
+  document.getElementById('eaNome_id').value = id;
+  document.getElementById('eaNome').value = nome;
+  document.getElementById('eaCidade').value = cidade;
+  document.getElementById('eaEstado').value = estado||'SP';
+  document.getElementById('eaPlano').value = acad?.plano||'piloto';
+  document.getElementById('editAcadTitle').textContent = nome;
+  // Reset form novo usuário
+  ['nuNome','nuEmail','nuSenha'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('nuResultado').style.display='none';
+  document.getElementById('nuBtnSalvar').disabled=false;
+  document.getElementById('nuBtnSalvar').textContent='Criar usuário';
+  document.getElementById('nuBtnSalvar').onclick=salvarNovoUsuario;
+  novoUserTipoAtual='treinador';
+  selectNovoUserTipo('treinador');
+  renderUsuariosAcademia(id);
+  document.getElementById('modalEditAcad').classList.add('open');
+}
+
+function renderUsuariosAcademia(acadId){
+  const treinadores = allTreinadores.filter(t=>t.academia_id===acadId);
+  const gestores    = allGestores.filter(g=>g.academia_id===acadId);
+  const consultores = allConsultores.filter(c=>c.academia_id===acadId);
+  const todos = [];
+
+  treinadores.forEach(t=>{
+    const isGestor = gestores.some(g=>g.user_id===t.user_id);
+    todos.push({...t, perfil:'Treinador(a)'+(isGestor?' + Gestor(a)':''), cor:'var(--primary)'});
+  });
+  gestores.forEach(g=>{
+    if(!treinadores.some(t=>t.user_id===g.user_id)){
+      todos.push({...g, perfil:'Gestor(a)', cor:'var(--blue)'});
+    }
+  });
+  consultores.forEach(c=>{
+    todos.push({...c, perfil:'Consultor(a) de Vendas', cor:'var(--purple)'});
+  });
+
+  const el = document.getElementById('eaUsuariosList');
+  if(!todos.length){
+    el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:10px 0">Nenhum usuário cadastrado ainda.</div>';
+    return;
+  }
+  el.innerHTML = todos.map(u=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${u.nome||'—'}</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">${u.email||'—'}</div>
+        <div style="font-size:10px;color:${u.cor};margin-top:2px">${u.perfil}${u.tipo?' · '+u.tipo:''}</div>
+      </div>
+      <button onclick="abrirModalSenha('${u.nome}','${u.email}')" style="padding:5px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🔑 Senha</button>
+    </div>`).join('');
+}
+
+function selectNovoUserTipo(tipo){
+  novoUserTipoAtual = tipo;
+  ['treinador','gestor','consultor'].forEach(t=>{
+    const btn=document.getElementById('novoUserTipo-'+t);
+    if(btn) btn.classList.toggle('active',t===tipo);
+  });
+  // Campo "Tipo" só aparece para treinador
+  const tipoWrap=document.getElementById('nuTipoWrap');
+  if(tipoWrap) tipoWrap.style.display=tipo==='treinador'?'flex':'none';
+}
+
+async function salvarEditAcad(){
+  const id=document.getElementById('eaNome_id').value;
+  const nome=document.getElementById('eaNome').value.trim();
+  const cidade=document.getElementById('eaCidade').value.trim();
+  const estado=document.getElementById('eaEstado').value;
+  const plano=document.getElementById('eaPlano').value;
+  if(!nome||!cidade){showToast('Preencha nome e cidade');return;}
+  const {error}=await sb.from('academias').update({nome,cidade,estado,plano}).eq('id',id);
+  if(error){showToast('Erro: '+error.message);return;}
+  showToast('✅ Academia atualizada!');
+  await carregarTudo();
+}
+
+async function salvarNovoUsuario(){
+  const acadId=editAcadIdAtual;
+  const nome=document.getElementById('nuNome').value.trim();
+  const email=document.getElementById('nuEmail').value.trim();
+  const senha=document.getElementById('nuSenha').value.trim();
+  const tipo=document.getElementById('nuTipo')?.value||'interno';
+  const perfil=novoUserTipoAtual;
+  if(!nome){showToast('Preencha o nome');return;}
+  if(!email){showToast('Preencha o e-mail');return;}
+  if(!senha||senha.length<8){showToast('Senha mínimo 8 caracteres');return;}
+  const btn=document.getElementById('nuBtnSalvar');
+  btn.disabled=true; btn.textContent='Criando...';
+  try {
+    const sbAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE);
+    const {data:auth,error:authErr}=await sbAdmin.auth.admin.createUser({
+      email, password:senha,
+      email_confirm: true,
+      user_metadata:{nome, role:perfil, academia_id:acadId}
+    });
+    if(authErr) throw new Error(authErr.message);
+    const userId=auth.user?.id;
+    if(userId){
+      if(perfil==='treinador') await sb.from('treinadores').insert([{user_id:userId,academia_id:acadId,nome,email,tipo}]);
+      if(perfil==='gestor')    await sb.from('gestores').insert([{user_id:userId,academia_id:acadId,nome,email}]);
+      if(perfil==='consultor') await sb.from('consultores').insert([{user_id:userId,academia_id:acadId,nome,email,ativo:true}]);
+    }
+    const perfilLabel = perfil==='treinador'?'Treinador(a)':perfil==='gestor'?'Gestor(a)':'Consultor(a)';
+    const credText=`${perfilLabel}: ${nome}\nE-mail: ${email}\nSenha: ${senha}\nURL: https://seu-dominio.acquacel.com.br/retencao/${perfil==='consultor'?'painel_vendas.html':''}`;
+    window._nuCredText=credText;
+    document.getElementById('nuCredenciais').innerHTML=credText.replace(/\n/g,'<br>');
+    document.getElementById('nuResultado').style.display='block';
+    btn.textContent='+ Criar outro ' + perfilLabel;
+    btn.disabled=false;
+    btn.onclick=()=>{
+      ['nuNome','nuEmail','nuSenha'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.getElementById('nuResultado').style.display='none';
+      btn.textContent='Criar usuário'; btn.onclick=salvarNovoUsuario;
+    };
+    await carregarTudo();
+    renderUsuariosAcademia(acadId);
+    showToast('✅ Usuário criado!');
+  } catch(err){
+    showToast('Erro: '+err.message);
+    btn.disabled=false; btn.textContent='Criar usuário';
+  }
+}
+
+// Botão + Treinador redireciona para Editar completo
+function abrirModalAddTreinador(acadId, acadNome){
+  const acad=allAcademias.find(a=>a.id===acadId);
+  abrirModalEditAcad(acadId,acadNome,acad?.cidade||'',acad?.estado||'SP');
+}
+
+// ── REDEFINIR SENHA ───────────────────────────────────────────
+function abrirModalSenha(nome, email){
+  document.getElementById('rsNomeDisplay').value = nome;
+  document.getElementById('rsEmailDisplay').value = email;
+  document.getElementById('rsSenhaEmail').value = email;
+  document.getElementById('rsSenha').value = '';
+  document.getElementById('modalSenha').classList.add('open');
+}
+
+async function salvarNovaSenha(){
+  const email = document.getElementById('rsSenhaEmail').value;
+  const novaSenha = document.getElementById('rsSenha').value.trim();
+
+  if(!novaSenha||novaSenha.length<8){ showToast('Senha mínimo 8 caracteres'); return; }
+
+  try {
+    // Usar cliente admin com service role key
+    const sbAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE);
+    
+    // Buscar UID pelo email
+    const {data: users} = await sbAdmin.auth.admin.listUsers();
+    const user = users?.users?.find(u => u.email === email);
+    
+    if(!user){ showToast('Usuário não encontrado'); return; }
+    
+    const {error} = await sbAdmin.auth.admin.updateUserById(user.id, {password: novaSenha});
+    
+    if(error) throw new Error(error.message);
+
+    showToast('✅ Senha redefinida com sucesso!');
+    fecharModal('modalSenha');
+
+  } catch(err){
+    console.error(err);
+    showToast('Erro: '+err.message);
+  }
+}
+
+function gerarSenhaModal(inputId){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+  let pw = '';
+  for(let i=0;i<10;i++) pw += chars[Math.floor(Math.random()*chars.length)];
+  const el = document.getElementById(inputId);
+  if(el) el.value = pw;
+}
+
+function copiarTexto(texto){
+  navigator.clipboard.writeText(texto);
+  showToast('✅ Copiado!');
+}
+
+// ── MÓDULOS ───────────────────────────────────────────────────
+const MODULOS_CONFIG = [
+  { key:'diario',      label:'📝 Diário do Treinador',     desc:'Lançamento diário de indicadores',           fase:1 },
+  { key:'carteira',    label:'👥 Carteira de Alunos',       desc:'Upload CSV + cadastro manual de alunos',     fase:1 },
+  { key:'experiencias',label:'⚡ Experiências',             desc:'Cadastro e acompanhamento de leads',         fase:1 },
+  { key:'revisao',     label:'📋 Revisão de Treino',        desc:'Registro de revisões e tarefas pendentes',   fase:1 },
+  { key:'planner',     label:'🎯 Planner Digital',          desc:'Consultoria com área foco, metas e agenda',  fase:2 },
+  { key:'app_aluno',   label:'📱 App do Aluno (QR Code)',   desc:'Desafio 21 dias, missões e NPS',             fase:2 },
+  { key:'dashboard',   label:'📊 Dashboard do Gestor',      desc:'KPIs completos, ranking e indicadores',      fase:3 },
+];
+
+const FASES = {
+  1: ['diario','carteira','experiencias','revisao'],
+  2: ['diario','carteira','experiencias','revisao','planner','app_aluno'],
+  3: ['diario','carteira','experiencias','revisao','planner','app_aluno','dashboard'],
+};
+
+let mmModulosAtual = [];
+
+function abrirModalModulos(id, nome, modulos){
+  document.getElementById('mmAcadId').value = id;
+  document.getElementById('mmAcadNome').value = nome;
+  mmModulosAtual = Array.isArray(modulos) ? [...modulos] : [];
+  renderModulosList();
+  document.getElementById('modalModulos').classList.add('open');
+}
+
+function renderModulosList(){
+  const el = document.getElementById('mmModulosList');
+  el.innerHTML = MODULOS_CONFIG.map(m => {
+    const ativo = mmModulosAtual.includes(m.key);
+    const faseColors = {1:'var(--yellow)',2:'var(--blue)',3:'var(--green)'};
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:${ativo?'rgba(27,79,216,.08)':'var(--card2)'};border:1px solid ${ativo?'var(--primary-border)':'var(--border)'};border-radius:8px;cursor:pointer;transition:all .15s" onclick="toggleModulo('${m.key}')">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:${ativo?'var(--text)':'var(--muted)'}">${m.label}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${m.desc} · <span style="color:${faseColors[m.fase]}">Fase ${m.fase}</span></div>
+        </div>
+        <div style="width:36px;height:20px;border-radius:10px;background:${ativo?'var(--primary)':'var(--dim)'};position:relative;transition:background .2s;flex-shrink:0">
+          <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;${ativo?'right:2px':'left:2px'};transition:all .2s"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleModulo(key){
+  if(mmModulosAtual.includes(key)){
+    mmModulosAtual = mmModulosAtual.filter(m=>m!==key);
+  } else {
+    mmModulosAtual.push(key);
+  }
+  renderModulosList();
+}
+
+function aplicarFase(fase){
+  mmModulosAtual = [...FASES[fase]];
+  renderModulosList();
+  showToast(`Fase ${fase} aplicada — clique em Salvar para confirmar`);
+}
+
+async function salvarModulos(){
+  const id = document.getElementById('mmAcadId').value;
+  const { error } = await sb.from('academias').update({ modulos: mmModulosAtual }).eq('id', id);
+  if(error){ showToast('Erro: '+error.message); return; }
+  showToast('✅ Módulos salvos!');
+  fecharModal('modalModulos');
+  await carregarTudo();
+}
+
+// ── MÓDULOS ───────────────────────────────────────────────────
+let naTreinadoresCount = 0;
+let naTreinadores = [];
+let naCredenciaisTexto = '';
+
+function naAddTreinador(){
+  naTreinadoresCount++;
+  const idx = naTreinadoresCount;
+  naTreinadores.push({id:idx, nome:'', email:'', senha:'', tipo:'interno'});
+
+  const div = document.createElement('div');
+  div.id = 'na-treinador-'+idx;
+  div.style.cssText = 'background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;position:relative';
+  div.innerHTML = `
+    <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Treinador(a) ${idx}</div>
+    <button onclick="naRemoveTreinador(${idx})" style="position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px">✕</button>
+    <div class="modal-field"><label>Nome completo *</label><input type="text" placeholder="Ex: Ana Costa" oninput="naUpdateTreinador(${idx},'nome',this.value)"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="modal-field"><label>E-mail *</label><input type="email" placeholder="ana@academia.com.br" oninput="naUpdateTreinador(${idx},'email',this.value)"></div>
+      <div class="modal-field"><label>Tipo</label>
+        <select onchange="naUpdateTreinador(${idx},'tipo',this.value)">
+          <option value="interno">Interno</option>
+          <option value="externo">Externo</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field"><label>Senha *</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="na-senha-${idx}" placeholder="Mínimo 8 caracteres" oninput="naUpdateTreinador(${idx},'senha',this.value)" style="flex:1;background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Barlow',sans-serif">
+        <button onclick="gerarSenhaAdmin('na-senha-${idx}',${idx})" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap">🎲 Gerar</button>
+      </div>
+    </div>`;
+  document.getElementById('naTreinadoresContainer').appendChild(div);
+}
+
+function naRemoveTreinador(idx){
+  const el = document.getElementById('na-treinador-'+idx);
+  if(el) el.remove();
+  naTreinadores = naTreinadores.filter(t=>t.id!==idx);
+}
+
+function naUpdateTreinador(idx, field, value){
+  const t = naTreinadores.find(t=>t.id===idx);
+  if(t) t[field] = value;
+}
+
+function gerarSenhaAdmin(inputId, treinadorIdx){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+  let pw = '';
+  for(let i=0;i<10;i++) pw += chars[Math.floor(Math.random()*chars.length)];
+  const input = document.getElementById(inputId);
+  if(input){
+    input.value = pw;
+    if(treinadorIdx !== undefined) naUpdateTreinador(treinadorIdx, 'senha', pw);
+  }
+}
+
+function naSetStep(id, status){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const icons = {loading:'🔄', done:'✅', error:'❌'};
+  const labels = {
+    naStep1:{loading:'Criando academia...',done:'Academia criada!',error:'Erro ao criar academia'},
+    naStep2:{loading:'Criando gestor...',done:'Gestor criado!',error:'Erro ao criar gestor'},
+    naStep3:{loading:'Criando treinadores...',done:'Treinadores criados!',error:'Erro nos treinadores'},
+  };
+  el.textContent = (icons[status]||'⏳') + ' ' + (labels[id]?.[status]||'');
+  el.style.background = status==='done'?'var(--green-dim)':status==='error'?'var(--red-dim)':'rgba(96,165,250,.1)';
+  el.style.color = status==='done'?'var(--green)':status==='error'?'var(--red)':'var(--blue)';
+}
+
+async function naCadastrar(){
+  const nome = document.getElementById('naNome').value.trim();
+  const cidade = document.getElementById('naCidade').value.trim();
+  const estado = document.getElementById('naEstado').value;
+  const plano = document.getElementById('naPlano').value;
+  const gestorNome = document.getElementById('naGestorNome').value.trim();
+  const gestorEmail = document.getElementById('naGestorEmail').value.trim();
+  const gestorSenha = document.getElementById('naGestorSenha').value.trim();
+
+  if(!nome){ showToast('Preencha o nome da academia'); return; }
+  if(!cidade){ showToast('Preencha a cidade'); return; }
+  if(!gestorNome){ showToast('Preencha o nome do gestor'); return; }
+  if(!gestorEmail){ showToast('Preencha o e-mail do gestor'); return; }
+  if(!gestorSenha || gestorSenha.length < 8){ showToast('Senha do gestor: mínimo 8 caracteres'); return; }
+
+  for(const t of naTreinadores){
+    if(!t.nome){ showToast(`Preencha o nome do treinador ${t.id}`); return; }
+    if(!t.email){ showToast(`Preencha o e-mail do treinador ${t.id}`); return; }
+    if(!t.senha || t.senha.length < 8){ showToast(`Senha do treinador ${t.nome}: mínimo 8 caracteres`); return; }
+  }
+
+  // UI
+  document.getElementById('naBtnCadastrar').disabled = true;
+  document.getElementById('naProgress').style.display = 'block';
+  document.getElementById('naResultado').style.display = 'none';
+
+  const credentials = [];
+  let academiaId = null;
+
+  try {
+    // 1. Academia
+    naSetStep('naStep1','loading');
+    const {data:acad, error:acadErr} = await sb.from('academias').insert([{
+      nome, cidade, estado, plano,
+      modulos: ['diario','carteira','experiencias','revisao']
+    }]).select().single();
+    if(acadErr) throw new Error('Academia: '+acadErr.message);
+    academiaId = acad.id;
+    naSetStep('naStep1','done');
+
+    // 2. Gestor
+    naSetStep('naStep2','loading');
+    const sbAdmin2 = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE);
+    const {data:gAuth, error:gErr} = await sbAdmin2.auth.admin.createUser({
+      email: gestorEmail, password: gestorSenha,
+      email_confirm: true,
+      user_metadata:{nome:gestorNome, role:'gestor', academia_id:academiaId}
+    });
+    if(gErr) throw new Error('Gestor: '+gErr.message);
+    if(gAuth.user?.id){
+      await sb.from('gestores').insert([{user_id:gAuth.user.id, academia_id:academiaId, nome:gestorNome, email:gestorEmail}]);
+    }
+    credentials.push({tipo:'Gestor', nome:gestorNome, email:gestorEmail, senha:gestorSenha});
+    naSetStep('naStep2','done');
+
+    // 3. Treinadores
+    naSetStep('naStep3','loading');
+    for(const t of naTreinadores){
+      const sbAdmin3 = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE);
+      const {data:tAuth, error:tErr} = await sbAdmin3.auth.admin.createUser({
+        email:t.email, password:t.senha,
+        email_confirm: true,
+        user_metadata:{nome:t.nome, role:'treinador', academia_id:academiaId}
+      });
+      if(tErr){ console.warn('Treinador err:', tErr.message); continue; }
+      if(tAuth.user?.id){
+        await sb.from('treinadores').insert([{user_id:tAuth.user.id, academia_id:academiaId, nome:t.nome, email:t.email, tipo:t.tipo}]);
+      }
+      credentials.push({tipo:'Treinador', nome:t.nome, email:t.email, senha:t.senha});
+    }
+    naSetStep('naStep3','done');
+
+    // Confirmar e-mails
+    await sb.rpc || null;
+
+    // Resultado
+    naCredenciaisTexto = `🏋️ ${nome}\n📍 ${cidade} / ${estado}\n\n🔗 URL: https://seu-dominio.acquacel.com.br/retencao/\n\n`;
+    naCredenciaisTexto += credentials.map(c=>`${c.tipo==='Gestor'?'📊':'🏃'} ${c.tipo}: ${c.nome}\n   E-mail: ${c.email}\n   Senha: ${c.senha}`).join('\n\n');
+
+    document.getElementById('naCredenciais').innerHTML = credentials.map(c=>`
+      <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div style="color:${c.tipo==='Gestor'?'var(--primary)':'var(--blue)'};font-weight:600;margin-bottom:4px">${c.tipo==='Gestor'?'📊':'🏃'} ${c.tipo} — ${c.nome}</div>
+        <div>E-mail: <span style="color:var(--text)">${c.email}</span></div>
+        <div>Senha: <span style="color:var(--primary)">${c.senha}</span></div>
+      </div>`).join('');
+
+    document.getElementById('naResultado').style.display = 'block';
+    document.getElementById('naBtnCadastrar').style.display = 'none';
+    await carregarTudo();
+    showToast('✅ Academia cadastrada com sucesso!');
+
+  } catch(err){
+    console.error(err);
+    showToast('Erro: '+err.message);
+    document.getElementById('naBtnCadastrar').disabled = false;
+  }
+}
+
+function copiarCredenciais(){
+  navigator.clipboard.writeText(naCredenciaisTexto);
+  showToast('✅ Credenciais copiadas!');
+}
+
+function novoCadastroAdmin(){
+  // Resetar formulário
+  ['naNome','naCidade','naGestorNome','naGestorEmail','naGestorSenha'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('naTreinadoresContainer').innerHTML = '';
+  document.getElementById('naProgress').style.display = 'none';
+  document.getElementById('naResultado').style.display = 'none';
+  document.getElementById('naBtnCadastrar').style.display = 'block';
+  document.getElementById('naBtnCadastrar').disabled = false;
+  naTreinadoresCount = 0;
+  naTreinadores = [];
+  naCredenciaisTexto = '';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function copiarEmail(email){
+  navigator.clipboard.writeText(email);
+  showToast('✅ E-mail copiado!');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>

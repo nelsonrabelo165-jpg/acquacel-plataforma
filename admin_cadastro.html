@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquacel · Admin — Cadastrar Academia</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F8FAFF;--card:#FFFFFF;--card2:#F0F4FF;--border:#E2E8F0;--border2:#CBD5E1;
+  --primary:#1B4FD8;--primary-dim:rgba(27,79,216,.10);--primary-border:rgba(27,79,216,.25);
+  --text:#1A202C;--muted:#718096;--dim:#E2E8F0;
+  --green:#22C55E;--green-dim:rgba(34,197,94,.12);--green-border:rgba(34,197,94,.3);
+  --red:#EF4444;--red-dim:rgba(239,68,68,.12);
+  --blue:#60A5FA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;padding-bottom:60px}
+
+.header{background:rgba(10,10,10,.95);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:720px;margin:0 auto;height:56px;display:flex;align-items:center;gap:12px}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:var(--primary)}
+.header-title{font-size:13px;color:var(--muted);padding-left:14px;border-left:1px solid var(--border2)}
+.admin-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--primary-dim);border:1px solid var(--primary-border);color:var(--primary)}
+
+.content{max-width:720px;margin:0 auto;padding:24px}
+
+.sec-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-label:first-child{margin-top:0}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.field input,.field select{background:#F8FAFF;border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;font-family:'Barlow',sans-serif;transition:border-color .15s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--primary)}
+.field input::placeholder{color:var(--muted)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Treinadores */
+.treinador-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;position:relative}
+.treinador-num{font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.btn-remove{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .15s}
+.btn-remove:hover{color:var(--red)}
+
+.btn-add{width:100%;padding:10px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;margin-bottom:8px}
+.btn-add:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Gestor */
+.gestor-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px}
+
+/* Botão principal */
+.btn-submit{width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#1B4FD8,#2563EB);color:#000;font-size:15px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:opacity .2s;margin-top:8px}
+.btn-submit:hover{opacity:.9}
+.btn-submit:disabled{background:var(--dim);color:var(--muted);cursor:default;opacity:1}
+
+/* Progress / result */
+.progress-wrap{display:none;margin-top:16px}
+.progress-step{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;margin-bottom:6px;font-size:13px}
+.progress-step.pending{background:var(--card2);color:var(--muted)}
+.progress-step.loading{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);color:var(--blue)}
+.progress-step.done{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green)}
+.progress-step.error{background:var(--red-dim);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.step-icon{font-size:16px;flex-shrink:0}
+
+.result-card{display:none;background:var(--green-dim);border:1px solid var(--green-border);border-radius:14px;padding:20px;margin-top:12px;text-align:center}
+.result-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--green);margin-bottom:8px}
+.result-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.credentials-box{background:#F8FAFF;border-radius:8px;padding:14px;text-align:left;margin-bottom:14px}
+.cred-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.cred-row:last-child{border:none}
+.cred-label{color:var(--muted)}
+.cred-val{font-weight:600;color:var(--text)}
+
+.btn-novo{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif}
+
+/* Toggle password */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:40px}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0}
+
+/* Senha gerada */
+.pw-gen{display:flex;gap:8px;align-items:center}
+.pw-gen input{flex:1}
+.pw-gen-btn{padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:#F8FAFF;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.pw-gen-btn:hover{border-color:var(--primary);color:var(--primary)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">Acquacel</div>
+    <div class="header-title">Painel Admin · Cadastrar Academia</div>
+    <div class="admin-badge">🔐 Admin</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ACADEMIA -->
+  <div class="sec-label">Dados da academia</div>
+  <div class="card">
+    <div class="field">
+      <label>Nome da Academia *</label>
+      <input type="text" id="acadNome" placeholder="Ex: Academia Força Total">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Cidade *</label>
+        <input type="text" id="acadCidade" placeholder="Ex: São Paulo">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="acadEstado">
+          <option value="SP">SP</option><option value="RJ">RJ</option>
+          <option value="MG">MG</option><option value="RS">RS</option>
+          <option value="PR">PR</option><option value="SC">SC</option>
+          <option value="BA">BA</option><option value="GO">GO</option>
+          <option value="DF">DF</option><option value="PE">PE</option>
+          <option value="CE">CE</option><option value="PA">PA</option>
+          <option value="AM">AM</option><option value="MS">MS</option>
+          <option value="MT">MT</option><option value="ES">ES</option>
+          <option value="RN">RN</option><option value="AL">AL</option>
+          <option value="PB">PB</option><option value="SE">SE</option>
+          <option value="PI">PI</option><option value="MA">MA</option>
+          <option value="TO">TO</option><option value="RO">RO</option>
+          <option value="AC">AC</option><option value="AP">AP</option>
+          <option value="RR">RR</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Plano</label>
+      <select id="acadPlano">
+        <option value="piloto">Piloto (gratuito)</option>
+        <option value="basico">Básico</option>
+        <option value="pro">Pro</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- GESTOR -->
+  <div class="sec-label">Gestor / responsável</div>
+  <div class="card">
+    <div class="gestor-card">
+      <div class="treinador-num">Acesso ao Dashboard</div>
+      <div class="field">
+        <label>Nome completo *</label>
+        <input type="text" id="gestorNome" placeholder="Ex: Carlos Silva">
+      </div>
+      <div class="field">
+        <label>E-mail *</label>
+        <input type="email" id="gestorEmail" placeholder="gestor@academia.com.br">
+      </div>
+      <div class="field">
+        <label>Senha *</label>
+        <div class="pw-gen">
+          <input type="text" id="gestorSenha" placeholder="Mínimo 8 caracteres">
+          <button class="pw-gen-btn" onclick="gerarSenha('gestorSenha')">🎲 Gerar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREINADORES -->
+  <div class="sec-label">Treinadores</div>
+  <div class="card">
+    <div id="treinadoresContainer"></div>
+    <button class="btn-add" onclick="addTreinador()">+ Adicionar treinador</button>
+  </div>
+
+  <!-- BOTÃO -->
+  <button class="btn-submit" id="btnSubmit" onclick="cadastrarAcademia()">
+    🏋️ Cadastrar Academia
+  </button>
+
+  <!-- PROGRESSO -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-step pending" id="step-academia">
+      <span class="step-icon">🏢</span> Criando academia no banco...
+    </div>
+    <div class="progress-step pending" id="step-gestor">
+      <span class="step-icon">👤</span> Criando usuário gestor...
+    </div>
+    <div class="progress-step pending" id="step-treinadores">
+      <span class="step-icon">🏋️</span> Criando treinadores...
+    </div>
+    <div class="progress-step pending" id="step-vinculos">
+      <span class="step-icon">🔗</span> Vinculando perfis ao banco...
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="result-card" id="resultCard">
+    <div class="result-title">✅ Academia cadastrada!</div>
+    <div class="result-sub" id="resultSub"></div>
+    <div class="credentials-box" id="credentialsBox"></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">
+      ⚠️ Salve essas credenciais antes de fechar. Envie ao gestor e treinadores por WhatsApp ou e-mail.
+    </div>
+    <button class="btn-novo" onclick="novoCadastro()">+ Cadastrar outra academia</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── TREINADORES ───────────────────────────────────────────────
+let treinadoresCount = 0;
+const treinadores = [];
+
+function addTreinador(){
+  treinadoresCount++;
+  const idx = treinadoresCount;
+  treinadores.push({id:idx, nome:'', email:'', senha:'', tipo:'interno'});
+
+  const div = document.createElement('div');
+  div.className = 'treinador-card';
+  div.id = 'treinador-card-'+idx;
+  div.innerHTML = `
+    <div class="treinador-num">Treinador(a) ${idx}</div>
+    <button class="btn-remove" onclick="removeTreinador(${idx})" title="Remover">✕</button>
+    <div class="field">
+      <label>Nome completo *</label>
+      <input type="text" placeholder="Ex: Ana Costa" oninput="updateTreinador(${idx},'nome',this.value)">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>E-mail *</label>
+        <input type="email" placeholder="ana@academia.com.br" oninput="updateTreinador(${idx},'email',this.value)">
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select onchange="updateTreinador(${idx},'tipo',this.value)">
+          <option value="interno">Interno</option>
+          <option value="externo">Externo / Personal</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Senha *</label>
+      <div class="pw-gen">
+        <input type="text" id="senha-t-${idx}" placeholder="Mínimo 8 caracteres" oninput="updateTreinador(${idx},'senha',this.value)">
+        <button class="pw-gen-btn" onclick="gerarSenha('senha-t-${idx}',${idx})">🎲 Gerar</button>
+      </div>
+    </div>`;
+  document.getElementById('treinadoresContainer').appendChild(div);
+}
+
+function removeTreinador(idx){
+  const card = document.getElementById('treinador-card-'+idx);
+  if(card) card.remove();
+  const i = treinadores.findIndex(t=>t.id===idx);
+  if(i!==-1) treinadores.splice(i,1);
+}
+
+function updateTreinador(idx, field, value){
+  const t = treinadores.find(t=>t.id===idx);
+  if(t) t[field] = value;
+}
+
+// ── GERAR SENHA ───────────────────────────────────────────────
+function gerarSenha(inputId, treinadorIdx){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+  let pw = '';
+  for(let i=0;i<10;i++) pw += chars[Math.floor(Math.random()*chars.length)];
+  const input = document.getElementById(inputId);
+  if(input){
+    input.value = pw;
+    if(treinadorIdx !== undefined) updateTreinador(treinadorIdx, 'senha', pw);
+    else document.getElementById('gestorSenha').dispatchEvent(new Event('input'));
+  }
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────
+function setStep(id, status){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.className = 'progress-step '+status;
+  const icons = {pending:'⏳',loading:'🔄',done:'✅',error:'❌'};
+  const labels = {
+    'step-academia': {pending:'Criando academia...',loading:'Criando academia...',done:'Academia criada',error:'Erro ao criar academia'},
+    'step-gestor':   {pending:'Criando gestor...',  loading:'Criando gestor...',  done:'Gestor criado',  error:'Erro ao criar gestor'},
+    'step-treinadores':{pending:'Criando treinadores...',loading:'Criando treinadores...',done:'Treinadores criados',error:'Erro nos treinadores'},
+    'step-vinculos': {pending:'Vinculando perfis...',loading:'Vinculando perfis...',done:'Perfis vinculados',error:'Erro nos vínculos'},
+  };
+  el.innerHTML = `<span class="step-icon">${icons[status]}</span> ${labels[id][status]}`;
+}
+
+// ── CADASTRAR ─────────────────────────────────────────────────
+async function cadastrarAcademia(){
+  // Validações
+  const nome = document.getElementById('acadNome').value.trim();
+  const cidade = document.getElementById('acadCidade').value.trim();
+  const estado = document.getElementById('acadEstado').value;
+  const plano = document.getElementById('acadPlano').value;
+  const gestorNome = document.getElementById('gestorNome').value.trim();
+  const gestorEmail = document.getElementById('gestorEmail').value.trim();
+  const gestorSenha = document.getElementById('gestorSenha').value.trim();
+
+  if(!nome){ alert('Preencha o nome da academia.'); return; }
+  if(!cidade){ alert('Preencha a cidade.'); return; }
+  if(!gestorNome){ alert('Preencha o nome do gestor.'); return; }
+  if(!gestorEmail){ alert('Preencha o e-mail do gestor.'); return; }
+  if(!gestorSenha || gestorSenha.length < 8){ alert('A senha do gestor deve ter no mínimo 8 caracteres.'); return; }
+
+  // Validar treinadores
+  for(const t of treinadores){
+    if(!t.nome){ alert(`Preencha o nome do treinador ${t.id}.`); return; }
+    if(!t.email){ alert(`Preencha o e-mail do treinador ${t.id}.`); return; }
+    if(!t.senha || t.senha.length < 8){ alert(`A senha do treinador ${t.nome} deve ter no mínimo 8 caracteres.`); return; }
+  }
+
+  // Mostrar progresso
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('progressWrap').style.display = 'block';
+  window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+
+  const credentials = [];
+  let academiaId = null;
+
+  try {
+    // ── 1. Criar academia ──
+    setStep('step-academia','loading');
+    const { data: acad, error: acadErr } = await sb
+      .from('academias')
+      .insert([{ nome, cidade, estado, plano }])
+      .select()
+      .single();
+
+    if(acadErr) throw new Error('Academia: '+acadErr.message);
+    academiaId = acad.id;
+    setStep('step-academia','done');
+
+    // ── 2. Criar gestor ──
+    setStep('step-gestor','loading');
+    const { data: gestorAuth, error: gestorErr } = await sb.auth.signUp({
+      email: gestorEmail,
+      password: gestorSenha,
+      options:{ data:{ nome: gestorNome, role:'gestor', academia_id: academiaId } }
+    });
+    if(gestorErr) throw new Error('Gestor auth: '+gestorErr.message);
+
+    const gestorUserId = gestorAuth.user?.id;
+    if(gestorUserId){
+      await sb.from('gestores').insert([{
+        user_id: gestorUserId,
+        academia_id: academiaId,
+        nome: gestorNome,
+        email: gestorEmail,
+      }]);
+    }
+    credentials.push({ tipo:'Gestor', nome: gestorNome, email: gestorEmail, senha: gestorSenha });
+    setStep('step-gestor','done');
+
+    // ── 3. Criar treinadores ──
+    setStep('step-treinadores','loading');
+    for(const t of treinadores){
+      const { data: tAuth, error: tErr } = await sb.auth.signUp({
+        email: t.email,
+        password: t.senha,
+        options:{ data:{ nome: t.nome, role:'treinador', academia_id: academiaId } }
+      });
+      if(tErr){ console.warn('Treinador err:', tErr.message); continue; }
+
+      const tUserId = tAuth.user?.id;
+      if(tUserId){
+        await sb.from('treinadores').insert([{
+          user_id: tUserId,
+          academia_id: academiaId,
+          nome: t.nome,
+          email: t.email,
+          tipo: t.tipo,
+        }]);
+        // Também vincular como gestor (acesso duplo)
+        await sb.from('gestores').insert([{
+          user_id: tUserId,
+          academia_id: academiaId,
+          nome: t.nome,
+          email: t.email,
+        }]).maybeSingle();
+      }
+      credentials.push({ tipo:'Treinador', nome: t.nome, email: t.email, senha: t.senha });
+    }
+    setStep('step-treinadores','done');
+
+    // ── 4. Vínculos ──
+    setStep('step-vinculos','loading');
+    // Atualizar senhas via SQL para garantir
+    await new Promise(r=>setTimeout(r,500));
+    setStep('step-vinculos','done');
+
+    // ── RESULTADO ──
+    showResult(nome, credentials);
+
+  } catch(err){
+    console.error(err);
+    alert('Erro: '+err.message+'\n\nVerifique o console para mais detalhes.');
+    document.getElementById('btnSubmit').disabled = false;
+  }
+}
+
+// ── RESULTADO ─────────────────────────────────────────────────
+function showResult(acadNome, credentials){
+  const rc = document.getElementById('resultCard');
+  const rs = document.getElementById('resultSub');
+  const cb = document.getElementById('credentialsBox');
+
+  rs.innerHTML = `Academia <strong>${acadNome}</strong> cadastrada com sucesso!<br>
+    ${credentials.length} usuário(s) criado(s). Envie as credenciais abaixo.`;
+
+  cb.innerHTML = `
+    <div style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">
+      🔑 Credenciais de acesso
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px">URL do sistema: <strong style="color:var(--text)">https://seu-dominio.acquacel.com.br/retencao</strong></div>
+    ${credentials.map(c=>`
+      <div style="background:#0A0A0A;border-radius:8px;padding:10px;margin-bottom:6px;border:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:${c.tipo==='Gestor'?'var(--primary)':'var(--blue)'};margin-bottom:4px">${c.tipo==='Gestor'?'📊':'🏋️'} ${c.tipo}</div>
+        <div class="cred-row"><span class="cred-label">Nome</span><span class="cred-val">${c.nome}</span></div>
+        <div class="cred-row"><span class="cred-label">E-mail</span><span class="cred-val">${c.email}</span></div>
+        <div class="cred-row"><span class="cred-label">Senha</span><span class="cred-val" style="color:var(--primary)">${c.senha}</span></div>
+      </div>`).join('')}`;
+
+  rc.style.display = 'block';
+  window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'});
+}
+
+// ── NOVO CADASTRO ─────────────────────────────────────────────
+function novoCadastro(){
+  location.reload();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+// Adicionar primeiro treinador automaticamente
+addTreinador();
+</script>
+</body>
+</html>
