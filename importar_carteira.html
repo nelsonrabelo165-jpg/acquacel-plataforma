@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acquacel · Atualizar Carteira</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#F8FAFF; --card:#FFFFFF; --card2:#F0F4FF; --border:#E2E8F0; --border2:#CBD5E1;
@@ -80,13 +80,13 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-
 /* ── PLANO MAP ── */
 .plano-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .plano-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--card2);border:1px solid var(--border2);border-radius:20px;font-size:11px}
-.plano-chip-val{font-family:'DM Mono',monospace;color:var(--yellow)}
+.plano-chip-val{font-family:'Barlow',monospace;color:var(--yellow)}
 .plano-chip select{background:transparent;border:none;color:var(--text);font-size:11px;outline:none;font-family:'Barlow',sans-serif;padding:0}
 
 /* ── STATS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
 .stat-box{background:var(--card2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)}
-.stat-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.stat-val{font-family:'Barlow',monospace;font-size:22px;font-weight:500}
 .stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
 
 /* ── PREVIEW TABLE ── */
@@ -128,7 +128,7 @@ tr:last-child td{border-bottom:none}
 .success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
 .success-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
 .success-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
-.success-stat-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--primary)}
+.success-stat-val{font-family:'Barlow',monospace;font-size:28px;font-weight:500;color:var(--primary)}
 .success-stat-label{font-size:11px;color:var(--muted);margin-top:3px}
 
 /* ── SEC ── */
@@ -323,7 +323,7 @@ tr:last-child td{border-bottom:none}
           <div class="prog-step idle" id="prog3"><span class="prog-icon">💾</span> Importando alunos...</div>
           <div class="prog-step idle" id="prog4"><span class="prog-icon">✅</span> Finalizando...</div>
         </div>
-        <div id="importLog" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;max-height:120px;overflow-y:auto;background:#F8FAFF;border-radius:6px;padding:10px;margin-top:10px;display:none"></div>
+        <div id="importLog" style="font-size:11px;color:var(--muted);font-family:'Barlow',monospace;max-height:120px;overflow-y:auto;background:#F8FAFF;border-radius:6px;padding:10px;margin-top:10px;display:none"></div>
       </div>
     </div>
 

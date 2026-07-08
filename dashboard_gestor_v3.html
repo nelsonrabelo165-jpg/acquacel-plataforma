@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acquacel · Central de Inteligência</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ── */
 :root {
@@ -106,7 +106,7 @@ body::before {
 .p-btn.active { background: var(--primary-dim); border-color:var(--primary); color: var(--primary); }
 
 .clock {
-  font-family: 'DM Mono', monospace;
+  font-family: 'Barlow', monospace;
   font-size: 12px; color: var(--text3);
 }
 
@@ -120,7 +120,7 @@ body::before {
 }
 .sec-hdr:first-child { margin-top: 0; }
 .sec-num {
-  font-family: 'DM Mono', monospace;
+  font-family: 'Barlow', monospace;
   font-size: 10px; color: var(--text3);
   border: 1px solid var(--border2);
   border-radius: 4px; padding: 2px 7px;
@@ -233,7 +233,7 @@ body::before {
 .bar-label { font-size: 11px; color: var(--text2); width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar-track { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
-.bar-val { font-size: 11px; font-weight: 700; width: 38px; text-align: right; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+.bar-val { font-size: 11px; font-weight: 700; width: 38px; text-align: right; flex-shrink: 0; font-family: 'Barlow', monospace; }
 
 /* ── NPS GAUGE ── */
 .nps-big {
@@ -249,7 +249,7 @@ body::before {
 .nps-bar-lbl { font-size: 10px; color: var(--text2); width: 62px; flex-shrink: 0; }
 .nps-bar-track { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
 .nps-bar-fill { height: 100%; border-radius: 3px; }
-.nps-bar-pct { font-size: 10px; font-weight: 700; width: 30px; text-align: right; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+.nps-bar-pct { font-size: 10px; font-weight: 700; width: 30px; text-align: right; font-family: 'Barlow', monospace; flex-shrink: 0; }
 
 /* ── PERCEPCAO 2x2 ── */
 .perc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; }
@@ -294,7 +294,7 @@ body::before {
 }
 .trainer-mini-cell { padding: 10px 8px; text-align: center; border-right: 1px solid var(--border); }
 .trainer-mini-cell:last-child { border-right: none; }
-.trainer-mini-val { font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.trainer-mini-val { font-size: 13px; font-weight: 700; font-family: 'Barlow', monospace; }
 .trainer-mini-lbl { font-size: 8px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
 .trainer-detail { display: none; padding: 14px 16px; border-top: 1px solid var(--border); background: var(--bg2); }
@@ -302,7 +302,7 @@ body::before {
 .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
 .detail-row:last-child { border: none; padding-bottom: 0; }
 .detail-lbl { color: var(--text2); }
-.detail-val { font-weight: 700; font-family: 'DM Mono', monospace; }
+.detail-val { font-weight: 700; font-family: 'Barlow', monospace; }
 
 .eng-section { margin-top: 12px; }
 .eng-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
@@ -310,7 +310,7 @@ body::before {
 .eng-lbl { font-size: 10px; color: var(--text2); width: 80px; flex-shrink: 0; }
 .eng-track { flex: 1; height: 5px; background: var(--border2); border-radius: 3px; overflow: hidden; }
 .eng-fill { height: 100%; border-radius: 3px; }
-.eng-val { font-size: 10px; font-weight: 700; width: 28px; text-align: right; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+.eng-val { font-size: 10px; font-weight: 700; width: 28px; text-align: right; font-family: 'Barlow', monospace; flex-shrink: 0; }
 
 /* ── DESAFIOS ── */
 .desafios-list { display: flex; flex-direction: column; gap: 6px; }
@@ -683,21 +683,21 @@ const sbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SU
         <div style="background:rgba(45,212,160,.06);border:1px solid rgba(45,212,160,.15);border-radius:8px;padding:7px 10px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
             <span style="font-size:10px;color:var(--text2)">🔥 Com app ativo</span>
-            <span style="font-size:11px;font-weight:800;color:var(--green);font-family:'DM Mono',monospace"><span id="cicloComAppRenov">34</span><span style="color:var(--text3);font-weight:400">/<span id="cicloComApp">38</span></span></span>
+            <span style="font-size:11px;font-weight:800;color:var(--green);font-family:'Barlow',monospace"><span id="cicloComAppRenov">34</span><span style="color:var(--text3);font-weight:400">/<span id="cicloComApp">38</span></span></span>
           </div>
           <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(45,212,160,.15);border-radius:2px;overflow:hidden"><div style="width:89%;height:100%;background:var(--green);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--green)" id="cicloComAppPct">89%</span></div>
         </div>
         <div style="background:rgba(255,209,102,.06);border:1px solid rgba(255,209,102,.15);border-radius:8px;padding:7px 10px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
             <span style="font-size:10px;color:var(--text2)">👤 Sem app</span>
-            <span style="font-size:11px;font-weight:800;color:var(--yellow);font-family:'DM Mono',monospace"><span id="cicloSemAppRenov">11</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemApp">17</span></span></span>
+            <span style="font-size:11px;font-weight:800;color:var(--yellow);font-family:'Barlow',monospace"><span id="cicloSemAppRenov">11</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemApp">17</span></span></span>
           </div>
           <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(255,209,102,.15);border-radius:2px;overflow:hidden"><div style="width:64%;height:100%;background:var(--yellow);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--yellow)" id="cicloSemAppPct">64%</span></div>
         </div>
         <div style="background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.15);border-radius:8px;padding:7px 10px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
             <span style="font-size:10px;color:var(--text2)">⚠️ Sem treinador</span>
-            <span style="font-size:11px;font-weight:800;color:var(--red);font-family:'DM Mono',monospace"><span id="cicloSemTreinadorRenov">5</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemTreinador">12</span></span></span>
+            <span style="font-size:11px;font-weight:800;color:var(--red);font-family:'Barlow',monospace"><span id="cicloSemTreinadorRenov">5</span><span style="color:var(--text3);font-weight:400">/<span id="cicloSemTreinador">12</span></span></span>
           </div>
           <div style="display:flex;align-items:center;gap:5px"><div style="flex:1;height:3px;background:rgba(255,77,109,.15);border-radius:2px;overflow:hidden"><div style="width:41%;height:100%;background:var(--red);border-radius:2px"></div></div><span style="font-size:9px;font-weight:700;color:var(--red)" id="cicloSemTreinadorPct">41%</span></div>
         </div>
@@ -1118,7 +1118,7 @@ function renderIndRanking(){
       <div style="flex:1;height:5px;background:var(--border2);border-radius:3px;overflow:hidden">
         <div style="width:${pct}%;height:100%;background:${t.color};border-radius:3px"></div>
       </div>
-      <div style="font-size:11px;font-weight:700;width:16px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace">${t.kpis.indicacoes}</div>`;
+      <div style="font-size:11px;font-weight:700;width:16px;text-align:right;flex-shrink:0;font-family:'Barlow',monospace">${t.kpis.indicacoes}</div>`;
     c.appendChild(row);
   });
 }
@@ -1168,7 +1168,7 @@ function renderEngajamentoChart(){
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left+cW, y); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,.25)';
-    ctx.font = '9px DM Mono';
+    ctx.font = '9px Barlow';
     ctx.fillText(v+'%', pad.left-4, y+3);
   });
 
@@ -1177,7 +1177,7 @@ function renderEngajamentoChart(){
   semanas.forEach((s,i) => {
     const x = pad.left + (i/(semanas.length-1))*cW;
     ctx.fillStyle = 'rgba(255,255,255,.35)';
-    ctx.font = '9px DM Sans';
+    ctx.font = '9px Barlow';
     ctx.fillText(s, x, H-8);
   });
 
@@ -1222,7 +1222,7 @@ function renderEngajamentoChart(){
     // Last value label
     const lp = pts[pts.length-1];
     ctx.fillStyle = s.color;
-    ctx.font = 'bold 10px DM Mono';
+    ctx.font = 'bold 10px Barlow';
     ctx.textAlign = 'left';
     ctx.fillText(s.data[s.data.length-1]+'%', lp.x+5, lp.y+3);
   });
@@ -1265,7 +1265,7 @@ function renderEvolucaoChart(){
     const y = pad.top + cH * (1-p);
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,.25)';
-    ctx.font = '10px DM Mono';
+    ctx.font = '10px Barlow';
     ctx.fillText(Math.round(maxVal * p), 4, y + 4);
   });
 
@@ -1273,7 +1273,7 @@ function renderEvolucaoChart(){
   meses.forEach((m, i) => {
     const x = pad.left + (i + 0.5) * (cW / meses.length);
     ctx.fillStyle = i < months ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.2)';
-    ctx.font = '10px DM Sans';
+    ctx.font = '10px Barlow';
     ctx.textAlign = 'center';
     ctx.fillText(m, x, H - 8);
   });
@@ -1330,7 +1330,7 @@ function renderEvolucaoChart(){
       // Value label on last point
       if(i === months-1){
         ctx.fillStyle = color;
-        ctx.font = 'bold 11px DM Mono';
+        ctx.font = 'bold 11px Barlow';
         ctx.textAlign = 'right';
         ctx.fillText(v, x-6, y-6);
       }
