@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cap. T03 — Protocolo de Atenção Plena | Acquacel University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:#1B4FD8;--azul-mid:#2563EB;--azul-light:#3B82F6;
+    --azul-pale:#DBEAFE;--azul-dim:rgba(27,79,216,0.08);--azul-border:rgba(27,79,216,0.22);
+    --verde:#16A34A;--verde-dim:rgba(22,163,74,0.08);--verde-border:rgba(22,163,74,0.22);
+    --vermelho:#DC2626;--verm-dim:rgba(220,38,38,0.07);--verm-border:rgba(220,38,38,0.22);
+    --amarelo:#D97706;--amar-dim:rgba(217,119,6,0.07);--amar-border:rgba(217,119,6,0.2);
+    --fundo:#F8FAFF;--fundo2:#FFFFFF;--fundo3:#F1F5FB;
+    --borda:#E2E8F0;--borda2:#CBD5E1;
+    --texto:#1E293B;--texto2:#475569;--texto3:#94A3B8;--preto:#0A0F1E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;font-size:15px;line-height:1.65;}
+
+  /* HEADER */
+  .uc-header{background:var(--preto);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 1.75rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;gap:12px;}
+  .uc-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .uc-logo-badge{width:32px;height:32px;background:var(--azul);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .uc-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
+  .uc-logo-text span{color:var(--azul-light);}
+  .uc-nav{display:flex;gap:2px;}
+  .uc-nav a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:5px;transition:all .15s;cursor:pointer;}
+  .uc-nav a:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.8);}
+  .uc-nav a.active{background:rgba(59,130,246,0.18);color:var(--azul-light);}
+  .uc-header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .badge-trilha{background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:var(--azul-light);font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase;}
+  .badge-dept{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;}
+
+  /* LAYOUT */
+  .layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 54px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--fundo2);border-right:1px solid var(--borda);padding:1.5rem 0;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;}
+  .sidebar-section{padding:0 1rem;margin-bottom:1.5rem;}
+  .sidebar-section-title{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--texto3);padding:0 0.5rem;margin-bottom:0.5rem;}
+  .sidebar-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;color:var(--texto2);text-decoration:none;font-size:13px;transition:all .15s;cursor:pointer;}
+  .sidebar-link:hover{background:var(--fundo3);color:var(--texto);}
+  .sidebar-link.active{background:var(--azul-dim);color:var(--azul);}
+  .sidebar-link .dot{width:6px;height:6px;border-radius:50%;background:var(--borda2);flex-shrink:0;}
+  .sidebar-link.active .dot{background:var(--azul);}
+  .sidebar-progress{margin:.75rem 1rem 0;padding:.875rem 1rem;background:var(--fundo3);border-radius:8px;border:1px solid var(--borda);}
+  .sidebar-progress-label{font-size:11px;color:var(--texto2);margin-bottom:6px;}
+  .progress-bar{height:4px;background:var(--borda);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--azul);border-radius:2px;width:0%;transition:width .4s ease;}
+  .progress-text{font-size:11px;color:var(--azul);margin-top:5px;font-weight:600;}
+  .cap-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:12px;color:var(--texto3);border:1px solid transparent;}
+  .cap-item.done{color:var(--verde);background:var(--verde-dim);border-color:var(--verde-border);}
+  .cap-item.current{background:var(--azul-dim);border-color:var(--azul-border);color:var(--azul);font-weight:600;}
+  .cap-item.locked{opacity:0.45;}
+  .cap-num{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.14em;color:inherit;width:28px;flex-shrink:0;}
+
+  /* MAIN */
+  .main{padding:2.5rem 3rem 4rem;max-width:860px;}
+  .breadcrumb{font-size:12px;color:var(--texto3);margin-bottom:1.5rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .breadcrumb span{color:var(--texto2);}
+  .breadcrumb .sep{color:var(--borda2);}
+
+  /* HERO */
+  .aula-hero{background:var(--preto);border-radius:14px;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+  .aula-hero::before{content:'T03';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:110px;color:rgba(59,130,246,0.07);line-height:1;pointer-events:none;user-select:none;}
+  .aula-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 0% 50%,rgba(27,79,216,0.15) 0%,transparent 70%);pointer-events:none;}
+  .aula-tag{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--azul-light);margin-bottom:.875rem;position:relative;z-index:1;}
+  .aula-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,42px);line-height:1;color:#fff;margin-bottom:.5rem;position:relative;z-index:1;}
+  .aula-subtitulo{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:1.5rem;max-width:520px;position:relative;z-index:1;}
+  .aula-meta{display:flex;gap:1.5rem;flex-wrap:wrap;position:relative;z-index:1;}
+  .aula-meta-item{font-size:12px;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:5px;}
+  .aula-meta-item strong{color:rgba(255,255,255,.6);}
+  .etapas-pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.07);position:relative;z-index:1;}
+  .etapa-pill{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:100px;border:1px solid rgba(59,130,246,.3);color:var(--azul-light);background:rgba(59,130,246,.1);}
+
+  /* TABS */
+  .tabs{display:flex;gap:2px;border-bottom:2px solid var(--borda);margin-bottom:2rem;overflow-x:auto;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{padding:10px 18px;font-size:12px;font-weight:700;color:var(--texto3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;margin-bottom:-2px;}
+  .tab-btn:hover{color:var(--texto);}
+  .tab-btn.active{color:var(--azul);border-bottom-color:var(--azul);}
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;}
+
+  /* TYPOGRAPHY */
+  .section-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--azul);margin-bottom:.5rem;display:flex;align-items:center;gap:8px;}
+  .section-label::before{content:'';width:20px;height:2px;background:var(--azul);display:inline-block;}
+  .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(20px,3vw,28px);color:var(--preto);margin-bottom:1rem;line-height:1.05;text-transform:uppercase;letter-spacing:.01em;}
+  .section-title em{font-style:normal;color:var(--azul);}
+  .prose{color:var(--texto);line-height:1.75;margin-bottom:1.25rem;}
+  .prose p{margin-bottom:.875rem;}
+  .prose p:last-child{margin-bottom:0;}
+  strong.dest{color:var(--azul);font-weight:700;}
+  .divider{height:1px;background:var(--borda);margin:2.25rem 0;}
+
+  /* CALLOUTS */
+  .callout{background:var(--azul-dim);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--texto);line-height:1.65;}
+  .callout strong{color:var(--azul);}
+  .callout-erro{background:var(--verm-dim);border-left-color:var(--vermelho);}
+  .callout-erro strong{color:var(--vermelho);}
+  .callout-verde{background:var(--verde-dim);border-left-color:var(--verde);}
+  .callout-verde strong{color:var(--verde);}
+  .callout-amar{background:var(--amar-dim);border-left-color:var(--amarelo);}
+  .callout-amar strong{color:var(--amarelo);}
+
+  /* ── RELÓGIO DO CICLO ── marca visual do T03 */
+  .relogio-wrap{display:flex;gap:28px;align-items:flex-start;margin:1.5rem 0;flex-wrap:wrap;}
+  .relogio{width:200px;height:200px;flex-shrink:0;position:relative;}
+  .relogio svg{width:100%;height:100%;transform:rotate(-90deg);}
+  .relogio-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  .relogio-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;color:var(--preto);line-height:1;}
+  .relogio-unit{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--texto3);}
+  .relogio-legenda{flex:1;min-width:220px;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+  .leg-item{display:flex;align-items:center;gap:10px;}
+  .leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+  .leg-dot.azul{background:var(--azul);}
+  .leg-dot.pale{background:#CBD5E1;}
+  .leg-text{font-size:13px;color:var(--texto2);}
+  .leg-text strong{color:var(--texto);font-size:15px;}
+  .jornada-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--borda);}
+  .jornada-chip{font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;background:var(--fundo2);border:1px solid var(--borda);color:var(--texto2);}
+
+  /* ── RONDAS ── */
+  .rondas-wrap{display:flex;flex-direction:column;gap:14px;margin:1.5rem 0;}
+  .ronda-card{border-radius:14px;overflow:hidden;border:1px solid var(--borda);}
+  .ronda-header{display:flex;align-items:center;gap:14px;padding:1rem 1.25rem;background:var(--fundo2);border-bottom:1px solid var(--borda);}
+  .ronda-timer{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:var(--azul);line-height:1;min-width:48px;}
+  .ronda-meta{flex:1;}
+  .ronda-tag{font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--azul);margin-bottom:3px;}
+  .ronda-nome{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;color:var(--preto);}
+  .ronda-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;white-space:nowrap;}
+  .badge-azul{background:var(--azul-dim);border:1px solid var(--azul-border);color:var(--azul);}
+  .badge-amar{background:var(--amar-dim);border:1px solid var(--amar-border);color:var(--amarelo);}
+  .ronda-body{padding:1.125rem 1.25rem;background:var(--fundo3);}
+  .ronda-objetivo{font-size:13px;color:var(--texto2);margin-bottom:.75rem;line-height:1.6;}
+  .ronda-acoes{display:flex;flex-direction:column;gap:5px;}
+  .ronda-acao{font-size:13px;color:var(--texto);display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
+  .ronda-acao::before{content:'→';color:var(--azul);font-weight:700;flex-shrink:0;}
+  .ronda-alerta{margin-top:.875rem;padding:.75rem 1rem;background:var(--verm-dim);border:1px solid var(--verm-border);border-radius:8px;font-size:12px;color:var(--vermelho);font-weight:600;}
+  .ronda-dica{margin-top:.875rem;padding:.75rem 1rem;background:var(--verde-dim);border:1px solid var(--verde-border);border-radius:8px;font-size:12px;color:var(--verde);font-weight:600;}
+
+  /* ── POSTURA PROIBIDA ── */
+  .proibido-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1.25rem 0;}
+  .proibido-item{display:flex;align-items:flex-start;gap:10px;padding:.875rem 1rem;border-radius:10px;background:var(--fundo2);border:1px solid var(--borda);}
+  .proibido-icon{font-size:20px;flex-shrink:0;}
+  .proibido-text{font-size:13px;color:var(--texto2);line-height:1.5;}
+  .proibido-text strong{color:var(--preto);display:block;margin-bottom:2px;}
+
+  /* ── INTERVENÇÃO STEPS ── */
+  .intervencao-steps{display:flex;flex-direction:column;gap:10px;margin:1.25rem 0;}
+  .intervencao-step{display:flex;gap:14px;align-items:flex-start;padding:1rem 1.125rem;border-radius:12px;background:var(--fundo2);border:1px solid var(--borda);}
+  .intervencao-num{width:34px;height:34px;border-radius:9px;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .intervencao-title{font-weight:700;font-size:14px;color:var(--preto);margin-bottom:3px;}
+  .intervencao-desc{font-size:13px;color:var(--texto2);line-height:1.5;}
+  .intervencao-frase{margin-top:7px;font-size:13px;color:var(--azul-mid);font-style:italic;padding:7px 12px;background:var(--azul-dim);border-radius:7px;}
+
+  /* ── MOVIMENTOS COMPLEXOS ── */
+  .movimentos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:1rem 0;}
+  .mov-pill{padding:.625rem .875rem;border-radius:8px;background:var(--fundo2);border:1px solid var(--borda);text-align:center;}
+  .mov-nome{font-size:12px;font-weight:700;color:var(--preto);}
+  .mov-risco{font-size:10px;color:var(--texto3);margin-top:2px;}
+
+  /* ── INDICADORES RÁPIDOS ── */
+  .kpi-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:1.25rem 0;}
+  .kpi-mini{padding:1rem;border-radius:10px;background:var(--fundo2);border:1px solid var(--borda);text-align:center;}
+  .kpi-mini-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;color:var(--azul);line-height:1;}
+  .kpi-mini-label{font-size:10px;color:var(--texto3);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;}
+
+  /* SCRIPTS */
+  .script-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;margin:1rem 0;overflow:hidden;}
+  .script-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;border-bottom:1px solid var(--borda);background:var(--fundo3);}
+  .script-tag{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);}
+  .script-copy-btn{font-size:11px;color:var(--texto3);background:none;border:1px solid var(--borda);border-radius:4px;padding:3px 10px;cursor:pointer;transition:all .15s;}
+  .script-copy-btn:hover{border-color:var(--azul-border);color:var(--azul);}
+  .script-body{padding:1.25rem;font-size:14px;color:var(--texto);line-height:1.75;}
+  .script-body p{margin-bottom:.75rem;}
+  .script-body p:last-child{margin-bottom:0;}
+  .script-placeholder{color:var(--azul-mid);font-style:italic;}
+  .script-obs{font-size:12px;color:var(--texto2);font-style:italic;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--borda);}
+
+  /* QUIZ */
+  .quiz-wrapper{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;overflow:hidden;}
+  .quiz-top{padding:1.25rem 1.5rem;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;background:var(--preto);}
+  .quiz-top-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:.04em;}
+  .quiz-top-meta{font-size:12px;color:rgba(255,255,255,.4);}
+  .quiz-progress-bar{height:3px;background:var(--borda);}
+  .quiz-progress-fill{height:100%;background:var(--azul);transition:width .3s ease;}
+  .quiz-body{padding:2rem 1.5rem;min-height:280px;}
+  .quiz-q-num{font-size:9px;font-weight:800;letter-spacing:.22em;color:var(--azul);text-transform:uppercase;margin-bottom:.5rem;}
+  .quiz-question{font-size:17px;font-weight:600;color:var(--preto);line-height:1.45;margin-bottom:1.5rem;}
+  .quiz-options{display:flex;flex-direction:column;gap:8px;}
+  .quiz-option{padding:.875rem 1.125rem;background:var(--fundo3);border:1px solid var(--borda);border-radius:8px;cursor:pointer;font-size:14px;color:var(--texto);transition:all .15s;text-align:left;font-family:'Barlow',sans-serif;}
+  .quiz-option:hover:not(:disabled){border-color:var(--azul-border);background:var(--azul-dim);}
+  .quiz-option.correct{background:var(--verde-dim);border-color:var(--verde-border);color:var(--verde);}
+  .quiz-option.wrong{background:var(--verm-dim);border-color:rgba(220,38,38,.25);color:var(--vermelho);}
+  .quiz-option:disabled{cursor:default;}
+  .quiz-feedback{margin-top:1rem;padding:.875rem 1.125rem;border-radius:8px;font-size:13px;line-height:1.6;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.ok{background:var(--verde-dim);border:1px solid var(--verde-border);color:var(--verde);}
+  .quiz-feedback.err{background:var(--verm-dim);border:1px solid rgba(220,38,38,.22);color:var(--vermelho);}
+  .quiz-footer{padding:1rem 1.5rem;border-top:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;background:var(--fundo3);}
+  .quiz-score{font-size:13px;color:var(--texto2);}
+  .quiz-score strong{color:var(--texto);}
+  .btn-primary{background:var(--azul);color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:'Barlow',sans-serif;letter-spacing:.04em;}
+  .btn-primary:hover{opacity:.88;}
+  .btn-primary:disabled{opacity:.35;cursor:default;}
+  .btn-outline{background:none;color:var(--texto2);border:1px solid var(--borda2);padding:9px 22px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;}
+  .btn-outline:hover{border-color:var(--azul);color:var(--azul);}
+  .quiz-resultado{text-align:center;padding:3rem 2rem;display:none;}
+  .quiz-resultado.show{display:block;}
+  .resultado-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:80px;line-height:1;margin-bottom:.5rem;}
+  .resultado-score.aprovado{color:var(--verde);}
+  .resultado-score.reprovado{color:var(--vermelho);}
+  .resultado-msg{font-size:16px;color:var(--texto2);margin-bottom:.5rem;font-weight:500;}
+  .resultado-sub{font-size:13px;color:var(--texto3);margin-bottom:2rem;}
+
+  /* REVISÃO */
+  .revisao-card{background:var(--preto);border-radius:12px;padding:1.75rem;margin:1rem 0;}
+  .revisao-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--azul-light);margin-bottom:1.25rem;}
+  .revisao-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;}
+  .revisao-item:last-child{border-bottom:none;}
+  .revisao-item strong{color:#fff;}
+  .revisao-check{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:var(--azul-light);font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Barlow Condensed',sans-serif;}
+
+  /* CHECKLIST */
+  .checklist-row{display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0;}
+  .check-pill{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:5px 13px;border-radius:100px;background:var(--fundo2);border:1px solid var(--borda);color:var(--texto2);cursor:pointer;transition:all .15s;user-select:none;text-transform:uppercase;letter-spacing:.06em;}
+  .check-pill:hover{border-color:var(--azul-border);color:var(--azul);}
+  .check-pill.checked{background:var(--azul-dim);border-color:var(--azul-border);color:var(--azul);}
+  .check-pill .ck{font-size:10px;}
+  .check-status{font-size:12px;color:var(--texto3);margin-top:.5rem;}
+
+  /* GESTOR */
+  .gestor-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1rem 0;}
+  .gestor-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:1.25rem;}
+  .gestor-card-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--azul);margin-bottom:.875rem;}
+  .gestor-item{font-size:13px;color:var(--texto2);padding:5px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+  .gestor-item::before{content:'→';color:var(--azul);flex-shrink:0;font-weight:700;}
+  .kpi-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--borda);}
+  .kpi-chip{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--azul-dim);border:1px solid var(--azul-border);color:var(--azul);letter-spacing:.06em;text-transform:uppercase;}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--borda2);border-radius:3px;}
+
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .main{padding:1.5rem 1.25rem 3rem;}
+    .relogio-wrap{flex-direction:column;align-items:center;}
+    .proibido-grid,.movimentos-grid,.gestor-grid{grid-template-columns:1fr;}
+    .kpi-mini-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="uc-header">
+  <div class="uc-logo">
+    <div class="uc-logo-badge">💧</div>
+    <div class="uc-logo-text">ACQUACEL <span>UNIVERSITY</span></div>
+  </div>
+  <nav class="uc-nav">
+    <a class="active" onclick="switchTab('conteudo')">Conteúdo</a>
+    <a onclick="switchTab('script')">Scripts</a>
+    <a onclick="switchTab('quiz')">Quiz</a>
+    <a onclick="switchTab('revisao')">Revisão</a>
+    <a onclick="switchTab('gestor')">Gestor</a>
+  </nav>
+  <div class="uc-header-right">
+    <span class="badge-dept">Depto. Técnico</span>
+    <span class="badge-trilha">Trilha · T03</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Neste capítulo</div>
+      <a class="sidebar-link active" onclick="switchTab('conteudo');scrollTo(0,0)"><span class="dot"></span> Visão geral</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('ciclo')"><span class="dot"></span> O ciclo de 30 minutos</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('rondas')"><span class="dot"></span> As 4 Rondas + Admin</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('intervencao')"><span class="dot"></span> Protocolo de intervenção</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('movimentos')"><span class="dot"></span> Movimentos complexos</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('proibido')"><span class="dot"></span> Postura inadmissível</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('indicadores')"><span class="dot"></span> Indicadores do turno</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Artefatos</div>
+      <a class="sidebar-link" onclick="switchTab('script')"><span class="dot"></span> Scripts de intervenção</a>
+      <a class="sidebar-link" onclick="switchTab('quiz')"><span class="dot"></span> Quiz de validação</a>
+      <a class="sidebar-link" onclick="switchTab('revisao')"><span class="dot"></span> Cartão de revisão</a>
+      <a class="sidebar-link" onclick="switchTab('gestor')"><span class="dot"></span> Guia do gestor</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Trilha Técnica</div>
+      <div class="cap-item done"><span class="cap-num">T01</span><span>✓ Identidade e Postura</span></div>
+      <div class="cap-item done"><span class="cap-num">T02</span><span>✓ Fluxo de Retenção</span></div>
+      <div class="cap-item current"><span class="cap-num">T03</span><span>Ciclos de 30 Minutos</span></div>
+      <div class="cap-item locked"><span class="cap-num">T04</span><span>Gestão de Carteira</span></div>
+      <div class="cap-item locked"><span class="cap-num">T05</span><span>Comunicação e Scripts</span></div>
+    </div>
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-label">Seu progresso neste módulo</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0% concluído</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">
+      Acquacel University <span class="sep">›</span>
+      <span>Departamento Técnico</span> <span class="sep">›</span>
+      <span>Cap. T03 — Protocolo de Atenção Plena: Ciclos de 30 Minutos</span>
+    </div>
+
+    <div class="aula-hero">
+      <div class="aula-tag">Cap. T03 · Departamento Técnico · Operacional</div>
+      <div class="aula-titulo">Protocolo de Atenção Plena:<br>Ciclos de 30 Minutos</div>
+      <div class="aula-subtitulo">O ciclo de 30 minutos é a unidade operacional do turno. Cada ciclo é uma entrega de valor real — não passagem de tempo.</div>
+      <div class="aula-meta">
+        <div class="aula-meta-item">⏱ <strong>Duração:</strong> 40 min</div>
+        <div class="aula-meta-item">👤 <strong>Público:</strong> Treinadores · Líderes</div>
+        <div class="aula-meta-item">🎯 <strong>Nível:</strong> Operacional</div>
+        <div class="aula-meta-item">✅ <strong>Quiz:</strong> 8 questões · 70% mínimo</div>
+      </div>
+      <div class="etapas-pill-row">
+        <span class="etapa-pill">30 minutos</span>
+        <span class="etapa-pill">4 Rondas</span>
+        <span class="etapa-pill">5 min Admin</span>
+        <span class="etapa-pill">Intervenção</span>
+        <span class="etapa-pill">Movimentos</span>
+        <span class="etapa-pill">Postura</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('conteudo')">📖 Conteúdo</button>
+      <button class="tab-btn" onclick="switchTab('script')">📋 Scripts</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">✅ Quiz</button>
+      <button class="tab-btn" onclick="switchTab('revisao')">⚡ Revisão Rápida</button>
+      <button class="tab-btn" onclick="switchTab('gestor')">🎯 Guia do Gestor</button>
+    </div>
+
+    <!-- TAB CONTEÚDO -->
+    <div class="tab-pane active" id="tab-conteudo">
+
+      <div class="section-label">Contexto</div>
+      <div class="section-title">Por que o turno precisa de <em>estrutura de ciclos?</em></div>
+      <div class="prose">
+        <p>Sem estrutura, o turno vira improviso. O treinador passa o tempo reagindo — corrigindo quando é chamado, conversando quando dá, circulando sem propósito. O ciclo de 30 minutos existe para transformar o turno em uma sequência de entregas intencionais.</p>
+        <p><strong class="dest">Cada ciclo de 30 minutos é uma unidade completa de valor.</strong> Em uma jornada de 5 horas, isso significa 10 ciclos — 10 oportunidades estruturadas de gerar conexão, intervenção e acompanhamento. Quem não usa ciclos, desperdiça o turno.</p>
+      </div>
+      <div class="callout callout-erro">
+        <strong>O turno sem ciclos:</strong> treinador circula aleatoriamente → reage quando chamado → para perto de quem é mais fácil → ignora involuntariamente alunos invisíveis → termina o turno sem saber o que entregou. Isso não é negligência — é falta de estrutura.
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- RELÓGIO -->
+      <div id="ciclo">
+        <div class="section-label">A Unidade Operacional</div>
+        <div class="section-title">O Ciclo de <em>30 Minutos</em></div>
+        <div class="prose">
+          <p>Cada ciclo é dividido em dois blocos: <strong class="dest">25 minutos de atenção plena no salão</strong> e <strong class="dest">5 minutos de gestão administrativa</strong>. O bloco de 5 minutos não é descanso — é entrega técnica planejada. Em uma jornada de 5 horas, isso resulta em 10 ciclos completos.</p>
+        </div>
+
+        <div class="relogio-wrap">
+          <div class="relogio">
+            <svg viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#E2E8F0" stroke-width="20"/>
+              <!-- 25min de 30min = 83.3% → comprimento do arco: 2π×80×0.833 = 418.9 -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#1B4FD8" stroke-width="20"
+                stroke-dasharray="418.9 502.7" stroke-linecap="round"/>
+            </svg>
+            <div class="relogio-label">
+              <div class="relogio-num">30</div>
+              <div class="relogio-unit">minutos</div>
+            </div>
+          </div>
+          <div class="relogio-legenda">
+            <div class="leg-item">
+              <div class="leg-dot azul"></div>
+              <div class="leg-text"><strong>25 min</strong> — Atenção plena no salão (4 Rondas)</div>
+            </div>
+            <div class="leg-item">
+              <div class="leg-dot pale"></div>
+              <div class="leg-text"><strong>5 min</strong> — Gestão administrativa (não é descanso)</div>
+            </div>
+            <div class="jornada-chips">
+              <span class="jornada-chip">5h de jornada = 10 ciclos</span>
+              <span class="jornada-chip">6h de jornada = 12 ciclos</span>
+              <span class="jornada-chip">8h de jornada = 16 ciclos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-mini-grid">
+          <div class="kpi-mini">
+            <div class="kpi-mini-num">3–5</div>
+            <div class="kpi-mini-label">Intervenções por aluno por ciclo</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-num">100<span style="font-size:18px">%</span></div>
+            <div class="kpi-mini-label">Alunos abordados por turno</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-num">0</div>
+            <div class="kpi-mini-label">Alunos invisíveis permitidos</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-num">25<span style="font-size:18px">min</span></div>
+            <div class="kpi-mini-label">De presença ativa por ciclo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- AS 4 RONDAS -->
+      <div id="rondas">
+        <div class="section-label">Os 25 Minutos de Atenção Plena</div>
+        <div class="section-title">As <em>4 Rondas</em> + Bloco Administrativo</div>
+        <div class="prose">
+          <p>Os 25 minutos de atenção plena são estruturados em 4 rondas sequenciais — cada uma com foco, duração e objetivo definidos. O bloco administrativo de 5 minutos fecha o ciclo com entrega técnica registrada.</p>
+        </div>
+
+        <div class="rondas-wrap">
+          <!-- RONDA A -->
+          <div class="ronda-card">
+            <div class="ronda-header">
+              <div class="ronda-timer">5'</div>
+              <div class="ronda-meta">
+                <div class="ronda-tag">Ronda A · Abertura do Ciclo</div>
+                <div class="ronda-nome">Conexão Imediata e Acolhimento</div>
+              </div>
+              <span class="ronda-badge badge-azul">Presença</span>
+            </div>
+            <div class="ronda-body">
+              <div class="ronda-objetivo">Objetivo: mostrar que o treinador está presente e que cada aluno foi percebido. A Ronda A instala o tom emocional do ciclo inteiro.</div>
+              <div class="ronda-acoes">
+                <div class="ronda-acao">Percorrer o salão cumprimentando todos os alunos presentes — pelo nome, quando possível</div>
+                <div class="ronda-acao">Mostrar presença, cuidado e energia — sem pressa, sem afobação</div>
+                <div class="ronda-acao">Identificar alunos novos ou ainda não conhecidos para abordar nas rondas seguintes</div>
+                <div class="ronda-acao">Observar o salão de forma global: quem está sozinho, quem parece com dificuldade</div>
+              </div>
+              <div class="ronda-dica">✓ Tom da Ronda A: acolhimento genuíno, não cumprimento mecânico. O aluno precisa sentir que foi visto — não apenas saudado.</div>
+            </div>
+          </div>
+
+          <!-- RONDA B -->
+          <div class="ronda-card">
+            <div class="ronda-header">
+              <div class="ronda-timer">10'</div>
+              <div class="ronda-meta">
+                <div class="ronda-tag">Ronda B · Núcleo do Ciclo</div>
+                <div class="ronda-nome">Intervenções Técnicas Estratégicas</div>
+              </div>
+              <span class="ronda-badge badge-azul">Intervenção</span>
+            </div>
+            <div class="ronda-body">
+              <div class="ronda-objetivo">Objetivo: gerar percepção de valor real com intervenções rápidas e intencionais — não correções genéricas. É aqui que a maior parte das 3 a 5 intervenções por aluno acontece.</div>
+              <div class="ronda-acoes">
+                <div class="ronda-acao">Intervenções rápidas que elevam percepção de valor — ajuste de carga, técnica, progressão</div>
+                <div class="ronda-acao">Nenhuma abordagem começa com crítica — sempre observar antes de falar</div>
+                <div class="ronda-acao">Reforçar evolução desde a última revisão — o aluno precisa saber que você acompanhou</div>
+                <div class="ronda-acao">Registrar mentalmente quem ainda não recebeu intervenção neste ciclo</div>
+              </div>
+              <div class="ronda-alerta">⚠ Erro da Ronda B: ficar na mesma área do salão ou com os mesmos alunos. Distribua as intervenções pelo espaço inteiro.</div>
+            </div>
+          </div>
+
+          <!-- RONDA C -->
+          <div class="ronda-card">
+            <div class="ronda-header">
+              <div class="ronda-timer">5'</div>
+              <div class="ronda-meta">
+                <div class="ronda-tag">Ronda C · Acompanhamento Técnico</div>
+                <div class="ronda-nome">Movimentos Complexos e de Risco</div>
+              </div>
+              <span class="ronda-badge badge-azul">Segurança</span>
+            </div>
+            <div class="ronda-body">
+              <div class="ronda-objetivo">Objetivo: observar e acompanhar presencialmente os exercícios de maior risco de compensação ou lesão. É uma ronda de segurança técnica — não de correção massiva.</div>
+              <div class="ronda-acoes">
+                <div class="ronda-acao">Identificar quem está executando agachamento, levantamento terra, stiff, remada ou supino</div>
+                <div class="ronda-acao">Acompanhar 2–3 repetições antes de qualquer abordagem — observar antes de falar</div>
+                <div class="ronda-acao">Seguir o protocolo: observar → validar → ajuste fino → reforço positivo</div>
+                <div class="ronda-acao">Exercícios unilaterais com risco de compensação também entram nesta ronda</div>
+              </div>
+              <div class="ronda-dica">✓ Priorize quem executa sozinho pela primeira vez — risco mais alto e oportunidade de vínculo mais forte.</div>
+            </div>
+          </div>
+
+          <!-- RONDA D -->
+          <div class="ronda-card">
+            <div class="ronda-header">
+              <div class="ronda-timer">5'</div>
+              <div class="ronda-meta">
+                <div class="ronda-tag">Ronda D · Expansão de Carteira</div>
+                <div class="ronda-nome">Conexão com Alunos Novos ou Não Encarteirados</div>
+              </div>
+              <span class="ronda-badge badge-azul">Carteira</span>
+            </div>
+            <div class="ronda-body">
+              <div class="ronda-objetivo">Objetivo: instalar vínculo com quem ainda não está na carteira ou com quem você ainda não conhece pessoalmente. É a ronda que garante que nenhum aluno fique invisível por tempo demais.</div>
+              <div class="ronda-acoes">
+                <div class="ronda-acao">Identificar alunos presentes que ainda não estão na sua carteira</div>
+                <div class="ronda-acao">Abordagem de apresentação: nome + papel de treinador no ciclo</div>
+                <div class="ronda-acao">Confirmar papel como Treinador Principal para novos alunos</div>
+                <div class="ronda-acao">Iniciar encarteiramento: próximo passo definido antes de encerrar o contato</div>
+              </div>
+              <div class="ronda-alerta">⚠ Erro da Ronda D: deixar para depois. Aluno novo que passa 3 ciclos sem encarteiramento raramente se mantém ativo na carteira depois.</div>
+            </div>
+          </div>
+
+          <!-- BLOCO ADMIN -->
+          <div class="ronda-card" style="border-color:var(--borda2);">
+            <div class="ronda-header" style="background:var(--preto);border-bottom-color:rgba(255,255,255,.08);">
+              <div class="ronda-timer" style="color:var(--azul-light);">5'</div>
+              <div class="ronda-meta">
+                <div class="ronda-tag" style="color:rgba(255,255,255,.4);">Bloco Administrativo · Fechamento do Ciclo</div>
+                <div class="ronda-nome" style="color:#fff;">Gestão Técnica — Não é Descanso</div>
+              </div>
+              <span class="ronda-badge" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);">Admin</span>
+            </div>
+            <div class="ronda-body" style="background:rgba(10,15,30,.04);">
+              <div class="ronda-objetivo">Objetivo: fechar o ciclo com registros técnicos, preparar o próximo ciclo e manter a carteira atualizada. Esses 5 minutos são entrega técnica — não pausa.</div>
+              <div class="ronda-acoes">
+                <div class="ronda-acao">Registrar observações técnicas dos alunos acompanhados no ciclo (app ou sistema)</div>
+                <div class="ronda-acao">Enviar mensagem rápida para faltante do dia — contato dentro do turno tem mais impacto</div>
+                <div class="ronda-acao">Verificar carteira: quem tem revisão essa semana, quem está em 21 dias ativos</div>
+                <div class="ronda-acao">Preparar mentalmente as prioridades para o próximo ciclo</div>
+              </div>
+              <div class="ronda-alerta" style="background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.15);">⚠ Proibido no bloco admin: sentar para descansar, comer no salão, checar redes sociais, conversa longa com outros treinadores.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PROTOCOLO INTERVENÇÃO -->
+      <div id="intervencao">
+        <div class="section-label">Protocolo Técnico</div>
+        <div class="section-title">Como Fazer uma <em>Intervenção de Valor</em></div>
+        <div class="prose">
+          <p>Uma intervenção de valor não é corrigir por corrigir — é uma sequência de 5 passos que transforma um ajuste técnico em percepção de cuidado real. A ordem importa tanto quanto o conteúdo.</p>
+        </div>
+
+        <div class="intervencao-steps">
+          <div class="intervencao-step">
+            <div class="intervencao-num">1</div>
+            <div>
+              <div class="intervencao-title">Observar — 2 a 3 repetições</div>
+              <div class="intervencao-desc">Nunca interrompa na primeira repetição. Observe o padrão de movimento completo antes de qualquer fala. O aluno percebe que você está realmente prestando atenção.</div>
+            </div>
+          </div>
+          <div class="intervencao-step">
+            <div class="intervencao-num">2</div>
+            <div>
+              <div class="intervencao-title">Perguntar antes de corrigir</div>
+              <div class="intervencao-desc">Nunca comece com crítica. Pergunte com curiosidade genuína — isso demonstra respeito e abre espaço para o aluno explicar o contexto.</div>
+              <div class="intervencao-frase">"Você costuma fazer esse movimento mais rápido por alguma orientação específica?"</div>
+            </div>
+          </div>
+          <div class="intervencao-step">
+            <div class="intervencao-num">3</div>
+            <div>
+              <div class="intervencao-title">Validar um ponto positivo real</div>
+              <div class="intervencao-desc">Reconheça algo concreto antes de sugerir ajuste. Não é elogio vazio — é identificar o que está funcionando. Isso cria abertura para receber a correção.</div>
+              <div class="intervencao-frase">"Sua postura na base do exercício está ótima — você tá protegendo o joelho direito."</div>
+            </div>
+          </div>
+          <div class="intervencao-step">
+            <div class="intervencao-num">4</div>
+            <div>
+              <div class="intervencao-title">Corrigir com propósito claro</div>
+              <div class="intervencao-desc">Corrija apenas o que impacta segurança ou eficácia real. Não caçe micro-erros desnecessários — isso gera insegurança, não confiança. Um ajuste bem explicado vale mais que três correções genéricas.</div>
+              <div class="intervencao-frase">"Vamos ajustar só um detalhe na sua pegada — isso vai proteger seu ombro no longo prazo."</div>
+            </div>
+          </div>
+          <div class="intervencao-step">
+            <div class="intervencao-num">5</div>
+            <div>
+              <div class="intervencao-title">Reforçar positivamente e criar próximo passo</div>
+              <div class="intervencao-desc">Encerre a intervenção com energia positiva e, quando possível, com um próximo passo concreto. O aluno deve sair da intervenção mais motivado do que quando entrou nela.</div>
+              <div class="intervencao-frase">"Perfeito! Com essa correção você vai sentir muito mais estabilidade. Na próxima sessão, já podemos testar um pouco mais de carga."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- MOVIMENTOS COMPLEXOS -->
+      <div id="movimentos">
+        <div class="section-label">Ronda C — Referência Técnica</div>
+        <div class="section-title">Movimentos que Exigem <em>Acompanhamento Ativo</em></div>
+        <div class="prose">
+          <p>Esses exercícios concentram o maior risco de compensação, sobrecarga articular e lesão por má execução. Na Ronda C, eles têm prioridade de observação — especialmente quando executados por iniciantes ou alunos que trocaram de treino recentemente.</p>
+        </div>
+        <div class="movimentos-grid">
+          <div class="mov-pill"><div class="mov-nome">Agachamento</div><div class="mov-risco">Joelho, lombar, quadril</div></div>
+          <div class="mov-pill"><div class="mov-nome">Levantamento Terra</div><div class="mov-risco">Lombar, isquiotibial</div></div>
+          <div class="mov-pill"><div class="mov-nome">Stiff</div><div class="mov-risco">Lombar, cadeia posterior</div></div>
+          <div class="mov-pill"><div class="mov-nome">Remada curvada</div><div class="mov-risco">Lombar, ombro</div></div>
+          <div class="mov-pill"><div class="mov-nome">Supino livre</div><div class="mov-risco">Ombro, cotovelo</div></div>
+          <div class="mov-pill"><div class="mov-nome">Desenvolvimento</div><div class="mov-risco">Ombro, pescoço</div></div>
+          <div class="mov-pill"><div class="mov-nome">Avanço / Lunge</div><div class="mov-risco">Joelho, estabilidade</div></div>
+          <div class="mov-pill"><div class="mov-nome">Agachamento búlgaro</div><div class="mov-risco">Joelho, quadril unilateral</div></div>
+          <div class="mov-pill"><div class="mov-nome">Hip Hinge</div><div class="mov-risco">Lombar, cadeia posterior</div></div>
+        </div>
+        <div class="callout">
+          <strong>Regra da Ronda C:</strong> observar 2–3 repetições antes de abordar, mesmo nos movimentos de alto risco. Interromper na primeira repetição sem contexto gera ansiedade no aluno — não confiança.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- POSTURA INADMISSÍVEL -->
+      <div id="proibido">
+        <div class="section-label">Padrão de Conduta</div>
+        <div class="section-title">Postura <em>Inadmissível</em> no Turno</div>
+        <div class="prose">
+          <p>Estas posturas não são apenas inadequadas — elas sinalizam para o aluno que o treinador não está presente. E aluno que percebe ausência não percebe valor. Sem valor percebido, cancela.</p>
+        </div>
+        <div class="proibido-grid">
+          <div class="proibido-item">
+            <div class="proibido-icon">🙅</div>
+            <div class="proibido-text"><strong>Braços cruzados parado</strong>Postura reativa que comunica desinteresse. O aluno vê e interpreta — mesmo que inconscientemente.</div>
+          </div>
+          <div class="proibido-item">
+            <div class="proibido-icon">📱</div>
+            <div class="proibido-text"><strong>Celular por tempo prolongado</strong>Uso pessoal durante o turno é inadmissível. Uso técnico (app de treino, registro) deve ser rápido e pontual.</div>
+          </div>
+          <div class="proibido-item">
+            <div class="proibido-icon">🧱</div>
+            <div class="proibido-text"><strong>Encostado na parede ou equipamento</strong>Sinaliza inatividade. Mesmo em momentos de observação, manter postura ereta e ativa.</div>
+          </div>
+          <div class="proibido-item">
+            <div class="proibido-icon">💬</div>
+            <div class="proibido-text"><strong>Conversa longa entre treinadores</strong>Conversas técnicas rápidas são normais. Conversas pessoais prolongadas no salão, não.</div>
+          </div>
+          <div class="proibido-item">
+            <div class="proibido-icon">🍽️</div>
+            <div class="proibido-text"><strong>Comer ou tomar café no salão</strong>Profissionalismo e presença são incompatíveis com alimentação no espaço do aluno.</div>
+          </div>
+          <div class="proibido-item">
+            <div class="proibido-icon">👉</div>
+            <div class="proibido-text"><strong>Apontar máquina de longe</strong>Indicar sem acompanhar não é orientação — é descaso disfarçado de instrução.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- INDICADORES -->
+      <div id="indicadores">
+        <div class="section-label">Gestão do Turno</div>
+        <div class="section-title">Indicadores de <em>Execução do Ciclo</em></div>
+        <div class="prose">
+          <p>Ao final de cada turno, o treinador deve conseguir responder a estas perguntas com precisão. Se não consegue, os ciclos não estão sendo executados com intenção.</p>
+        </div>
+        <div class="callout callout-verde">
+          <strong>As 4 perguntas do fechamento de turno:</strong> (1) Quantos alunos estavam presentes e quantos eu abordei? (2) Fiz pelo menos 3 intervenções de valor por aluno presente? (3) Algum aluno ficou invisível neste turno? (4) Tenho novos encarteiramentos ou próximos passos definidos para novos alunos?
+        </div>
+        <div class="callout callout-amar">
+          <strong>Sinal de alerta:</strong> se ao final do turno o treinador não consegue responder a nenhuma dessas perguntas, o turno foi executado em modo reativo — não em ciclos. O próximo turno precisa de uma reinicialização intencional do protocolo.
+        </div>
+      </div>
+
+    </div><!-- /tab-conteudo -->
+
+    <!-- TAB SCRIPTS -->
+    <div class="tab-pane" id="tab-script">
+      <div class="section-label">Artefato 02</div>
+      <div class="section-title">Scripts de <em>Intervenção Técnica</em></div>
+      <div class="prose"><p>Scripts para cada momento do ciclo — da abertura com acolhimento ao fechamento com encaminhamento. Use os <span style="color:var(--azul-mid);font-style:italic">[colchetes]</span> com informações reais do aluno.</p></div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Ronda A — Abertura: acolhimento de chegada</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr1')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr1">
+          <p>"Que bom que você veio treinar hoje, <span class="script-placeholder">[Nome]</span>! Como tá se sentindo antes de começar?"</p>
+          <p>"Qualquer coisa no treino hoje, me chama — estou aqui."</p>
+          <div class="script-obs">→ Objetivo: fazer o aluno sentir que foi percebido. Não precisa ser longo — precisa ser genuíno. Cumprimento mecânico sem contato visual não conta.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Ronda B — Intervenção técnica de valor</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr2')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr2">
+          <p>[Após observar 2–3 repetições:]</p>
+          <p>"<span class="script-placeholder">[Nome]</span>, você tá com esse exercício há quanto tempo? Eu vi aqui que a sua execução tá bem mais segura do que da última vez."</p>
+          <p>"Tem um detalhe que a gente pode ajustar para você tirar ainda mais proveito — sua <span class="script-placeholder">[parte do corpo]</span> tá fazendo uma pequena compensação que vai acumular cansaço no longo prazo. Vou te mostrar."</p>
+          <p>"Exato! Sente a diferença? Com esse ajuste você vai conseguir progredir com mais segurança nas próximas semanas."</p>
+          <div class="script-obs">→ Sequência: observa (silêncio) → pergunta com curiosidade → valida o que está bom → propõe ajuste com propósito → reforça positivamente. Nunca inverter a ordem.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Ronda C — Movimentos complexos: abordagem de segurança</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr3')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr3">
+          <p>[Se a execução está segura:]</p>
+          <p>"<span class="script-placeholder">[Nome]</span>, sua execução tá muito boa — você tá protegendo bem a lombar. Continua assim."</p>
+          <p>[Se há compensação:]</p>
+          <p>"Posso fazer uma observação rápida? Vi que na descida você tá deixando o joelho cair para dentro — acontece bastante em movimentos unilaterais. Vamos corrigir em uma repetição?"</p>
+          <p>"Isso — percebeu a diferença na estabilidade? Com isso você evita sobrecarga no joelho ao longo dos treinos."</p>
+          <div class="script-obs">→ Em movimentos de alto risco, a abordagem é proativa — não espere o aluno pedir. Mas sempre inicie com validação antes de corrigir.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Ronda D — Aluno novo: apresentação e encarteiramento</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr4')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr4">
+          <p>"Oi! Tudo bem? Eu sou <span class="script-placeholder">[seu nome]</span>, faço parte da equipe técnica aqui. Você é novo(a) ou já treina aqui há um tempo?"</p>
+          <p>[Se novo:] "Perfeito! Vou ser seu Treinador(a) Principal nesses primeiros dias. Qualquer dúvida no treino, me chama diretamente."</p>
+          <p>"Você já fez o mapeamento de saúde com a gente? É o que a gente usa para montar um treino que faça sentido pra você de verdade — leva uns 10 minutos. Quando você terminar hoje, a gente passa lá na recepção e eu te explico."</p>
+          <div class="script-obs">→ Não faça a Ronda D com pressa. O primeiro contato com um aluno novo define se ele vai se sentir acompanhado ou mais um. Qualidade sobre velocidade.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Bloco Admin — Mensagem para faltante do dia</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr5')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr5">
+          <p>"Oi <span class="script-placeholder">[Nome]</span>! Vi que você não apareceu hoje — tá tudo bem? Qualquer coisa me fala, a gente ajusta o plano da semana sem problema."</p>
+          <p>[Variação — ausência recorrente:]</p>
+          <p>"<span class="script-placeholder">[Nome]</span>, faz um tempo que não te vejo aqui! Aconteceu alguma coisa? A sua revisão de treino está chegando e quero garantir que você não perde essa etapa — ela é importante para a gente ajustar o seu plano."</p>
+          <div class="script-obs">→ Mensagem enviada durante o turno (bloco admin) tem mais impacto do que mensagem enviada no final do dia. A janela ideal é nas primeiras 2 horas após a ausência detectada.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Fim do turno — Encerramento com próximo passo</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr6')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr6">
+          <p>"<span class="script-placeholder">[Nome]</span>, treino ótimo hoje! Esse ajuste que a gente fez no <span class="script-placeholder">[exercício]</span> vai fazer diferença nas próximas sessões."</p>
+          <p>"Quando você volta? <span class="script-placeholder">[dia]</span>? Perfeito — na sua próxima sessão a gente já testa um pouco mais de carga nesse movimento. Até lá!"</p>
+          <div class="script-obs">→ Todo aluno deve sair do turno com um próximo passo definido — mesmo que seja apenas "até quinta!". A sensação de continuidade é o que mantém o hábito ativo entre as sessões.</div>
+        </div>
+      </div>
+    </div><!-- /tab-script -->
+
+    <!-- TAB QUIZ -->
+    <div class="tab-pane" id="tab-quiz">
+      <div class="section-label">Artefato 03 · Validação do Protocolo</div>
+      <div class="section-title">Quiz — <em>Ciclos de 30 Minutos</em></div>
+      <div class="prose" style="margin-bottom:1.5rem">
+        <p>8 questões sobre o protocolo de atenção plena. Mínimo de <strong>70% (6 acertos)</strong> para aprovação e liberação do Cap. T04.</p>
+      </div>
+      <div class="quiz-wrapper">
+        <div class="quiz-top">
+          <div class="quiz-top-title">Quiz · Cap. T03 — Ciclos de 30 Minutos</div>
+          <div class="quiz-top-meta" id="quizMeta">Questão 1 de 8</div>
+        </div>
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressBar" style="width:12.5%"></div></div>
+        <div class="quiz-body" id="quizBody">
+          <div class="quiz-q-num" id="quizQNum">Questão 1 de 8</div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+        <div class="quiz-resultado" id="quizResultado">
+          <div class="resultado-score" id="resultadoScore"></div>
+          <div class="resultado-msg" id="resultadoMsg"></div>
+          <div class="resultado-sub" id="resultadoSub"></div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem">
+            <button class="btn-outline" onclick="reiniciarQuiz()">Refazer quiz</button>
+          </div>
+        </div>
+        <div class="quiz-footer">
+          <div class="quiz-score">Acertos: <strong id="quizAcertos">0</strong> / <span id="quizTotal">0</span></div>
+          <button class="btn-primary" id="btnProximo" onclick="proximaQuestao()" disabled>Próxima →</button>
+        </div>
+      </div>
+    </div><!-- /tab-quiz -->
+
+    <!-- TAB REVISÃO -->
+    <div class="tab-pane" id="tab-revisao">
+      <div class="section-label">Artefato 04 · Formato Bolso</div>
+      <div class="section-title">Cartão de <em>Revisão Rápida</em></div>
+      <div class="prose"><p>Leia antes do turno. São os fundamentos do Cap. T03 em formato de bolso.</p></div>
+
+      <div class="revisao-card">
+        <div class="revisao-title">⚡ T03 — Protocolo de Atenção Plena: Ciclos de 30 Minutos</div>
+        <div class="revisao-item">
+          <div class="revisao-check">1</div>
+          <div><strong>Cada ciclo = 25 min de salão + 5 min admin.</strong> Em 5h de jornada, são 10 ciclos. O bloco de 5 min não é descanso — é registro, mensagem e preparação do próximo ciclo.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">2</div>
+          <div><strong>Ronda A (5 min):</strong> acolhimento genuíno de todos os presentes. O tom aqui define o tom do ciclo inteiro. Cumprimento mecânico sem contato visual não conta.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">3</div>
+          <div><strong>Ronda B (10 min):</strong> intervenções técnicas de valor, 3 a 5 por aluno. Distribua pelo salão inteiro — não fique na mesma área ou com os mesmos alunos.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">4</div>
+          <div><strong>Ronda C (5 min):</strong> acompanhamento de movimentos complexos. Observe 2–3 repetições antes de falar. Priorize quem executa sozinho pela primeira vez.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">5</div>
+          <div><strong>Ronda D (5 min):</strong> foco em alunos novos ou não encarteirados. Nenhum aluno deve ficar invisível por mais de 2 ciclos consecutivos.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">6</div>
+          <div><strong>Protocolo de intervenção em 5 passos:</strong> observar → perguntar → validar → corrigir com propósito → reforçar e criar próximo passo. Nunca inverter a ordem.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <div class="section-label">Checklist do ciclo — por ronda</div>
+        <div class="checklist-row" id="checklistRow">
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ronda A: acolhi todos</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ronda B: 3–5 intervenções</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ronda B: distribui o salão</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ronda C: movimentos complexos</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ronda D: novos encarteirados</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Admin: registrei observações</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Admin: mensagem a faltante</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> 0 alunos invisíveis no turno</span>
+        </div>
+        <div class="check-status" id="checkStatus">0 de 8 etapas confirmadas</div>
+      </div>
+    </div><!-- /tab-revisao -->
+
+    <!-- TAB GESTOR -->
+    <div class="tab-pane" id="tab-gestor">
+      <div class="section-label">Artefato 05 · Para gestores e líderes</div>
+      <div class="section-title">Guia do Gestor — <em>Cap. T03</em></div>
+      <div class="prose"><p>Como observar a execução dos ciclos em campo, o que cobrar e quais sinais mostram que o protocolo está ou não sendo aplicado.</p></div>
+
+      <div class="gestor-grid">
+        <div class="gestor-card">
+          <div class="gestor-card-title">🔍 O que observar em campo</div>
+          <div class="gestor-item">O treinador está circulando pelo salão inteiro ou concentrado em uma área?</div>
+          <div class="gestor-item">Há alunos presentes que passaram o turno inteiro sem interação com o treinador?</div>
+          <div class="gestor-item">As intervenções seguem o protocolo de 5 passos ou são correções abruptas sem contexto?</div>
+          <div class="gestor-item">O bloco de 5 min está sendo usado para gestão técnica ou para descanso/celular?</div>
+          <div class="gestor-item">O treinador sabe, ao final do turno, quantos alunos estavam presentes e o que entregou?</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📣 Como cobrar a aplicação</div>
+          <div class="gestor-item">Observação silenciosa de turno: gestor acompanha sem interferir e dá feedback estruturado após.</div>
+          <div class="gestor-item">Debriefing pós-turno: "Quantos alunos você abordou hoje? Algum ficou sem interação?" — sem julgamento, com curiosidade.</div>
+          <div class="gestor-item">Simulação: gestor faz papel de aluno no salão — o treinador pratica as rondas em contexto real.</div>
+          <div class="gestor-item">Revisão de registros: verificar no sistema se os apontamentos do bloco admin foram feitos.</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📋 Sinais de execução correta</div>
+          <div class="gestor-item">Nenhum aluno fica mais de 15 minutos sem algum tipo de interação com o treinador</div>
+          <div class="gestor-item">Os alunos conhecem o nome do treinador e percebem que estão sendo acompanhados</div>
+          <div class="gestor-item">O treinador consegue responder às 4 perguntas do fechamento de turno com precisão</div>
+          <div class="gestor-item">O número de faltantes que respondem às mensagens do bloco admin aumenta gradualmente</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📊 Indicadores vinculados ao T03</div>
+          <div class="gestor-item">Taxa de abordagem ativa por turno (alunos abordados / alunos presentes)</div>
+          <div class="gestor-item">Frequência de encarteiramento de novos alunos por semana</div>
+          <div class="gestor-item">Taxa de resposta a mensagens de faltante enviadas no turno</div>
+          <div class="gestor-item">NPS informal: aluno reconhece o treinador e sente-se acompanhado?</div>
+          <div class="kpi-row">
+            <span class="kpi-chip">Presença ativa</span>
+            <span class="kpi-chip">Intervenção</span>
+            <span class="kpi-chip">Engajamento</span>
+            <span class="kpi-chip">Carteira</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-verde" style="margin-top:1.5rem">
+        <strong>Quando o T03 está sendo aplicado bem:</strong> os alunos não ficam invisíveis, o treinador circula com propósito, o bloco admin gera registros reais no sistema e as mensagens de faltante são enviadas dentro do turno. O resultado mais visível é simples: os alunos começam a sentir que têm um treinador — não apenas um salão.
+      </div>
+    </div><!-- /tab-gestor -->
+
+  </main>
+</div>
+
+<script>
+const questoes=[
+  {q:"Qual é a divisão correta de tempo dentro de cada ciclo de 30 minutos?",opts:["20 minutos de atenção plena e 10 minutos de descanso ativo","25 minutos de atenção plena no salão e 5 minutos de gestão administrativa","15 minutos de intervenção técnica e 15 minutos de registro no sistema","30 minutos de atenção plena — o bloco admin é feito fora do ciclo"],correta:1,exp:"Cada ciclo tem 25 minutos de atenção plena no salão (divididos em 4 Rondas) e 5 minutos de gestão administrativa. O bloco admin não é descanso — é entrega técnica: registros, mensagens para faltantes e preparação do próximo ciclo."},
+  {q:"Qual é o objetivo específico da Ronda A dentro do ciclo de 30 minutos?",opts:["Realizar todas as intervenções técnicas prioritárias do ciclo","Acompanhar os movimentos complexos de maior risco de lesão","Instalar conexão e acolhimento — garantir que todo aluno presente seja percebido","Identificar e encarteirar alunos que ainda não estão na carteira"],correta:2,exp:"A Ronda A (5 minutos) existe para mostrar presença e fazer o aluno se sentir visto. Ela define o tom emocional do ciclo inteiro. Um cumprimento mecânico sem contato visual não conta — o aluno precisa perceber que foi genuinamente notado."},
+  {q:"Por que o bloco administrativo de 5 minutos não pode ser usado como pausa de descanso?",opts:["Porque o gestor pode estar observando e isso é considerado falta de comprometimento","Porque esses 5 minutos são entrega técnica: registro, mensagem para faltante e preparação — se não forem usados assim, o treinador perde gestão da carteira","Porque o protocolo exige que o treinador esteja visível no salão 100% do tempo","Porque as mensagens para faltantes, se enviadas fora do turno, perdem o efeito"],correta:1,exp:"Os 5 minutos do bloco admin são entrega técnica, não pausa. Registrar observações, enviar mensagem para faltante dentro do turno e preparar o próximo ciclo são atividades que, se não realizadas nesse momento, comprometem a gestão da carteira e a qualidade do acompanhamento."},
+  {q:"Qual é o primeiro passo do protocolo de intervenção técnica de valor?",opts:["Cumprimentar o aluno pelo nome antes de qualquer observação","Observar de 2 a 3 repetições antes de falar qualquer coisa","Verificar no sistema qual é o treino prescrito para o aluno","Perguntar ao aluno se ele quer receber orientação técnica naquele momento"],correta:1,exp:"O primeiro passo é sempre observar — 2 a 3 repetições em silêncio, antes de qualquer intervenção verbal. Isso permite entender o padrão de movimento completo, demonstra que o treinador está realmente prestando atenção e evita correções precipitadas sem contexto."},
+  {q:"Um treinador passa os 25 minutos de atenção plena sempre na área de musculação pesada, onde estão os alunos mais experientes. O que está errado?",opts:["Nada — ele está focando no grupo que mais precisa de acompanhamento técnico","Ele está concentrando as intervenções em uma área, deixando alunos em outras zonas do salão sem contato — gerando alunos invisíveis","Ele deveria focar na Ronda A antes de ir para a musculação pesada","Ele está priorizando o Perfil 5% em vez do Perfil 95%, o que é correto no protocolo"],correta:1,exp:"As intervenções devem ser distribuídas por todo o salão — não concentradas em uma área ou com os mesmos alunos. Focar apenas na musculação pesada cria uma zona de invisibilidade para todos os outros alunos presentes, quebrando a meta de 100% abordados por turno."},
+  {q:"Durante a Ronda B, o que deve ser corrigido prioritariamente em uma intervenção técnica?",opts:["Todos os erros de execução identificados durante a observação de 2-3 repetições","Apenas o que impacta segurança ou eficácia real — sem caçar micro-erros desnecessários","O exercício mais complexo tecnicamente, independente do risco ao aluno","Apenas os erros que o próprio aluno identifica e pede para corrigir"],correta:1,exp:"Corrigir apenas o que tem impacto real em segurança ou eficácia. Caçar micro-erros desnecessários gera insegurança no aluno — não confiança. Um ajuste bem explicado e bem timed vale muito mais do que três correções genéricas em sequência."},
+  {q:"Qual das posturas abaixo está absolutamente fora do padrão no turno do treinador Acquacel?",opts:["Observar movimentos complexos em silêncio por 2-3 repetições antes de abordar","Usar o celular rapidamente para registrar uma observação técnica no app de treino","Ficar de braços cruzados encostado na parede durante os 25 minutos de atenção plena","Circular pelo salão sem falar com todos os alunos na Ronda A"],correta:2,exp:"Braços cruzados, encostado na parede, durante o tempo de atenção plena é inadmissível. Mesmo em momentos de observação, a postura precisa ser ativa e ereta. O uso do celular para registro técnico rápido é aceitável; o uso para fins pessoais, não."},
+  {q:"Qual é o objetivo central da Ronda D no ciclo de 30 minutos?",opts:["Fazer as intervenções técnicas mais complexas que não couberam na Ronda B","Encerrar o ciclo com um resumo verbal das orientações dadas a cada aluno","Instalar vínculo com alunos novos ou não encarteirados — garantindo que ninguém permaneça invisível por mais de 2 ciclos","Revisar os exercícios de alto risco que não foram acompanhados na Ronda C"],correta:2,exp:"A Ronda D foca em alunos que ainda não estão na carteira ou que ainda não foram conhecidos. Aluno novo que passa mais de 2 ciclos sem encarteiramento raramente se mantém ativo na carteira depois. A Ronda D garante que a expansão da carteira aconteça de forma intencional em todo turno."}
+];
+
+let qAtual=0,acertos=0,respondidas=0,selecionado=null;
+function renderQuestao(){
+  const q=questoes[qAtual];
+  document.getElementById('quizQNum').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizMeta').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizQuestion').textContent=q.q;
+  document.getElementById('quizProgressBar').style.width=`${((qAtual+1)/questoes.length)*100}%`;
+  document.getElementById('quizFeedback').className='quiz-feedback';
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('btnProximo').disabled=true;
+  selecionado=null;
+  const opts=document.getElementById('quizOptions');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-option';btn.textContent=o;
+    btn.onclick=()=>selecionar(i);opts.appendChild(btn);
+  });
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+}
+function selecionar(idx){
+  if(selecionado!==null)return;
+  selecionado=idx;
+  const q=questoes[qAtual];
+  const opts=document.querySelectorAll('.quiz-option');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('quizFeedback');
+  if(idx===q.correta){opts[idx].classList.add('correct');acertos++;fb.textContent='✓ Correto! '+q.exp;fb.className='quiz-feedback show ok';}
+  else{opts[idx].classList.add('wrong');opts[q.correta].classList.add('correct');fb.textContent='✗ Incorreto. '+q.exp;fb.className='quiz-feedback show err';}
+  respondidas++;
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+  document.getElementById('btnProximo').disabled=false;
+  updateProgress(respondidas/questoes.length*0.6);
+}
+function proximaQuestao(){qAtual++;if(qAtual>=questoes.length){mostrarResultado();return;}renderQuestao();}
+function mostrarResultado(){
+  document.getElementById('quizBody').style.display='none';
+  const pct=Math.round((acertos/questoes.length)*100);
+  const aprovado=pct>=70;
+  document.getElementById('quizResultado').className='quiz-resultado show';
+  document.getElementById('resultadoScore').textContent=pct+'%';
+  document.getElementById('resultadoScore').className='resultado-score '+(aprovado?'aprovado':'reprovado');
+  document.getElementById('resultadoMsg').textContent=aprovado?'✓ Aprovado! Você está pronto para avançar para o Cap. T04.':'✗ Abaixo do mínimo. Revise o conteúdo e tente novamente.';
+  document.getElementById('resultadoSub').textContent=`${acertos} de ${questoes.length} questões corretas. Mínimo: 70% (6 acertos).`;
+  document.getElementById('btnProximo').disabled=true;
+  updateProgress(1);
+}
+function reiniciarQuiz(){qAtual=0;acertos=0;respondidas=0;selecionado=null;document.getElementById('quizBody').style.display='block';document.getElementById('quizResultado').className='quiz-resultado';renderQuestao();}
+function switchTab(id){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.uc-nav a').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4};
+  if(map[id]!==undefined){document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');document.querySelectorAll('.uc-nav a')[map[id]].classList.add('active');}
+  if(id==='quiz'&&respondidas===0)renderQuestao();
+}
+function copyScript(btn,id){
+  const text=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',1800);});
+}
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  el.querySelector('.ck').textContent=el.classList.contains('checked')?'✓':'○';
+  const total=document.querySelectorAll('.check-pill').length;
+  const checked=document.querySelectorAll('.check-pill.checked').length;
+  document.getElementById('checkStatus').textContent=`${checked} de ${total} etapas confirmadas`;
+  updateProgress(checked/total*0.4);
+}
+function updateProgress(pct){
+  const p=Math.min(100,Math.round(pct*100));
+  document.getElementById('progressFill').style.width=p+'%';
+  document.getElementById('progressText').textContent=p+'% concluído';
+}
+function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+renderQuestao();
+</script>
+</body>
+</html>

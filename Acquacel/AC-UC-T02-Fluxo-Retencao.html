@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cap. T02 — O Fluxo de Retenção Técnica | Acquacel University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul:#1B4FD8;--azul-mid:#2563EB;--azul-light:#3B82F6;
+    --azul-pale:#DBEAFE;--azul-dim:rgba(27,79,216,0.08);--azul-border:rgba(27,79,216,0.22);
+    --verde:#16A34A;--verde-dim:rgba(22,163,74,0.08);--verde-border:rgba(22,163,74,0.22);
+    --vermelho:#DC2626;--verm-dim:rgba(220,38,38,0.07);
+    --fundo:#F8FAFF;--fundo2:#FFFFFF;--fundo3:#F1F5FB;
+    --borda:#E2E8F0;--borda2:#CBD5E1;
+    --texto:#1E293B;--texto2:#475569;--texto3:#94A3B8;--preto:#0A0F1E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;font-size:15px;line-height:1.65;}
+
+  /* HEADER */
+  .uc-header{background:var(--preto);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 1.75rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:200;gap:12px;}
+  .uc-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .uc-logo-badge{width:32px;height:32px;background:var(--azul);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .uc-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;}
+  .uc-logo-text span{color:var(--azul-light);}
+  .uc-nav{display:flex;gap:2px;}
+  .uc-nav a{color:rgba(255,255,255,0.45);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:5px;transition:all .15s;cursor:pointer;}
+  .uc-nav a:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.8);}
+  .uc-nav a.active{background:rgba(59,130,246,0.18);color:var(--azul-light);}
+  .uc-header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .badge-trilha{background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:var(--azul-light);font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:0.1em;text-transform:uppercase;}
+  .badge-dept{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;}
+
+  /* LAYOUT */
+  .layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 54px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--fundo2);border-right:1px solid var(--borda);padding:1.5rem 0;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;}
+  .sidebar-section{padding:0 1rem;margin-bottom:1.5rem;}
+  .sidebar-section-title{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--texto3);padding:0 0.5rem;margin-bottom:0.5rem;}
+  .sidebar-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;color:var(--texto2);text-decoration:none;font-size:13px;transition:all .15s;cursor:pointer;}
+  .sidebar-link:hover{background:var(--fundo3);color:var(--texto);}
+  .sidebar-link.active{background:var(--azul-dim);color:var(--azul);}
+  .sidebar-link .dot{width:6px;height:6px;border-radius:50%;background:var(--borda2);flex-shrink:0;}
+  .sidebar-link.active .dot{background:var(--azul);}
+  .sidebar-progress{margin:0.75rem 1rem 0;padding:0.875rem 1rem;background:var(--fundo3);border-radius:8px;border:1px solid var(--borda);}
+  .sidebar-progress-label{font-size:11px;color:var(--texto2);margin-bottom:6px;}
+  .progress-bar{height:4px;background:var(--borda);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--azul);border-radius:2px;width:0%;transition:width .4s ease;}
+  .progress-text{font-size:11px;color:var(--azul);margin-top:5px;font-weight:600;}
+  .cap-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;font-size:12px;color:var(--texto3);border:1px solid transparent;}
+  .cap-item.done{color:var(--verde);background:var(--verde-dim);border-color:var(--verde-border);}
+  .cap-item.current{background:var(--azul-dim);border-color:var(--azul-border);color:var(--azul);font-weight:600;}
+  .cap-item.locked{opacity:0.45;}
+  .cap-num{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.14em;color:inherit;width:28px;flex-shrink:0;}
+
+  /* MAIN */
+  .main{padding:2.5rem 3rem 4rem;max-width:860px;}
+
+  /* BREADCRUMB */
+  .breadcrumb{font-size:12px;color:var(--texto3);margin-bottom:1.5rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .breadcrumb span{color:var(--texto2);}
+  .breadcrumb .sep{color:var(--borda2);}
+
+  /* HERO */
+  .aula-hero{background:var(--preto);border-radius:14px;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+  .aula-hero::before{content:'T02';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:110px;color:rgba(59,130,246,0.07);line-height:1;pointer-events:none;user-select:none;}
+  .aula-hero::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 80% 60% at 0% 50%, rgba(27,79,216,0.15) 0%, transparent 70%);pointer-events:none;}
+  .aula-tag{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--azul-light);margin-bottom:0.875rem;position:relative;z-index:1;}
+  .aula-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,42px);line-height:1.0;color:#fff;margin-bottom:0.5rem;position:relative;z-index:1;}
+  .aula-subtitulo{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:1.5rem;max-width:520px;position:relative;z-index:1;}
+  .aula-meta{display:flex;gap:1.5rem;flex-wrap:wrap;position:relative;z-index:1;}
+  .aula-meta-item{font-size:12px;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:5px;}
+  .aula-meta-item strong{color:rgba(255,255,255,0.6);}
+  .etapas-pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.07);position:relative;z-index:1;}
+  .etapa-pill{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 11px;border-radius:100px;border:1px solid rgba(59,130,246,0.3);color:var(--azul-light);background:rgba(59,130,246,0.1);}
+
+  /* TABS */
+  .tabs{display:flex;gap:2px;border-bottom:2px solid var(--borda);margin-bottom:2rem;overflow-x:auto;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{padding:10px 18px;font-size:12px;font-weight:700;color:var(--texto3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:-2px;}
+  .tab-btn:hover{color:var(--texto);}
+  .tab-btn.active{color:var(--azul);border-bottom-color:var(--azul);}
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;}
+
+  /* TYPOGRAPHY */
+  .section-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.3em;text-transform:uppercase;color:var(--azul);margin-bottom:0.5rem;display:flex;align-items:center;gap:8px;}
+  .section-label::before{content:'';width:20px;height:2px;background:var(--azul);display:inline-block;}
+  .section-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(20px,3vw,28px);color:var(--preto);margin-bottom:1rem;line-height:1.05;text-transform:uppercase;letter-spacing:0.01em;}
+  .section-title em{font-style:normal;color:var(--azul);}
+  .prose{color:var(--texto);line-height:1.75;margin-bottom:1.25rem;}
+  .prose p{margin-bottom:0.875rem;}
+  .prose p:last-child{margin-bottom:0;}
+  strong.dest{color:var(--azul);font-weight:700;}
+
+  /* CALLOUTS */
+  .callout{background:var(--azul-dim);border-left:3px solid var(--azul);border-radius:0 10px 10px 0;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--texto);line-height:1.65;}
+  .callout strong{color:var(--azul);}
+  .callout-erro{background:var(--verm-dim);border-left-color:var(--vermelho);}
+  .callout-erro strong{color:var(--vermelho);}
+  .callout-verde{background:var(--verde-dim);border-left-color:var(--verde);}
+  .callout-verde strong{color:var(--verde);}
+  .divider{height:1px;background:var(--borda);margin:2.25rem 0;}
+
+  /* FLUXO STEPS - o destaque visual do T02 */
+  .fluxo-wrap{display:flex;flex-direction:column;gap:0;margin:1.5rem 0;}
+  .fluxo-step{display:flex;gap:0;align-items:stretch;margin-bottom:2px;}
+  .fluxo-num-col{display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0;}
+  .fluxo-num{width:40px;height:40px;border-radius:10px;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .fluxo-connector{width:2px;flex:1;background:var(--borda);min-height:16px;}
+  .fluxo-step:last-child .fluxo-connector{display:none;}
+  .fluxo-content{flex:1;background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:1.125rem 1.25rem;margin-left:12px;margin-bottom:14px;transition:border-color .15s;}
+  .fluxo-content:hover{border-color:var(--azul-border);}
+  .fluxo-tag{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;}
+  .fluxo-nome{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;color:var(--preto);margin-bottom:6px;}
+  .fluxo-desc{font-size:13px;color:var(--texto2);line-height:1.6;}
+  .fluxo-alert{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;font-weight:700;color:var(--verde);background:var(--verde-dim);border:1px solid var(--verde-border);border-radius:100px;padding:3px 10px;}
+  .fluxo-warn{color:var(--vermelho);background:var(--verm-dim);border-color:rgba(220,38,38,0.22);}
+
+  /* CONCEITOS GRID */
+  .conceitos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1.5rem 0;}
+  .conceito-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:1.25rem;transition:border-color .15s;}
+  .conceito-card:hover{border-color:var(--azul-border);}
+  .conceito-card.destaque{border-color:var(--azul-border);background:var(--azul-dim);}
+  .conceito-num{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--azul);margin-bottom:0.5rem;}
+  .conceito-nome{font-weight:700;font-size:14px;color:var(--preto);margin-bottom:0.4rem;}
+  .conceito-desc{font-size:13px;color:var(--texto2);line-height:1.55;}
+
+  /* COMPARATIVO consultoria vs revisao */
+  .vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--borda);border-radius:12px;overflow:hidden;margin:1.25rem 0;}
+  .vs-col{background:var(--fundo2);padding:1.5rem;}
+  .vs-header{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid var(--borda);}
+  .vs-header.azul{color:var(--azul);border-bottom-color:var(--azul);}
+  .vs-header.verde{color:var(--verde);border-bottom-color:var(--verde);}
+  .vs-item{font-size:13px;color:var(--texto2);padding:6px 0;border-bottom:1px solid var(--borda);display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+  .vs-item:last-child{border-bottom:none;}
+  .vs-item .vs-label{font-weight:700;color:var(--texto3);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;width:70px;flex-shrink:0;padding-top:2px;}
+
+  /* FUNIL */
+  .funil-wrap{margin:1.5rem 0;display:flex;flex-direction:column;gap:2px;}
+  .funil-step{display:flex;align-items:center;gap:14px;padding:0.875rem 1rem;background:var(--fundo2);border:1px solid var(--borda);border-radius:8px;transition:all .15s;}
+  .funil-step:hover{border-color:var(--azul-border);background:var(--azul-dim);}
+  .funil-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--azul);min-width:28px;line-height:1;}
+  .funil-info{flex:1;}
+  .funil-nome{font-weight:600;font-size:14px;color:var(--preto);}
+  .funil-desc{font-size:12px;color:var(--texto2);margin-top:2px;}
+  .funil-meta{font-size:11px;font-weight:700;color:var(--azul);background:var(--azul-dim);border:1px solid var(--azul-border);border-radius:100px;padding:2px 9px;white-space:nowrap;}
+
+  /* SCRIPTS */
+  .script-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;margin:1rem 0;overflow:hidden;}
+  .script-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.25rem;border-bottom:1px solid var(--borda);background:var(--fundo3);}
+  .script-tag{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--azul);}
+  .script-copy-btn{font-size:11px;color:var(--texto3);background:none;border:1px solid var(--borda);border-radius:4px;padding:3px 10px;cursor:pointer;transition:all .15s;}
+  .script-copy-btn:hover{border-color:var(--azul-border);color:var(--azul);}
+  .script-body{padding:1.25rem;font-size:14px;color:var(--texto);line-height:1.75;}
+  .script-body p{margin-bottom:0.75rem;}
+  .script-body p:last-child{margin-bottom:0;}
+  .script-placeholder{color:var(--azul-mid);font-style:italic;}
+  .script-obs{font-size:12px;color:var(--texto2);font-style:italic;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--borda);}
+
+  /* MSG GRID */
+  .msg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1rem 0;}
+  .msg-card{background:var(--fundo3);border:1px solid var(--borda);border-radius:8px;overflow:hidden;}
+  .msg-header{padding:0.5rem 1rem;background:var(--fundo2);border-bottom:1px solid var(--borda);font-size:10px;font-weight:800;color:var(--azul);text-transform:uppercase;letter-spacing:0.1em;}
+  .msg-body{padding:0.875rem 1rem;font-size:13px;color:var(--texto);line-height:1.6;}
+
+  /* QUIZ */
+  .quiz-wrapper{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;overflow:hidden;}
+  .quiz-top{padding:1.25rem 1.5rem;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;background:var(--preto);}
+  .quiz-top-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:0.04em;}
+  .quiz-top-meta{font-size:12px;color:rgba(255,255,255,0.4);}
+  .quiz-progress-bar{height:3px;background:var(--borda);}
+  .quiz-progress-fill{height:100%;background:var(--azul);transition:width .3s ease;}
+  .quiz-body{padding:2rem 1.5rem;min-height:280px;}
+  .quiz-q-num{font-size:9px;font-weight:800;letter-spacing:0.22em;color:var(--azul);text-transform:uppercase;margin-bottom:0.5rem;}
+  .quiz-question{font-size:17px;font-weight:600;color:var(--preto);line-height:1.45;margin-bottom:1.5rem;}
+  .quiz-options{display:flex;flex-direction:column;gap:8px;}
+  .quiz-option{padding:0.875rem 1.125rem;background:var(--fundo3);border:1px solid var(--borda);border-radius:8px;cursor:pointer;font-size:14px;color:var(--texto);transition:all .15s;text-align:left;font-family:'Barlow',sans-serif;}
+  .quiz-option:hover:not(:disabled){border-color:var(--azul-border);background:var(--azul-dim);}
+  .quiz-option.correct{background:var(--verde-dim);border-color:var(--verde-border);color:var(--verde);}
+  .quiz-option.wrong{background:var(--verm-dim);border-color:rgba(220,38,38,0.25);color:var(--vermelho);}
+  .quiz-option:disabled{cursor:default;}
+  .quiz-feedback{margin-top:1rem;padding:0.875rem 1.125rem;border-radius:8px;font-size:13px;line-height:1.6;display:none;}
+  .quiz-feedback.show{display:block;}
+  .quiz-feedback.ok{background:var(--verde-dim);border:1px solid var(--verde-border);color:var(--verde);}
+  .quiz-feedback.err{background:var(--verm-dim);border:1px solid rgba(220,38,38,0.22);color:var(--vermelho);}
+  .quiz-footer{padding:1rem 1.5rem;border-top:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;background:var(--fundo3);}
+  .quiz-score{font-size:13px;color:var(--texto2);}
+  .quiz-score strong{color:var(--texto);}
+  .btn-primary{background:var(--azul);color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:'Barlow',sans-serif;letter-spacing:0.04em;}
+  .btn-primary:hover{opacity:0.88;}
+  .btn-primary:disabled{opacity:0.35;cursor:default;}
+  .btn-outline{background:none;color:var(--texto2);border:1px solid var(--borda2);padding:9px 22px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;}
+  .btn-outline:hover{border-color:var(--azul);color:var(--azul);}
+  .quiz-resultado{text-align:center;padding:3rem 2rem;display:none;}
+  .quiz-resultado.show{display:block;}
+  .resultado-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:80px;line-height:1;margin-bottom:0.5rem;}
+  .resultado-score.aprovado{color:var(--verde);}
+  .resultado-score.reprovado{color:var(--vermelho);}
+  .resultado-msg{font-size:16px;color:var(--texto2);margin-bottom:0.5rem;font-weight:500;}
+  .resultado-sub{font-size:13px;color:var(--texto3);margin-bottom:2rem;}
+
+  /* REVISÃO */
+  .revisao-card{background:var(--preto);border-radius:12px;padding:1.75rem;margin:1rem 0;}
+  .revisao-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--azul-light);margin-bottom:1.25rem;}
+  .revisao-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;}
+  .revisao-item:last-child{border-bottom:none;}
+  .revisao-item strong{color:#fff;}
+  .revisao-check{width:22px;height:22px;border-radius:50%;flex-shrink:0;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:var(--azul-light);font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Barlow Condensed',sans-serif;}
+
+  /* CHECKLIST */
+  .checklist-row{display:flex;gap:8px;flex-wrap:wrap;margin:1rem 0;}
+  .check-pill{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:5px 13px;border-radius:100px;background:var(--fundo2);border:1px solid var(--borda);color:var(--texto2);cursor:pointer;transition:all .15s;user-select:none;text-transform:uppercase;letter-spacing:0.06em;}
+  .check-pill:hover{border-color:var(--azul-border);color:var(--azul);}
+  .check-pill.checked{background:var(--azul-dim);border-color:var(--azul-border);color:var(--azul);}
+  .check-pill .ck{font-size:10px;}
+  .check-status{font-size:12px;color:var(--texto3);margin-top:0.5rem;}
+
+  /* GESTOR */
+  .gestor-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1rem 0;}
+  .gestor-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:1.25rem;}
+  .gestor-card-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--azul);margin-bottom:0.875rem;}
+  .gestor-item{font-size:13px;color:var(--texto2);padding:5px 0;display:flex;gap:8px;align-items:flex-start;line-height:1.5;}
+  .gestor-item::before{content:'→';color:var(--azul);flex-shrink:0;font-weight:700;}
+  .kpi-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:0.875rem;padding-top:0.875rem;border-top:1px solid var(--borda);}
+  .kpi-chip{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;background:var(--azul-dim);border:1px solid var(--azul-border);color:var(--azul);letter-spacing:0.06em;text-transform:uppercase;}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--borda2);border-radius:3px;}
+
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .main{padding:1.5rem 1.25rem 3rem;}
+    .conceitos-grid,.vs-grid,.gestor-grid,.msg-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="uc-header">
+  <div class="uc-logo">
+    <div class="uc-logo-badge">💧</div>
+    <div class="uc-logo-text">ACQUACEL <span>UNIVERSITY</span></div>
+  </div>
+  <nav class="uc-nav">
+    <a class="active" onclick="switchTab('conteudo')">Conteúdo</a>
+    <a onclick="switchTab('script')">Scripts</a>
+    <a onclick="switchTab('quiz')">Quiz</a>
+    <a onclick="switchTab('revisao')">Revisão</a>
+    <a onclick="switchTab('gestor')">Gestor</a>
+  </nav>
+  <div class="uc-header-right">
+    <span class="badge-dept">Depto. Técnico</span>
+    <span class="badge-trilha">Trilha · T02</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Neste capítulo</div>
+      <a class="sidebar-link active" onclick="switchTab('conteudo');scrollTo(0,0)"><span class="dot"></span> Visão geral</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('abordagem')"><span class="dot"></span> Etapa 1 — Abordagem</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('carteira')"><span class="dot"></span> Etapa 2 — Carteira</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('mapeamento')"><span class="dot"></span> Etapa 3 — Mapeamento</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('consultoria')"><span class="dot"></span> Etapa 4 — Consultoria</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('21dias')"><span class="dot"></span> Etapa 5 — 21 Dias</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('revisao-treino')"><span class="dot"></span> Etapa 6 — Revisão</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('funil')"><span class="dot"></span> Funil de retenção</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Artefatos</div>
+      <a class="sidebar-link" onclick="switchTab('script')"><span class="dot"></span> Scripts do fluxo</a>
+      <a class="sidebar-link" onclick="switchTab('quiz')"><span class="dot"></span> Quiz de validação</a>
+      <a class="sidebar-link" onclick="switchTab('revisao')"><span class="dot"></span> Cartão de revisão</a>
+      <a class="sidebar-link" onclick="switchTab('gestor')"><span class="dot"></span> Guia do gestor</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Trilha Técnica</div>
+      <div class="cap-item done"><span class="cap-num">T01</span><span>✓ Identidade e Postura</span></div>
+      <div class="cap-item current"><span class="cap-num">T02</span><span>Fluxo de Retenção</span></div>
+      <div class="cap-item locked"><span class="cap-num">T03</span><span>Ciclos de 30 Minutos</span></div>
+      <div class="cap-item locked"><span class="cap-num">T04</span><span>Gestão de Carteira</span></div>
+      <div class="cap-item locked"><span class="cap-num">T05</span><span>Comunicação e Scripts</span></div>
+    </div>
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-label">Seu progresso neste módulo</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0% concluído</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">
+      Acquacel University <span class="sep">›</span>
+      <span>Departamento Técnico</span> <span class="sep">›</span>
+      <span>Cap. T02 — O Fluxo de Retenção Técnica</span>
+    </div>
+
+    <div class="aula-hero">
+      <div class="aula-tag">Cap. T02 · Departamento Técnico · Operacional</div>
+      <div class="aula-titulo">O Fluxo de<br>Retenção Técnica</div>
+      <div class="aula-subtitulo">Da abordagem no salão ao primeiro ciclo completo — cada etapa tem intenção, ferramenta e próximo passo definidos.</div>
+      <div class="aula-meta">
+        <div class="aula-meta-item">⏱ <strong>Duração:</strong> 45 min</div>
+        <div class="aula-meta-item">👤 <strong>Público:</strong> Treinadores · Líderes Técnicos</div>
+        <div class="aula-meta-item">🎯 <strong>Nível:</strong> Operacional</div>
+        <div class="aula-meta-item">✅ <strong>Quiz:</strong> 8 questões · 70% mínimo</div>
+      </div>
+      <div class="etapas-pill-row">
+        <span class="etapa-pill">Abordagem</span>
+        <span class="etapa-pill">Encarteiramento</span>
+        <span class="etapa-pill">Mapeamento</span>
+        <span class="etapa-pill">Consultoria</span>
+        <span class="etapa-pill">21 Dias</span>
+        <span class="etapa-pill">Revisão</span>
+        <span class="etapa-pill">Funil</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('conteudo')">📖 Conteúdo</button>
+      <button class="tab-btn" onclick="switchTab('script')">📋 Scripts</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">✅ Quiz</button>
+      <button class="tab-btn" onclick="switchTab('revisao')">⚡ Revisão Rápida</button>
+      <button class="tab-btn" onclick="switchTab('gestor')">🎯 Guia do Gestor</button>
+    </div>
+
+    <!-- TAB CONTEÚDO -->
+    <div class="tab-pane active" id="tab-conteudo">
+
+      <div class="section-label">Contexto</div>
+      <div class="section-title">O fluxo que <em>nenhuma etapa pode pular</em></div>
+      <div class="prose">
+        <p>No T01 você entendeu quem você é. No T02, você aprende o que fazer — em qual ordem, com qual intenção e com qual ferramenta. O fluxo de retenção técnica é o processo central da Acquacel: quando aplicado com consistência, ele transforma cada novo aluno em um caso de sucesso.</p>
+        <p><strong class="dest">Pular etapas não agiliza o processo — ele quebra o processo.</strong> Cada etapa existe por uma razão específica e prepara o aluno emocionalmente e operacionalmente para a próxima.</p>
+      </div>
+      <div class="callout callout-erro">
+        <strong>O erro mais comum:</strong> o treinador tenta marcar a consultoria sem o mapeamento preenchido, ou tenta fazer a revisão sem ter passado pelos 21 dias. O aluno não está preparado emocionalmente para o próximo passo — e o processo perde força.
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 1 -->
+      <div id="abordagem">
+        <div class="section-label">Etapa 1 de 6</div>
+        <div class="section-title"><em>Abordagem Ativa</em> — O ponto de partida</div>
+        <div class="prose">
+          <p>Tudo começa aqui. A abordagem ativa é o momento em que o treinador vai até o aluno — não espera ser chamado. É o gatilho de todo o processo subsequente. Sem abordagem, não há encarteiramento. Sem encarteiramento, não há mapeamento. Sem mapeamento, não há consultoria.</p>
+        </div>
+        <div class="fluxo-wrap">
+          <div class="fluxo-step">
+            <div class="fluxo-num-col"><div class="fluxo-num">1</div><div class="fluxo-connector"></div></div>
+            <div class="fluxo-content">
+              <div class="fluxo-tag">Abordagem · Salão</div>
+              <div class="fluxo-nome">Primeiro contato intencional</div>
+              <div class="fluxo-desc">O treinador vai até o aluno durante o treino — de forma natural, sem interromper o esforço. Pergunta, observa, cria conexão. O objetivo não é informar — é criar vínculo suficiente para o próximo passo.</div>
+              <div class="fluxo-alert">✓ Meta: 100% dos alunos presentes abordados por turno</div>
+            </div>
+          </div>
+        </div>
+        <div class="conceitos-grid">
+          <div class="conceito-card destaque">
+            <div class="conceito-num">Abordagem · Aluno existente</div>
+            <div class="conceito-nome">Quem já treina aqui</div>
+            <div class="conceito-desc">Conversa natural durante o treino. Ponto de entrada: o treino atual, tempo de casa, como está se sentindo. Transição para o mapeamento deve parecer continuidade — não venda.</div>
+          </div>
+          <div class="conceito-card destaque">
+            <div class="conceito-num">Abordagem · Aluno em experiência</div>
+            <div class="conceito-nome">Quem acabou de chegar</div>
+            <div class="conceito-desc">Abordagem imediata no fim do primeiro treino. Apresentação + pergunta sobre a experiência + convite para a recepção. A janela de oportunidade é a saída — não deixe para depois.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 2 -->
+      <div id="carteira">
+        <div class="section-label">Etapa 2 de 6</div>
+        <div class="section-title"><em>Encarteiramento</em> — Sua carteira, sua responsabilidade</div>
+        <div class="prose">
+          <p>Encarteirar significa registrar o aluno como parte da sua carteira de acompanhamento. Sem isso, o treinador não tem visibilidade sobre quem está sumindo, quem precisa de revisão ou quem está em risco de cancela.</p>
+        </div>
+        <div class="callout">
+          <strong>Regra da carteira:</strong> cada treinador tem uma base de alunos sob sua gestão direta. Aluno sem treinador definido é aluno invisível — e aluno invisível cancela sem que ninguém perceba. Meta institucional: mais de 85% dos alunos ativos encarteirados.
+        </div>
+        <div class="conceitos-grid">
+          <div class="conceito-card">
+            <div class="conceito-num">Como encarteirar</div>
+            <div class="conceito-nome">No sistema ou na lista física</div>
+            <div class="conceito-desc">Registre nome, data de início e próximo passo. O encarteiramento ativa o acompanhamento — sem ele, o treinador depende da memória para saber quem está na carteira.</div>
+          </div>
+          <div class="conceito-card">
+            <div class="conceito-num">Quem encarteitar</div>
+            <div class="conceito-nome">Todo aluno abordado</div>
+            <div class="conceito-desc">Perfil 95%: encarteirar + encaminhar para mapeamento. Perfil 5%: encarteirar + marcar revisão de treino direta. Ninguém sai da abordagem sem um próximo passo definido.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 3 -->
+      <div id="mapeamento">
+        <div class="section-label">Etapa 3 de 6</div>
+        <div class="section-title"><em>Mapeamento de Sintomas</em> — O diagnóstico antes da prescrição</div>
+        <div class="prose">
+          <p>O mapeamento de sintomas é o pré-requisito obrigatório para a consultoria. Ele é preenchido pelo aluno — pelo celular, em casa ou na recepção — e cobre 15 áreas da saúde e do estilo de vida. Sem ele preenchido, não há consultoria.</p>
+        </div>
+        <div class="callout callout-erro">
+          <strong>Regra inegociável:</strong> nunca agende consultoria antes do mapeamento estar preenchido. O mapeamento não é burocracia — ele é o que transforma a consultoria de conversa genérica em orientação personalizada. E é o comprometimento inicial do aluno com o processo.
+        </div>
+        <div class="fluxo-wrap">
+          <div class="fluxo-step">
+            <div class="fluxo-num-col"><div class="fluxo-num">3</div><div class="fluxo-connector"></div></div>
+            <div class="fluxo-content">
+              <div class="fluxo-tag">Mapeamento · Recepção + digital</div>
+              <div class="fluxo-nome">Bastão treinador → recepção</div>
+              <div class="fluxo-desc">O treinador acompanha o aluno até a recepção, apresenta e garante que o mapeamento será gerado e enviado. A recepção envia o link. O aluno preenche. O agendamento da consultoria só acontece após confirmação de preenchimento.</div>
+              <div class="fluxo-alert">✓ Gargalo mais comum: aluno recebe o link mas não preenche. Acompanhe em 24h.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 4 -->
+      <div id="consultoria">
+        <div class="section-label">Etapa 4 de 6</div>
+        <div class="section-title"><em>Consultoria Técnica</em> — Uma vez, na sala, com propósito</div>
+        <div class="prose">
+          <p>A consultoria acontece uma única vez, no início da jornada, em uma sala reservada — sem a pressão do salão. Ela transforma os dados do mapeamento em um plano real: frequência, foco, limitações e o desafio de 21 dias. O aluno sai com um planner na mão e uma revisão já agendada.</p>
+        </div>
+
+        <div class="vs-grid">
+          <div class="vs-col">
+            <div class="vs-header azul">Consultoria Técnica</div>
+            <div class="vs-item"><span class="vs-label">Quando</span>Uma vez, no início da jornada</div>
+            <div class="vs-item"><span class="vs-label">Onde</span>Sala reservada, ambiente privado</div>
+            <div class="vs-item"><span class="vs-label">Duração</span>20 a 30 minutos</div>
+            <div class="vs-item"><span class="vs-label">Foco</span>Diagnóstico + plano + desafio 21 dias</div>
+            <div class="vs-item"><span class="vs-label">Entrega</span>Planner de treino personalizado</div>
+          </div>
+          <div class="vs-col">
+            <div class="vs-header verde">Revisão de Treino</div>
+            <div class="vs-item"><span class="vs-label">Quando</span>A cada 21 dias, recorrente</div>
+            <div class="vs-item"><span class="vs-label">Onde</span>No salão, durante o treino</div>
+            <div class="vs-item"><span class="vs-label">Duração</span>10 a 15 minutos</div>
+            <div class="vs-item"><span class="vs-label">Foco</span>Evolução + ajuste + próximo ciclo</div>
+            <div class="vs-item"><span class="vs-label">Entrega</span>Treino ajustado + nova revisão agendada</div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Confundir as duas é um erro grave.</strong> Tentar fazer "mini-consultorias" no salão dilui o valor do processo. A consultoria tem ambiente, tempo e formato específicos — e isso é intencional.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 5 -->
+      <div id="21dias">
+        <div class="section-label">Etapa 5 de 6</div>
+        <div class="section-title">Os <em>21 Dias</em> — Hábito, vínculo e adesão</div>
+        <div class="prose">
+          <p>Os primeiros 21 dias não existem para transformar o físico — existem para criar hábito, gerar vínculo e manter o aluno conectado. O foco é comportamento e consistência, não resultado estético imediato. Prometer transformação em 21 dias é desalinhar expectativa e criar frustração.</p>
+        </div>
+        <div class="callout callout-verde">
+          <strong>O objetivo dos 21 dias:</strong> o aluno sair do período sabendo que consegue — que a academia cabe na sua vida. O resultado físico mensurável vem no fechamento do ciclo completo de 12 semanas. Os 21 dias constroem a base comportamental que torna isso possível.
+        </div>
+        <div class="conceitos-grid">
+          <div class="conceito-card">
+            <div class="conceito-num">Durante os 21 dias</div>
+            <div class="conceito-nome">Acompanhamento ativo</div>
+            <div class="conceito-desc">O treinador monitora frequência, aborda o aluno no salão com intenção e envia mensagens estratégicas: início de semana, reconhecimento de presença, contato em ausência e confirmação de revisão.</div>
+          </div>
+          <div class="conceito-card">
+            <div class="conceito-num">Além da catraca</div>
+            <div class="conceito-nome">Conexão digital</div>
+            <div class="conceito-desc">4 tipos de mensagem: início de semana (motivação + plano), reconhecimento (presença), ausência (cuidado + ajuste) e pré-revisão (antecipação positiva). São intervenções planejadas — não improvisadas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ETAPA 6 -->
+      <div id="revisao-treino">
+        <div class="section-label">Etapa 6 de 6</div>
+        <div class="section-title"><em>Revisão de Treino</em> — O checkpoint de 21 dias</div>
+        <div class="prose">
+          <p>A revisão é o checkpoint formal ao fim de cada ciclo de 21 dias. Ela acontece no salão, durante o treino, e tem três funções: reforçar comprometimento, ajustar o treino com base na evolução real e abrir o próximo ciclo. É sempre agendada no fim da consultoria anterior.</p>
+        </div>
+        <div class="callout">
+          <strong>Revisão às quintas e sextas:</strong> esses são os dias de menor frequência — o aluno tem tempo, o treinador tem disponibilidade. Nunca marque revisão em dias de pico sem acordo prévio.
+        </div>
+        <div class="conceitos-grid">
+          <div class="conceito-card">
+            <div class="conceito-num">O que fazer na revisão</div>
+            <div class="conceito-nome">3 movimentos</div>
+            <div class="conceito-desc">1. Celebrar a evolução (frequência, carga, sensação). 2. Ajustar o treino — não trocar tudo, ajustar o que precisa. 3. Abrir o próximo ciclo: nova meta, nova revisão agendada.</div>
+          </div>
+          <div class="conceito-card">
+            <div class="conceito-num">O que não fazer</div>
+            <div class="conceito-nome">Erros comuns</div>
+            <div class="conceito-desc">Trocar o treino completamente sem motivo. Fazer a revisão sem ter acompanhado os 21 dias. Não agendar a próxima revisão ao final. Deixar o aluno sair sem saber qual é o próximo passo.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- FUNIL -->
+      <div id="funil">
+        <div class="section-label">Gestão do Processo</div>
+        <div class="section-title">Funil de <em>Retenção — Onde medir</em></div>
+        <div class="prose">
+          <p>Cada etapa do fluxo tem uma taxa de conversão. Monitorar o funil permite identificar onde o processo está falhando. Sem número, não existe gestão — e sem gestão, o problema só aparece quando o aluno já cancelou.</p>
+        </div>
+        <div class="funil-wrap">
+          <div class="funil-step">
+            <div class="funil-num">1</div>
+            <div class="funil-info"><div class="funil-nome">Alunos abordados</div><div class="funil-desc">Contato ativo por turno — alunos existentes + experiências. Indicador de postura e presença.</div></div>
+            <span class="funil-meta">Meta: 100%</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">2</div>
+            <div class="funil-info"><div class="funil-nome">Alunos encarteirados</div><div class="funil-desc">Aluno registrado na carteira do treinador. Pré-requisito para qualquer acompanhamento estruturado.</div></div>
+            <span class="funil-meta">Meta: 85%+</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">3</div>
+            <div class="funil-info"><div class="funil-nome">Mapeamentos preenchidos</div><div class="funil-desc">Pré-requisito obrigatório para consultoria. Gargalo mais comum: aluno recebe link mas não preenche.</div></div>
+            <span class="funil-meta">Acompanhe em 24h</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">4</div>
+            <div class="funil-info"><div class="funil-nome">Consultorias agendadas vs. realizadas</div><div class="funil-desc">Taxa de comparecimento — segundo gargalo mais comum. Lembrete + confirmação 24h antes reduz ausência.</div></div>
+            <span class="funil-meta">Meta: 80%+</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">5</div>
+            <div class="funil-info"><div class="funil-nome">Desafios de 21 dias ativos</div><div class="funil-desc">Alunos com planner ativo e revisão agendada. Indicador direto de adesão e engajamento no processo.</div></div>
+            <span class="funil-meta">Acompanhe semanal</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">6</div>
+            <div class="funil-info"><div class="funil-nome">Revisões realizadas</div><div class="funil-desc">Checkpoints concluídos por ciclo. Indicador mais direto de retenção técnica ativa na base.</div></div>
+            <span class="funil-meta">Meta: 75%+</span>
+          </div>
+          <div class="funil-step">
+            <div class="funil-num">7</div>
+            <div class="funil-info"><div class="funil-nome">Experiências convertidas em matrícula</div><div class="funil-desc">Resultado final do fluxo. Reflexo da qualidade de toda a jornada de abordagem até a revisão.</div></div>
+            <span class="funil-meta">Meta: 70%+</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-conteudo -->
+
+    <!-- TAB SCRIPTS -->
+    <div class="tab-pane" id="tab-script">
+      <div class="section-label">Artefato 02</div>
+      <div class="section-title">Scripts do <em>Fluxo Completo</em></div>
+      <div class="prose"><p>Um script para cada etapa crítica do fluxo. Use os campos em <span style="color:var(--azul-mid);font-style:italic">[colchetes]</span> com as informações reais. Adapte o tom — nunca o processo.</p></div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 1 — Abordagem no salão (aluno existente)</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr1')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr1">
+          <p>"<span class="script-placeholder">[Nome]</span>, quanto tempo você tá com esse treino? Deixa eu dar uma olhada com você."</p>
+          <p>"A gente tá trazendo algumas novidades aqui — não é só mudar exercício, é uma forma diferente de acompanhar seu resultado. Você já ouviu falar do mapeamento de sintomas?"</p>
+          <p>"É rápido, você preenche pelo celular. Com ele preenchido a gente consegue marcar uma conversa de uns 20 minutos — uma consultoria — para estruturar melhor o seu treino. Termina aqui e a gente passa lá na recepção para já gerar o seu. Pode ser?"</p>
+          <div class="script-obs">→ Perfil 5%: "Vamos marcar uma revisão do seu treino então — eu reservo um horário para a gente olhar com calma." Encarteira e marca a revisão diretamente, sem mapeamento.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 3 — Passagem de bastão para a recepção</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr2')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr2">
+          <p>[Para a recepção, com o aluno ao lado:]</p>
+          <p>"<span class="script-placeholder">[Nome da recepcionista]</span>, tudo bem? Esse é o <span class="script-placeholder">[nome do aluno]</span>. Ele/ela já treinou hoje e a gente conversou sobre a consultoria. Você consegue verificar se o mapeamento já foi gerado e agendar a consultoria?"</p>
+          <p>[Para o aluno:] "Você fica aqui com ela um minutinho — ela vai te ajudar a agendar tudo certinho. Qualquer dúvida, me chama."</p>
+          <div class="script-obs">→ O bastão precisa ser passado por completo. Não é "vai lá na frente" — é acompanhar, apresentar e garantir que o próximo passo vai acontecer.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 4 — Criação de expectativa antes da consultoria</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr3')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr3">
+          <p>"Essa consultoria que a gente vai fazer não é uma avaliação física — não tem balança, fita métrica, nada disso por enquanto."</p>
+          <p>"É uma conversa de uns 20 minutos onde a gente vai sentar, olhar o que você respondeu no mapeamento e montar junto um plano para os seus primeiros 21 dias. Já vamos definir quais dias você vai treinar, qual vai ser o seu foco e a gente já marca a primeira revisão do seu treino."</p>
+          <p>"A ideia é que você saia daqui sabendo exatamente o que fazer — sem achismo, sem treino genérico."</p>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 5 — Comunicação da revisão agendada (fim da consultoria)</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr4')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr4">
+          <p>"<span class="script-placeholder">[Nome]</span>, então ficou combinado: sua revisão de treino vai ser no dia <span class="script-placeholder">[data — quinta ou sexta]</span>. A gente vai fazer durante o treino mesmo — não precisa separar um horário diferente."</p>
+          <p>"Nesse dia a gente vai olhar como foi esses 21 dias, repetir alguns exercícios para ver sua evolução de carga e ajustar o que precisar. Vai ser um marco legal — você vai perceber o quanto evoluiu."</p>
+          <p>"Qualquer coisa antes disso, me chama aqui no salão."</p>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 5 — Mensagens dos 21 dias (acompanhamento além da catraca)</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr5')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr5">
+          <div class="msg-grid">
+            <div class="msg-card">
+              <div class="msg-header">Início de semana</div>
+              <div class="msg-body">"Oi <span class="script-placeholder">[Nome]</span>! Semana nova começando. Lembra do seu desafio: <span class="script-placeholder">[dias combinados]</span>. Força — qualquer dúvida no treino me chama!"</div>
+            </div>
+            <div class="msg-card">
+              <div class="msg-header">Reconhecimento</div>
+              <div class="msg-body">"<span class="script-placeholder">[Nome]</span>, vi você arrasando hoje! Continua assim — essa regularidade é o que vai fazer a diferença lá na frente."</div>
+            </div>
+            <div class="msg-card">
+              <div class="msg-header">Ausência</div>
+              <div class="msg-body">"Oi <span class="script-placeholder">[Nome]</span>, sumiu hoje! Tá tudo bem? Se precisar ajustar o plano da semana, me fala — a gente resolve juntos."</div>
+            </div>
+            <div class="msg-card">
+              <div class="msg-header">Pré-revisão</div>
+              <div class="msg-body">"<span class="script-placeholder">[Nome]</span>, sua revisão de treino é <span class="script-placeholder">[dia]</span>! Vai ser bacana ver sua evolução. Confirma que você vem?"</div>
+            </div>
+          </div>
+          <div class="script-obs">→ Essas mensagens são intervenções planejadas — não improvisadas. Elas reduzem o churn silencioso e mantêm o vínculo ativo nos dias em que o aluno não aparece.</div>
+        </div>
+      </div>
+
+      <div class="script-box">
+        <div class="script-header">
+          <span class="script-tag">📍 Etapa 6 — Abertura da revisão de treino (no salão)</span>
+          <button class="script-copy-btn" onclick="copyScript(this,'scr6')">Copiar</button>
+        </div>
+        <div class="script-body" id="scr6">
+          <p>"<span class="script-placeholder">[Nome]</span>, chegou o dia! Como você tá se sentindo comparado com o início?"</p>
+          <p>"Vou repetir com você <span class="script-placeholder">[exercício 1]</span> e <span class="script-placeholder">[exercício 2]</span> — os mesmos do início — para a gente ver a diferença na carga e na execução. Aí a gente faz os ajustes no treino e já combina os próximos 21 dias."</p>
+          <div class="script-obs">→ Sempre abra a revisão com celebração antes do ajuste. O aluno precisa perceber que evoluiu — mesmo que ele ainda não tenha notado.</div>
+        </div>
+      </div>
+    </div><!-- /tab-script -->
+
+    <!-- TAB QUIZ -->
+    <div class="tab-pane" id="tab-quiz">
+      <div class="section-label">Artefato 03 · Validação do Fluxo</div>
+      <div class="section-title">Quiz — <em>O Fluxo de Retenção Técnica</em></div>
+      <div class="prose" style="margin-bottom:1.5rem">
+        <p>8 questões sobre o fluxo completo. Mínimo de <strong>70% (6 acertos)</strong> para aprovação e liberação do Cap. T03.</p>
+      </div>
+      <div class="quiz-wrapper">
+        <div class="quiz-top">
+          <div class="quiz-top-title">Quiz · Cap. T02 — Fluxo de Retenção</div>
+          <div class="quiz-top-meta" id="quizMeta">Questão 1 de 8</div>
+        </div>
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressBar" style="width:12.5%"></div></div>
+        <div class="quiz-body" id="quizBody">
+          <div class="quiz-q-num" id="quizQNum">Questão 1 de 8</div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+        <div class="quiz-resultado" id="quizResultado">
+          <div class="resultado-score" id="resultadoScore"></div>
+          <div class="resultado-msg" id="resultadoMsg"></div>
+          <div class="resultado-sub" id="resultadoSub"></div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem">
+            <button class="btn-outline" onclick="reiniciarQuiz()">Refazer quiz</button>
+          </div>
+        </div>
+        <div class="quiz-footer">
+          <div class="quiz-score">Acertos: <strong id="quizAcertos">0</strong> / <span id="quizTotal">0</span></div>
+          <button class="btn-primary" id="btnProximo" onclick="proximaQuestao()" disabled>Próxima →</button>
+        </div>
+      </div>
+    </div><!-- /tab-quiz -->
+
+    <!-- TAB REVISÃO -->
+    <div class="tab-pane" id="tab-revisao">
+      <div class="section-label">Artefato 04 · Formato Bolso</div>
+      <div class="section-title">Cartão de <em>Revisão Rápida</em></div>
+      <div class="prose"><p>Os 6 princípios do fluxo. Leia antes de qualquer turno até que estejam internalizados.</p></div>
+
+      <div class="revisao-card">
+        <div class="revisao-title">⚡ T02 — O Fluxo de Retenção Técnica</div>
+        <div class="revisao-item">
+          <div class="revisao-check">1</div>
+          <div><strong>Abordar é o seu trabalho.</strong> Nenhum aluno deve ficar invisível no salão. A abordagem ativa é o ponto de partida de tudo — sem ela, o processo não começa.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">2</div>
+          <div><strong>Sem mapeamento, sem consultoria.</strong> O mapeamento de sintomas é o gatilho obrigatório. Nunca agende consultoria antes dele estar preenchido e confirmado.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">3</div>
+          <div><strong>Consultoria ≠ Revisão de treino.</strong> São dois momentos completamente distintos. Consultoria: uma vez, na sala, no início. Revisão: a cada 21 dias, no salão, durante o treino.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">4</div>
+          <div><strong>Os 21 dias são de comportamento.</strong> Não prometa transformação estética em 21 dias. Foque em hábito, vínculo e adesão. O resultado físico mensurável vem no fechamento do ciclo de 12 semanas.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">5</div>
+          <div><strong>Passe o bastão por completo.</strong> Levar o aluno até a recepção e apresentar é diferente de mandar ele "ir lá". O bastão incompleto quebra o processo e o vínculo construído na abordagem.</div>
+        </div>
+        <div class="revisao-item">
+          <div class="revisao-check">6</div>
+          <div><strong>Conheça seus números.</strong> Quantos alunos na carteira? Quantas consultorias essa semana? Quantas revisões agendadas? Treinador sem número não tem gestão — e sem gestão não há retenção.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <div class="section-label">Checklist do fluxo — por turno</div>
+        <div class="checklist-row" id="checklistRow">
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Abordei todos</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Encarteirei novos</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Gerei mapeamentos</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Agendei consultorias</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Ativei 21 dias</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Agendei revisões</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Enviei mensagens</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Passei bastão completo</span>
+        </div>
+        <div class="check-status" id="checkStatus">0 de 8 etapas confirmadas</div>
+      </div>
+    </div><!-- /tab-revisao -->
+
+    <!-- TAB GESTOR -->
+    <div class="tab-pane" id="tab-gestor">
+      <div class="section-label">Artefato 05 · Para gestores e líderes</div>
+      <div class="section-title">Guia do Gestor — <em>Cap. T02</em></div>
+      <div class="prose"><p>O que observar em campo, como cobrar o processo e quais indicadores monitorar quando o fluxo de retenção técnica está ou não sendo aplicado.</p></div>
+
+      <div class="gestor-grid">
+        <div class="gestor-card">
+          <div class="gestor-card-title">🔍 O que observar em campo</div>
+          <div class="gestor-item">O treinador está abordando ativamente ou esperando o aluno pedir?</div>
+          <div class="gestor-item">Cada aluno novo ou experiência está sendo encarteirado no sistema?</div>
+          <div class="gestor-item">O bastão para a recepção está sendo feito presencialmente?</div>
+          <div class="gestor-item">As consultorias estão sendo agendadas somente após mapeamento preenchido?</div>
+          <div class="gestor-item">O treinador sabe quantos alunos tem em 21 dias ativos e quantas revisões estão agendadas?</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📣 Como cobrar a aplicação</div>
+          <div class="gestor-item">Reunião semanal: cada treinador apresenta seus números do funil (abordagens, mapeamentos, consultorias, revisões).</div>
+          <div class="gestor-item">Simulação de abordagem: gestor faz papel de aluno resistente — treinador pratica o script ao vivo.</div>
+          <div class="gestor-item">Verificação no sistema: quantos alunos sem mapeamento, sem consultoria, sem revisão agendada.</div>
+          <div class="gestor-item">Perguntar: "Quem foi embora hoje sem próximo passo definido?" Nenhum deveria sair sem isso.</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📋 Pauta da reunião semanal</div>
+          <div class="gestor-item">Números da semana: abordagens × mapeamentos × consultorias × revisões realizadas</div>
+          <div class="gestor-item">Gargalo do funil: em qual etapa está a maior perda de conversão?</div>
+          <div class="gestor-item">Caso real: cada treinador traz uma situação que não soube resolver no fluxo</div>
+          <div class="gestor-item">Próxima ação: o que cada um vai fazer diferente nos próximos 7 dias</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📊 Indicadores vinculados ao T02</div>
+          <div class="gestor-item">Alunos abordados por treinador por turno</div>
+          <div class="gestor-item">Taxa mapeamentos gerados vs. consultorias agendadas</div>
+          <div class="gestor-item">Taxa de comparecimento às consultorias</div>
+          <div class="gestor-item">Alunos com revisão de treino agendada (21 dias ativos)</div>
+          <div class="gestor-item">Taxa de conversão de experiência em matrícula</div>
+          <div class="kpi-row">
+            <span class="kpi-chip">Retenção</span>
+            <span class="kpi-chip">Frequência</span>
+            <span class="kpi-chip">Conversão</span>
+            <span class="kpi-chip">Carteira ativa</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-verde" style="margin-top:1.5rem">
+        <strong>Quando esse fluxo está sendo aplicado bem:</strong> a taxa de comparecimento sobe, o churn silencioso cai, experiências convertem mais e o aluno passa a perceber o treinador como referência — não como um recurso disponível só quando ele quer. Esses são os sinais de que o processo virou cultura.
+      </div>
+    </div><!-- /tab-gestor -->
+
+  </main>
+</div>
+
+<script>
+const questoes=[
+  {q:"Qual é a consequência direta de pular etapas no fluxo de retenção técnica?",opts:["O processo fica mais ágil e o aluno chega mais rápido à consultoria","O processo é quebrado — cada etapa prepara o aluno emocionalmente para a próxima","O treinador fica com mais tempo disponível no turno","Não há consequência real — o fluxo é apenas uma sugestão de boas práticas"],correta:1,exp:"Cada etapa do fluxo existe por uma razão específica e prepara o aluno para a próxima. Pular etapas não agiliza o processo — quebra o processo. O aluno chega despreparado e a taxa de conversão despenca."},
+  {q:"Qual é o pré-requisito obrigatório para agendar uma consultoria técnica?",opts:["O aluno ter assinado o contrato de matrícula anual","A bioimpedância e a avaliação antropométrica terem sido realizadas","O mapeamento de sintomas estar preenchido e confirmado pelo aluno","O aluno ter completado pelo menos 30 dias de treino na academia"],correta:2,exp:"O mapeamento de sintomas é o gatilho formal que ativa o processo. Sem ele preenchido e confirmado, não há consultoria — e sem consultoria, não há jornada estruturada. É também o comprometimento inicial do aluno com o processo."},
+  {q:"Qual é a principal diferença entre Consultoria Técnica e Revisão de Treino?",opts:["A consultoria é feita pelo gestor; a revisão é feita pelo treinador","A consultoria usa bioimpedância; a revisão usa apenas o treino prático","A consultoria acontece uma vez na sala no início da jornada; a revisão acontece a cada 21 dias no salão durante o treino","A consultoria é para alunos novos; a revisão é exclusiva para alunos com plano anual"],correta:2,exp:"São dois momentos completamente distintos: a Consultoria acontece uma vez, na sala, no início da jornada — define plano, planner e desafio. A Revisão acontece a cada 21 dias, no salão, durante o treino — é o checkpoint técnico e comportamental do ciclo."},
+  {q:"O que significa 'passar o bastão por completo' ao encaminhar um aluno à recepção?",opts:["Enviar uma mensagem pelo sistema avisando a recepção que o aluno está a caminho","Acompanhar o aluno até a recepção, apresentá-lo pessoalmente e garantir que o próximo passo será realizado","Explicar ao aluno o que ele deve pedir na recepção e deixá-lo ir sozinho","Ligar para a recepção enquanto o aluno caminha até lá"],correta:1,exp:"O bastão precisa ser passado por completo: o treinador acompanha, apresenta o aluno à recepção e garante que o mapeamento será gerado e a consultoria agendada. 'Vai lá na frente' não é bastão — é abandono do processo."},
+  {q:"Qual é o foco correto dos primeiros 21 dias do aluno na jornada?",opts:["Transformação estética mensurável — perda de peso e medidas visíveis","Realização de bioimpedância semanal para acompanhar composição corporal","Comportamento, vínculo e adesão — criar hábito e conexão com o método","Aprendizado técnico de todos os exercícios do programa"],correta:2,exp:"Os primeiros 21 dias não existem para transformar o físico — existem para criar hábito, gerar vínculo e manter o aluno conectado. O resultado estético mensurável vem no fechamento do ciclo de 12 semanas. Prometer resultado em 21 dias desalinha expectativa."},
+  {q:"Um treinador fez 12 abordagens na semana, mas apenas 3 alunos preencheram o mapeamento e nenhuma consultoria foi realizada. Onde está o gargalo?",opts:["Na etapa de abordagem — o treinador precisa abordar mais alunos por dia","Entre mapeamento e consultoria — a taxa de comparecimento está baixa","Entre abordagem e mapeamento — a maioria dos abordados não preencheu o mapeamento","Na etapa de revisão — os alunos não estão voltando para o checkpoint de 21 dias"],correta:2,exp:"De 12 abordagens, apenas 3 preencheram o mapeamento. O gargalo está entre a abordagem e o mapeamento. O aluno ouviu mas não agiu — o encaminhamento à recepção e a criação de urgência precisam ser revistos."},
+  {q:"Por que as mensagens dos 21 dias são chamadas de 'intervenções planejadas'?",opts:["Porque são enviadas automaticamente pelo sistema sem participação do treinador","Porque cada tipo de mensagem tem um propósito específico e um momento certo para ser enviada","Porque elas seguem um modelo genérico enviado para todos os alunos simultaneamente","Porque são opcionais e servem apenas como lembrete de próxima sessão"],correta:1,exp:"As mensagens dos 21 dias (início de semana, reconhecimento, ausência e pré-revisão) são intervenções planejadas porque cada uma tem um propósito específico e um momento correto — não são improvisos. Elas reduzem o churn silencioso e mantêm o vínculo ativo nos dias que o aluno não aparece."},
+  {q:"Qual deve ser o primeiro movimento do treinador ao abrir a revisão de treino com um aluno?",opts:["Apresentar as correções técnicas identificadas nos últimos 21 dias","Celebrar a evolução antes de qualquer ajuste — o aluno precisa perceber que avançou","Verificar no sistema quantas faltas o aluno teve no período","Propor a troca completa do treino para manter o aluno motivado"],correta:1,exp:"A revisão sempre começa com celebração — não com ajuste. O aluno precisa perceber que evoluiu antes de ouvir o que muda. Essa sequência (celebrar → ajustar → abrir próximo ciclo) é intencional: ela reforça o comprometimento e prepara o aluno emocionalmente para continuar."}
+];
+
+let qAtual=0,acertos=0,respondidas=0,selecionado=null;
+
+function renderQuestao(){
+  const q=questoes[qAtual];
+  document.getElementById('quizQNum').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizMeta').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizQuestion').textContent=q.q;
+  document.getElementById('quizProgressBar').style.width=`${((qAtual+1)/questoes.length)*100}%`;
+  document.getElementById('quizFeedback').className='quiz-feedback';
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('btnProximo').disabled=true;
+  selecionado=null;
+  const opts=document.getElementById('quizOptions');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-option';btn.textContent=o;
+    btn.onclick=()=>selecionar(i);opts.appendChild(btn);
+  });
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+}
+
+function selecionar(idx){
+  if(selecionado!==null)return;
+  selecionado=idx;
+  const q=questoes[qAtual];
+  const opts=document.querySelectorAll('.quiz-option');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('quizFeedback');
+  if(idx===q.correta){opts[idx].classList.add('correct');acertos++;fb.textContent='✓ Correto! '+q.exp;fb.className='quiz-feedback show ok';}
+  else{opts[idx].classList.add('wrong');opts[q.correta].classList.add('correct');fb.textContent='✗ Incorreto. '+q.exp;fb.className='quiz-feedback show err';}
+  respondidas++;
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+  document.getElementById('btnProximo').disabled=false;
+  updateProgress(respondidas/questoes.length*0.6);
+}
+
+function proximaQuestao(){qAtual++;if(qAtual>=questoes.length){mostrarResultado();return;}renderQuestao();}
+
+function mostrarResultado(){
+  document.getElementById('quizBody').style.display='none';
+  const pct=Math.round((acertos/questoes.length)*100);
+  const aprovado=pct>=70;
+  document.getElementById('quizResultado').className='quiz-resultado show';
+  document.getElementById('resultadoScore').textContent=pct+'%';
+  document.getElementById('resultadoScore').className='resultado-score '+(aprovado?'aprovado':'reprovado');
+  document.getElementById('resultadoMsg').textContent=aprovado?'✓ Aprovado! Você está pronto para avançar para o Cap. T03.':'✗ Abaixo do mínimo. Revise o conteúdo e tente novamente.';
+  document.getElementById('resultadoSub').textContent=`${acertos} de ${questoes.length} questões corretas. Mínimo: 70% (6 acertos).`;
+  document.getElementById('btnProximo').disabled=true;
+  updateProgress(1);
+}
+
+function reiniciarQuiz(){qAtual=0;acertos=0;respondidas=0;selecionado=null;document.getElementById('quizBody').style.display='block';document.getElementById('quizResultado').className='quiz-resultado';renderQuestao();}
+
+function switchTab(id){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.uc-nav a').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4};
+  if(map[id]!==undefined){document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');document.querySelectorAll('.uc-nav a')[map[id]].classList.add('active');}
+  if(id==='quiz'&&respondidas===0)renderQuestao();
+}
+
+function copyScript(btn,id){
+  const text=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',1800);});
+}
+
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  el.querySelector('.ck').textContent=el.classList.contains('checked')?'✓':'○';
+  const total=document.querySelectorAll('.check-pill').length;
+  const checked=document.querySelectorAll('.check-pill.checked').length;
+  document.getElementById('checkStatus').textContent=`${checked} de ${total} etapas confirmadas`;
+  updateProgress(checked/total*0.4);
+}
+
+function updateProgress(pct){
+  const p=Math.min(100,Math.round(pct*100));
+  document.getElementById('progressFill').style.width=p+'%';
+  document.getElementById('progressText').textContent=p+'% concluído';
+}
+
+function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+renderQuestao();
+</script>
+</body>
+</html>
