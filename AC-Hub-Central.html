@@ -263,18 +263,32 @@ body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;
 const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
 
-/* ══ USUÁRIOS LOCAIS — edite aqui para adicionar colaboradores ══ */
-const USUARIOS = [
-  { id:'admin',    nome:'Administrador',   email:'admin@acquacel.com.br',           senha:'acquacel2026', tipo:'admin'         },
-  { id:'luciano',  nome:'Luciano',         email:'luciano@acquacel.com.br',          senha:'acquacel123',  tipo:'gestor'        },
-  { id:'penha',    nome:'Penha',           email:'penha@acquacel.com.br',            senha:'acquacel123',  tipo:'gestor'        },
-  { id:'ana',      nome:'Ana Paula',       email:'ana.paula@acquacel.com.br',        senha:'acquacel123',  tipo:'treinador'     },
-  { id:'carlos',   nome:'Carlos Eduardo',  email:'carlos.eduardo@acquacel.com.br',   senha:'acquacel123',  tipo:'treinador'     },
-  { id:'jessica',  nome:'Jessica Lima',    email:'jessica.lima@acquacel.com.br',     senha:'acquacel123',  tipo:'treinador'     },
-  { id:'marcos',   nome:'Marcos Vinícius', email:'marcos.vinicius@acquacel.com.br',  senha:'acquacel123',  tipo:'treinador'     },
-  { id:'patricia', nome:'Patrícia Souza',  email:'patricia.souza@acquacel.com.br',   senha:'acquacel123',  tipo:'treinador'     },
-  { id:'rafael',   nome:'Rafael Costa',    email:'rafael.costa@acquacel.com.br',     senha:'acquacel123',  tipo:'treinador'     },
+/* ══ USUÁRIOS — admin fixo + demais salvos no localStorage ══ */
+const ADMIN_FIXO = { id:'admin', nome:'Administrador', email:'admin@acquacel.com.br', senha:'acquacel2026', tipo:'admin' };
+
+const PERFIS_DISPONIVEIS = [
+  { valor:'admin',          label:'Admin'               },
+  { valor:'gestor',         label:'Gestão'              },
+  { valor:'lider_tecnico',  label:'Liderança Técnica'   },
+  { valor:'consultor',      label:'Liderança Comercial' },
+  { valor:'treinador',      label:'Treinador(a)'        },
+  { valor:'consultor_ext',  label:'Consultor(a)'        },
 ];
+
+function getUsuarios() {
+  try {
+    const raw = localStorage.getItem('acqu_usuarios');
+    const lista = raw ? JSON.parse(raw) : [];
+    return [ADMIN_FIXO, ...lista];
+  } catch(e) { return [ADMIN_FIXO]; }
+}
+
+function salvarUsuarios(lista) {
+  const semAdmin = lista.filter(u => u.id !== 'admin');
+  localStorage.setItem('acqu_usuarios', JSON.stringify(semAdmin));
+}
+
+const USUARIOS = getUsuarios();
 
 /* ══════════════════════════════
    PERFIS E MÓDULOS
@@ -346,7 +360,7 @@ function fazerLogin() {
   err.classList.remove('show');
   if (!email || !senha) { err.textContent = 'Preencha e-mail e senha.'; err.classList.add('show'); return; }
 
-  const user = USUARIOS.find(u => u.email.toLowerCase() === email && u.senha === senha);
+  const user = getUsuarios().find(u => u.email.toLowerCase() === email && u.senha === senha);
 
   if (!user) {
     err.textContent = 'E-mail ou senha incorretos. Verifique e tente novamente.';
@@ -578,39 +592,138 @@ function renderAtividade() {
    EXTRA ADMIN
 ══════════════════════════════ */
 function renderAdminExtra() {
+  const lista = getUsuarios().filter(u => u.id !== 'admin');
+  const rows = lista.length === 0
+    ? `<tr><td colspan="4" style="text-align:center;color:var(--texto3);padding:2rem">Nenhum usuário cadastrado ainda.</td></tr>`
+    : lista.map(u => `
+      <tr>
+        <td><div class="trainer-cell">
+          <div class="topbar-avatar" style="background:${AVATAR_CORES[u.tipo]||'#1B4FD8'};width:32px;height:32px;font-size:12px;flex-shrink:0;">${u.nome[0].toUpperCase()}</div>
+          <div><div style="font-weight:600;color:var(--preto)">${u.nome}</div><div style="font-size:11px;color:var(--texto3)">${u.email}</div></div>
+        </div></td>
+        <td><span class="perfil-badge" style="background:${AVATAR_CORES[u.tipo]||'#1B4FD8'}20;color:${AVATAR_CORES[u.tipo]||'#1B4FD8'};border:1px solid ${AVATAR_CORES[u.tipo]||'#1B4FD8'}40">${PERFIS_DISPONIVEIS.find(p=>p.valor===u.tipo)?.label||u.tipo}</span></td>
+        <td style="font-size:12px;color:var(--texto2)">${u.senha}</td>
+        <td>
+          <button onclick="editarUsuario('${u.id}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--borda2);background:none;color:var(--texto2);cursor:pointer;margin-right:4px">Editar</button>
+          <button onclick="deletarUsuario('${u.id}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--verm-border);background:var(--verm-dim);color:var(--vermelho);cursor:pointer">Remover</button>
+        </td>
+      </tr>`).join('');
+
   return `
     <div class="hub-divider"></div>
-    <div class="hub-section-label ciano">Configurações da plataforma</div>
-    <div class="admin-grid">
-      <div class="admin-card">
-        <div class="admin-card-title">🏢 Academia</div>
-        <div class="admin-item"><span class="admin-item-label">Nome</span><span class="admin-item-val">Acquacel Fitness</span></div>
-        <div class="admin-item"><span class="admin-item-label">Plano</span><span class="admin-item-val">Profissional</span></div>
-        <div class="admin-item"><span class="admin-item-label">Supabase</span><span class="admin-item-val" style="color:var(--verde)">✓ Conectado</span></div>
-        <div class="admin-item"><span class="admin-item-label">Região</span><span class="admin-item-val">us-east-1</span></div>
+    <div class="hub-section-label ciano">Gestão de usuários</div>
+
+    <div style="background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;overflow:hidden;margin-bottom:1.75rem;">
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;color:var(--preto)">Usuários da plataforma</div>
+          <div style="font-size:11px;color:var(--texto3)">${getUsuarios().length} usuário(s) cadastrado(s) · Admin sempre ativo</div>
+        </div>
+        <button onclick="abrirModalUsuario()" style="background:var(--azul);color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;">+ Novo usuário</button>
       </div>
-      <div class="admin-card">
-        <div class="admin-card-title">🔧 Módulos ativos</div>
-        <div class="admin-item"><span class="admin-item-label">Sistema de Retenção</span><span class="admin-item-val" style="color:var(--verde)">✓ Ativo</span></div>
-        <div class="admin-item"><span class="admin-item-label">Universidade Corporativa</span><span class="admin-item-val" style="color:var(--verde)">✓ Ativo</span></div>
-        <div class="admin-item"><span class="admin-item-label">Painel de Vendas</span><span class="admin-item-val" style="color:var(--verde)">✓ Ativo</span></div>
-        <div class="admin-item"><span class="admin-item-label">Planner Digital</span><span class="admin-item-val" style="color:var(--amarelo)">Fase 2</span></div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead style="background:var(--preto);">
+            <tr>
+              <th style="padding:.75rem 1.125rem;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65);text-align:left;">Colaborador</th>
+              <th style="padding:.75rem 1.125rem;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;">Perfil de acesso</th>
+              <th style="padding:.75rem 1.125rem;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;">Senha</th>
+              <th style="padding:.75rem 1.125rem;font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:left;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
       </div>
-      <div class="admin-card">
-        <div class="admin-card-title">📋 Próximos passos</div>
-        <div class="admin-item"><span class="admin-item-label">1. Cadastrar academia</span><span class="admin-item-val" style="color:var(--amarelo)">Pendente</span></div>
-        <div class="admin-item"><span class="admin-item-label">2. Criar treinadores</span><span class="admin-item-val" style="color:var(--amarelo)">Pendente</span></div>
-        <div class="admin-item"><span class="admin-item-label">3. Criar gestor</span><span class="admin-item-val" style="color:var(--amarelo)">Pendente</span></div>
-        <div class="admin-item"><span class="admin-item-label">4. Importar carteira</span><span class="admin-item-val" style="color:var(--amarelo)">Pendente</span></div>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-title">🔑 Credenciais admin</div>
-        <div class="admin-item"><span class="admin-item-label">E-mail</span><span class="admin-item-val">admin@acquacel.com.br</span></div>
-        <div class="admin-item"><span class="admin-item-label">Painel admin</span><span class="admin-item-val">admin / acquacel2026</span></div>
-        <div class="admin-item"><span class="admin-item-label">Altere as senhas</span><span class="admin-item-val" style="color:var(--vermelho)">⚠ Urgente</span></div>
+    </div>
+
+    <!-- MODAL NOVO/EDITAR USUÁRIO -->
+    <div id="modal-usuario" style="position:fixed;inset:0;background:rgba(10,15,30,.75);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+      <div style="background:var(--fundo2);border-radius:16px;padding:2rem;width:100%;max-width:460px;border:1px solid var(--borda);margin:1rem;" onclick="event.stopPropagation()">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;color:var(--preto);margin-bottom:.25rem" id="modal-usuario-titulo">Novo usuário</div>
+        <div style="font-size:12px;color:var(--texto3);margin-bottom:1.5rem">Preencha os dados do colaborador. A senha pode ser alterada depois.</div>
+
+        <label class="form-label">Nome completo</label>
+        <input type="text" class="form-input" id="u-nome" placeholder="Ex: Ana Paula Silva">
+
+        <label class="form-label">E-mail de acesso</label>
+        <input type="email" class="form-input" id="u-email" placeholder="ana.paula@acquacel.com.br">
+
+        <label class="form-label">Senha inicial</label>
+        <input type="text" class="form-input" id="u-senha" placeholder="Ex: acquacel123">
+
+        <label class="form-label">Perfil de acesso</label>
+        <select class="form-input" id="u-tipo" style="appearance:auto">
+          ${PERFIS_DISPONIVEIS.filter(p=>p.valor!=='admin').map(p=>`<option value="${p.valor}">${p.label}</option>`).join('')}
+        </select>
+
+        <input type="hidden" id="u-id">
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--borda);">
+          <button onclick="fecharModalUsuario()" style="background:none;color:var(--texto2);border:1px solid var(--borda2);padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;">Cancelar</button>
+          <button onclick="salvarUsuario()" style="background:var(--azul);color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;">Salvar usuário</button>
+        </div>
       </div>
     </div>
   `;
+}
+
+function abrirModalUsuario(id) {
+  document.getElementById('modal-usuario-titulo').textContent = id ? 'Editar usuário' : 'Novo usuário';
+  document.getElementById('u-id').value = id || '';
+  if (id) {
+    const u = getUsuarios().find(x=>x.id===id);
+    if (u) {
+      document.getElementById('u-nome').value  = u.nome;
+      document.getElementById('u-email').value = u.email;
+      document.getElementById('u-senha').value = u.senha;
+      document.getElementById('u-tipo').value  = u.tipo;
+    }
+  } else {
+    document.getElementById('u-nome').value  = '';
+    document.getElementById('u-email').value = '';
+    document.getElementById('u-senha').value = 'acquacel123';
+    document.getElementById('u-tipo').value  = 'treinador';
+  }
+  document.getElementById('modal-usuario').style.display = 'flex';
+}
+
+function editarUsuario(id) { abrirModalUsuario(id); }
+
+function fecharModalUsuario() {
+  document.getElementById('modal-usuario').style.display = 'none';
+}
+
+function salvarUsuario() {
+  const nome  = document.getElementById('u-nome').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  const senha = document.getElementById('u-senha').value.trim();
+  const tipo  = document.getElementById('u-tipo').value;
+  const id    = document.getElementById('u-id').value;
+
+  if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
+
+  const lista = getUsuarios().filter(u => u.id !== 'admin');
+
+  if (id) {
+    const idx = lista.findIndex(u=>u.id===id);
+    if (idx>=0) lista[idx] = { id, nome, email, senha, tipo };
+  } else {
+    const novoId = 'u_' + Date.now();
+    lista.push({ id: novoId, nome, email, senha, tipo });
+  }
+
+  salvarUsuarios(lista);
+  fecharModalUsuario();
+  renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
+  showToast('✓ Usuário salvo com sucesso!');
+}
+
+function deletarUsuario(id) {
+  if (!confirm('Remover este usuário? Esta ação não pode ser desfeita.')) return;
+  const lista = getUsuarios().filter(u => u.id !== 'admin' && u.id !== id);
+  salvarUsuarios(lista);
+  renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
+  showToast('Usuário removido.');
 }
 
 /* ══════════════════════════════
