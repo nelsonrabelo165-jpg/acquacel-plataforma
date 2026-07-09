@@ -6,7 +6,6 @@
 <title>Acquacel · Hub Central</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --azul:#1B4FD8;--azul-mid:#2563EB;--azul-light:#3B82F6;
@@ -260,9 +259,22 @@ body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;
 /* ══════════════════════════════
    SUPABASE
 ══════════════════════════════ */
+/* ══ SUPABASE (apenas para dados — não para Auth) ══ */
 const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ══ USUÁRIOS LOCAIS — edite aqui para adicionar colaboradores ══ */
+const USUARIOS = [
+  { id:'admin',    nome:'Administrador',   email:'admin@acquacel.com.br',           senha:'acquacel2026', tipo:'admin'         },
+  { id:'luciano',  nome:'Luciano',         email:'luciano@acquacel.com.br',          senha:'acquacel123',  tipo:'gestor'        },
+  { id:'penha',    nome:'Penha',           email:'penha@acquacel.com.br',            senha:'acquacel123',  tipo:'gestor'        },
+  { id:'ana',      nome:'Ana Paula',       email:'ana.paula@acquacel.com.br',        senha:'acquacel123',  tipo:'treinador'     },
+  { id:'carlos',   nome:'Carlos Eduardo',  email:'carlos.eduardo@acquacel.com.br',   senha:'acquacel123',  tipo:'treinador'     },
+  { id:'jessica',  nome:'Jessica Lima',    email:'jessica.lima@acquacel.com.br',     senha:'acquacel123',  tipo:'treinador'     },
+  { id:'marcos',   nome:'Marcos Vinícius', email:'marcos.vinicius@acquacel.com.br',  senha:'acquacel123',  tipo:'treinador'     },
+  { id:'patricia', nome:'Patrícia Souza',  email:'patricia.souza@acquacel.com.br',   senha:'acquacel123',  tipo:'treinador'     },
+  { id:'rafael',   nome:'Rafael Costa',    email:'rafael.costa@acquacel.com.br',     senha:'acquacel123',  tipo:'treinador'     },
+];
 
 /* ══════════════════════════════
    PERFIS E MÓDULOS
@@ -326,66 +338,36 @@ let perfilAtual  = null;
 /* ══════════════════════════════
    LOGIN
 ══════════════════════════════ */
-async function fazerLogin() {
-  const email = document.getElementById('inputEmail').value.trim();
+function fazerLogin() {
+  const email = document.getElementById('inputEmail').value.trim().toLowerCase();
   const senha = document.getElementById('inputSenha').value;
   const err   = document.getElementById('loginError');
-  const ldr   = document.getElementById('loginLoader');
-  const btn   = document.getElementById('btnLogin');
 
   err.classList.remove('show');
   if (!email || !senha) { err.textContent = 'Preencha e-mail e senha.'; err.classList.add('show'); return; }
 
-  btn.disabled = true;
-  ldr.classList.add('show');
+  const user = USUARIOS.find(u => u.email.toLowerCase() === email && u.senha === senha);
 
-  try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
-    if (error) throw error;
-
-    /* Identificar perfil buscando nas tabelas */
-    const perfil = await identificarPerfil(data.user.id);
-    if (!perfil) throw new Error('Perfil não encontrado. Contate o administrador.');
-
-    usuarioAtual = { ...data.user, ...perfil };
-    perfilAtual  = perfil.tipo;
-    abrirHub();
-  } catch(e) {
-    err.textContent = e.message || 'E-mail ou senha incorretos.';
+  if (!user) {
+    err.textContent = 'E-mail ou senha incorretos. Verifique e tente novamente.';
     err.classList.add('show');
-  } finally {
-    btn.disabled = false;
-    ldr.classList.remove('show');
-  }
-}
-
-async function identificarPerfil(userId) {
-  /* Tenta cada tabela em ordem */
-  const tabelas = [
-    { tabela:'treinadores', tipo:'treinador' },
-    { tabela:'gestores',    tipo:'gestor'    },
-    { tabela:'consultores', tipo:'consultor' },
-  ];
-
-  for (const { tabela, tipo } of tabelas) {
-    const { data } = await sb.from(tabela).select('*').eq('user_id', userId).maybeSingle();
-    if (data) {
-      /* Líder técnico = treinador com tipo 'lider' na coluna tipo */
-      const tipoReal = (tipo === 'treinador' && data.tipo === 'lider') ? 'lider_tecnico' : tipo;
-      return { ...data, tipo: tipoReal };
-    }
+    return;
   }
 
-  /* Fallback: verificar se é admin pelo e-mail */
-  const { data: { user } } = await sb.auth.getUser();
-  if (user?.email === 'admin@acquacel.com.br') return { nome:'Administrador', tipo:'admin' };
-
-  return null;
+  usuarioAtual = user;
+  perfilAtual  = user.tipo;
+  localStorage.setItem('acqu_session', JSON.stringify({ id: user.id, tipo: user.tipo }));
+  abrirHub();
 }
 
-async function fazerLogout() {
-  await sb.auth.signOut();
+/* identificarPerfil — não usada no login local, mantida para compatibilidade */
+function identificarPerfil(userId) {
+  return USUARIOS.find(u => u.id === userId) || null;
+}
+
+function fazerLogout() {
   usuarioAtual = null; perfilAtual = null;
+  localStorage.removeItem('acqu_session');
   document.getElementById('tela-hub').style.display = 'none';
   document.getElementById('tela-login').style.display = 'flex';
   document.getElementById('inputSenha').value = '';
@@ -634,45 +616,28 @@ function renderAdminExtra() {
 /* ══════════════════════════════
    CARREGAR KPIs DO SUPABASE
 ══════════════════════════════ */
-async function carregarKpis() {
-  if (!usuarioAtual) return;
-
-  try {
-    if (perfilAtual === 'treinador' || perfilAtual === 'lider_tecnico') {
-      const tid = usuarioAtual.id;
-      const [{ count: cart }, { count: exp }, { count: rev }] = await Promise.all([
-        sb.from('alunos').select('*', {count:'exact',head:true}).eq('treinador_id', tid).eq('ativo', true),
-        sb.from('experiencias').select('*', {count:'exact',head:true}).eq('treinador_id', tid).eq('status','ativa'),
-        sb.from('tarefas_treinador').select('*', {count:'exact',head:true}).eq('treinador_id', tid).eq('status','pendente'),
-      ]);
-      setText('kpi-carteira', cart ?? 0);
-      setText('kpi-revisoes', rev ?? 0);
-      setText('kpi-exp', exp ?? 0);
-      setText('kpi-uc', localStorage.getItem(`acqu_${tid}_prog`) ? calcUcProg(tid) : 0);
-    }
-
-    if (perfilAtual === 'gestor' || perfilAtual === 'admin') {
-      const aid = usuarioAtual.academia_id;
-      const [{ count: alunos }, { count: exp }, { count: users }] = await Promise.all([
-        sb.from('alunos').select('*', {count:'exact',head:true}).eq('academia_id', aid).eq('ativo', true),
-        sb.from('experiencias').select('*', {count:'exact',head:true}).eq('academia_id', aid).eq('status','ativa'),
-        sb.from('treinadores').select('*', {count:'exact',head:true}).eq('academia_id', aid),
-      ]);
-      setText('kpi-total-alunos', alunos ?? 0);
-      setText('kpi-usuarios', users ?? 0);
-      setText('kpi-alunos-total', alunos ?? 0);
-      setText('kpi-exp-ativas', exp ?? 0);
-    }
-
-    if (perfilAtual === 'consultor') {
-      const hoje = new Date().toISOString().split('T')[0];
-      const { count: fu } = await sb.from('follow_ups').select('*', {count:'exact',head:true}).eq('data_prevista', hoje).eq('realizado', false);
-      const { count: exp } = await sb.from('experiencias').select('*', {count:'exact',head:true}).eq('status','ativa');
-      setText('kpi-followups', fu ?? 0);
-      setText('kpi-exp-ativas', exp ?? 0);
-    }
-  } catch(e) {
-    console.warn('KPIs:', e.message);
+function carregarKpis() {
+  /* KPIs locais — expandir com Supabase quando integrado */
+  if (perfilAtual === 'treinador' || perfilAtual === 'lider_tecnico') {
+    const uid = usuarioAtual.id;
+    setText('kpi-carteira', '—');
+    setText('kpi-revisoes', '—');
+    setText('kpi-exp', '—');
+    setText('kpi-uc', calcUcProg(uid));
+  }
+  if (perfilAtual === 'gestor' || perfilAtual === 'admin') {
+    setText('kpi-total-alunos', '—');
+    setText('kpi-encarteirados', '—');
+    setText('kpi-conversao', '—');
+    setText('kpi-uc-time', USUARIOS.filter(u=>u.tipo==='treinador').length);
+    setText('kpi-usuarios', USUARIOS.length);
+    setText('kpi-alunos-total', '—');
+    setText('kpi-uc-prog', '—');
+  }
+  if (perfilAtual === 'consultor') {
+    setText('kpi-followups', '—');
+    setText('kpi-exp-ativas', '—');
+    setText('kpi-conv-mes', '—');
   }
 }
 
@@ -701,20 +666,22 @@ function showToast(msg) {
 }
 
 /* ══════════════════════════════
-   VERIFICAR SESSÃO ATIVA
+   VERIFICAR SESSÃO LOCAL
 ══════════════════════════════ */
-async function verificarSessao() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    const perfil = await identificarPerfil(session.user.id);
-    if (perfil) {
-      usuarioAtual = { ...session.user, ...perfil };
-      perfilAtual  = perfil.tipo;
-      abrirHub();
-      carregarKpis();
-      return;
+function verificarSessao() {
+  try {
+    const raw = localStorage.getItem('acqu_session');
+    if (raw) {
+      const sess = JSON.parse(raw);
+      const user = USUARIOS.find(u => u.id === sess.id && u.tipo === sess.tipo);
+      if (user) {
+        usuarioAtual = user;
+        perfilAtual  = user.tipo;
+        abrirHub();
+        return;
+      }
     }
-  }
+  } catch(e) {}
   document.getElementById('tela-login').style.display = 'flex';
 }
 
