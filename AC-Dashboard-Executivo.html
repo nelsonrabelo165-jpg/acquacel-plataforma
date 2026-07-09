@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Executivo | Acquacel Fitness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1B4FD8;--azul-mid:#2563EB;--azul-light:#3B82F6;
+  --azul-dim:rgba(27,79,216,0.09);--azul-border:rgba(27,79,216,0.22);
+  --verde:#16A34A;--verde-dim:rgba(22,163,74,0.09);--verde-border:rgba(22,163,74,0.25);
+  --amarelo:#D97706;--amar-dim:rgba(217,119,6,0.08);--amar-border:rgba(217,119,6,0.22);
+  --vermelho:#DC2626;--verm-dim:rgba(220,38,38,0.07);--verm-border:rgba(220,38,38,0.2);
+  --roxo:#7C3AED;--roxo-dim:rgba(124,58,237,0.08);--roxo-border:rgba(124,58,237,0.22);
+  --ciano:#0891B2;--ciano-dim:rgba(8,145,178,0.08);--ciano-border:rgba(8,145,178,0.22);
+  --fundo:#F0F4FF;--fundo2:#FFFFFF;--fundo3:#F1F5FB;
+  --borda:#E2E8F0;--borda2:#CBD5E1;
+  --texto:#1E293B;--texto2:#475569;--texto3:#94A3B8;--preto:#0A0F1E;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.6;}
+
+/* HEADER */
+.header{background:var(--preto);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.75rem;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,.07);}
+.header-logo{display:flex;align-items:center;gap:10px;}
+.header-badge{width:32px;height:32px;background:var(--azul);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;}
+.header-badge img{width:100%;height:100%;object-fit:contain;}
+.header-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#fff;}
+.header-title span{color:var(--azul-light);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.header-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--azul-light);letter-spacing:.1em;text-transform:uppercase;}
+.btn-edit{font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;}
+.btn-edit:hover{background:rgba(255,255,255,.12);color:#fff;}
+.btn-voltar{font-size:11px;font-weight:700;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:none;color:rgba(255,255,255,.5);cursor:pointer;font-family:'Barlow',sans-serif;transition:all .15s;text-decoration:none;display:flex;align-items:center;gap:5px;}
+.btn-voltar:hover{color:#fff;}
+
+/* PAGE */
+.page{max-width:1160px;margin:0 auto;padding:2rem 1.5rem 5rem;}
+
+/* HERO */
+.hero{background:var(--preto);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 0% 50%,rgba(27,79,216,0.2) 0%,transparent 65%);pointer-events:none;}
+.hero-eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--azul-light);margin-bottom:.625rem;position:relative;z-index:1;}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,42px);color:#fff;line-height:1;margin-bottom:.5rem;position:relative;z-index:1;}
+.hero-title em{font-style:normal;color:var(--azul-light);}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.4);position:relative;z-index:1;margin-bottom:1.5rem;}
+.hero-scores{display:flex;gap:1rem;flex-wrap:wrap;position:relative;z-index:1;}
+.hero-score-item{text-align:center;}
+.hero-score-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;line-height:1;}
+.hero-score-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;}
+.score-verde{color:#4ADE80;}
+.score-azul{color:var(--azul-light);}
+.score-amar{color:#FBBF24;}
+.score-verm{color:#F87171;}
+.score-roxo{color:#A78BFA;}
+
+/* PERIOD SELECTOR */
+.period-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
+.period-label{font-size:12px;color:var(--texto3);font-weight:600;}
+.period-btns{display:flex;gap:4px;}
+.period-btn{font-size:11px;font-weight:700;padding:5px 14px;border-radius:7px;border:1px solid var(--borda2);background:var(--fundo2);color:var(--texto2);cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;}
+.period-btn.active{background:var(--azul);color:#fff;border-color:var(--azul);}
+
+/* PILARES */
+.sec-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--azul);margin-bottom:.875rem;display:flex;align-items:center;gap:8px;}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--azul);display:inline-block;}
+.pilares-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:2rem;}
+
+.pilar-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:16px;overflow:hidden;transition:border-color .2s;}
+.pilar-card:hover{border-color:var(--azul-border);}
+.pilar-header{padding:1.125rem 1.25rem;border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:12px;}
+.pilar-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.pilar-meta{flex:1;}
+.pilar-num{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;}
+.pilar-nome{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;color:var(--preto);}
+.pilar-score-wrap{text-align:right;}
+.pilar-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:38px;line-height:1;}
+.pilar-score-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto3);}
+
+.pilar-body{padding:1.125rem 1.25rem;}
+.pilar-kpi-main{background:var(--fundo3);border:1px solid var(--borda);border-radius:10px;padding:1rem;margin-bottom:.875rem;}
+.pilar-kpi-main-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto3);margin-bottom:.375rem;}
+.pilar-kpi-main-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:34px;line-height:1;margin-bottom:.25rem;}
+.pilar-kpi-main-meta{font-size:12px;color:var(--texto2);}
+.pilar-prog-bar{height:5px;background:var(--borda);border-radius:3px;overflow:hidden;margin-top:.625rem;}
+.pilar-prog-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+
+.pilar-subs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pilar-sub{background:var(--fundo3);border:1px solid var(--borda);border-radius:8px;padding:.75rem;}
+.pilar-sub-label{font-size:10px;color:var(--texto3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.pilar-sub-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;}
+
+.pilar-footer{padding:.75rem 1.25rem;border-top:1px solid var(--borda);background:var(--fundo3);display:flex;align-items:center;justify-content:space-between;}
+.pilar-status{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.08em;}
+.s-verde{background:var(--verde-dim);color:var(--verde);border:1px solid var(--verde-border);}
+.s-amar{background:var(--amar-dim);color:var(--amarelo);border:1px solid var(--amar-border);}
+.s-verm{background:var(--verm-dim);color:var(--vermelho);border:1px solid var(--verm-border);}
+.s-azul{background:var(--azul-dim);color:var(--azul);border:1px solid var(--azul-border);}
+.pilar-updated{font-size:10px;color:var(--texto3);}
+
+/* SCORE GAUGE */
+.score-ring-wrap{display:flex;justify-content:center;align-items:center;margin:1.5rem 0;}
+.score-ring-container{position:relative;width:160px;height:160px;}
+.score-ring-container svg{transform:rotate(-90deg);}
+.score-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-ring-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:42px;line-height:1;}
+.score-ring-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto3);margin-top:2px;}
+
+/* RESUMO TABLE */
+.resumo-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;overflow:hidden;margin-bottom:2rem;}
+.resumo-header{padding:1rem 1.25rem;border-bottom:1px solid var(--borda);background:var(--preto);}
+.resumo-header-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;color:#fff;letter-spacing:.04em;}
+.resumo-header-sub{font-size:11px;color:rgba(255,255,255,.35);}
+.resumo-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:.875rem 1.25rem;border-bottom:1px solid var(--borda);align-items:center;gap:8px;}
+.resumo-row:last-child{border-bottom:none;}
+.resumo-row:hover{background:var(--fundo3);}
+.resumo-row-header{background:var(--fundo3);}
+.resumo-col-title{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--texto3);}
+.resumo-pilar{display:flex;align-items:center;gap:10px;}
+.resumo-pilar-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.resumo-pilar-nome{font-size:13px;font-weight:600;color:var(--preto);}
+.resumo-pilar-ind{font-size:11px;color:var(--texto3);}
+.resumo-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;}
+.resumo-meta{font-size:12px;color:var(--texto2);}
+
+/* EDIT MODAL */
+.edit-overlay{position:fixed;inset:0;background:rgba(10,15,30,.75);z-index:500;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;backdrop-filter:blur(4px);}
+.edit-overlay.show{display:flex;}
+.edit-box{background:var(--fundo2);border-radius:16px;padding:2rem;width:100%;max-width:680px;border:1px solid var(--borda);margin:auto;}
+.edit-box-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;color:var(--preto);margin-bottom:.25rem;}
+.edit-box-sub{font-size:12px;color:var(--texto3);margin-bottom:1.5rem;}
+.edit-pilar-section{margin-bottom:1.25rem;padding:1rem;background:var(--fundo3);border:1px solid var(--borda);border-radius:10px;}
+.edit-pilar-title{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.875rem;}
+.edit-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
+.edit-field{display:flex;flex-direction:column;gap:4px;}
+.edit-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--texto2);}
+.edit-input{padding:7px 10px;border:1px solid var(--borda2);border-radius:7px;font-size:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--preto);background:var(--fundo);outline:none;transition:border-color .15s;width:100%;}
+.edit-input:focus{border-color:var(--azul);background:#fff;}
+.edit-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--borda);}
+.btn-save{background:var(--azul);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;}
+.btn-cancel{background:none;color:var(--texto2);border:1px solid var(--borda2);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;}
+
+/* CORES POR PILAR */
+.p-adm .pilar-icon{background:var(--ciano-dim);border:1px solid var(--ciano-border);}
+.p-adm .pilar-num{color:var(--ciano);}
+.p-adm .pilar-score{color:var(--ciano);}
+.p-adm .pilar-prog-fill{background:var(--ciano);}
+.p-adm .pilar-kpi-main-val{color:var(--ciano);}
+.p-mkt .pilar-icon{background:var(--roxo-dim);border:1px solid var(--roxo-border);}
+.p-mkt .pilar-num{color:var(--roxo);}
+.p-mkt .pilar-score{color:var(--roxo);}
+.p-mkt .pilar-prog-fill{background:var(--roxo);}
+.p-mkt .pilar-kpi-main-val{color:var(--roxo);}
+.p-com .pilar-icon{background:var(--amar-dim);border:1px solid var(--amar-border);}
+.p-com .pilar-num{color:var(--amarelo);}
+.p-com .pilar-score{color:var(--amarelo);}
+.p-com .pilar-prog-fill{background:var(--amarelo);}
+.p-com .pilar-kpi-main-val{color:var(--amarelo);}
+.p-tec .pilar-icon{background:var(--azul-dim);border:1px solid var(--azul-border);}
+.p-tec .pilar-num{color:var(--azul);}
+.p-tec .pilar-score{color:var(--azul);}
+.p-tec .pilar-prog-fill{background:var(--azul);}
+.p-tec .pilar-kpi-main-val{color:var(--azul);}
+.p-suc .pilar-icon{background:var(--verde-dim);border:1px solid var(--verde-border);}
+.p-suc .pilar-num{color:var(--verde);}
+.p-suc .pilar-score{color:var(--verde);}
+.p-suc .pilar-prog-fill{background:var(--verde);}
+.p-suc .pilar-kpi-main-val{color:var(--verde);}
+
+.divider{height:1px;background:var(--borda);margin:2rem 0;}
+.toast{position:fixed;bottom:24px;right:24px;z-index:2000;background:var(--preto);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;display:none;border:1px solid rgba(255,255,255,.1);}
+.toast.show{display:block;}
+@media(max-width:768px){.pilares-grid{grid-template-columns:1fr;}.resumo-row{grid-template-columns:1fr 1fr;}.hero-scores{gap:.75rem;}}
+@media print{.header,.btn-edit,.btn-voltar,.edit-overlay,.toast{display:none!important;}.page{padding:0;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <div class="header-badge">💧</div>
+    <div class="header-title">ACQUACEL <span>FITNESS</span></div>
+  </div>
+  <div class="header-right">
+    <span class="header-tag">Dashboard Executivo</span>
+    <button class="btn-edit" onclick="abrirEditor()">✏️ Atualizar indicadores</button>
+    <a href="index.html" class="btn-voltar">← Hub</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HERO COM SCORE GERAL -->
+  <div class="hero">
+    <div class="hero-eyebrow">Acquacel Fitness · Dashboard Executivo · Gestão Estratégica</div>
+    <div class="hero-title">Visão Geral dos <em>5 Pilares</em></div>
+    <div class="hero-sub">Indicadores consolidados por pilar · Atualização manual pelo gestor</div>
+    <div class="hero-scores" id="heroScores"></div>
+  </div>
+
+  <!-- PERIOD -->
+  <div class="period-bar">
+    <div class="period-label" id="periodLabel">Período: <strong>Este mês</strong> · Última atualização: <span id="lastUpdate">—</span></div>
+    <div class="period-btns">
+      <button class="period-btn active" onclick="setPeriod('mes',this)">Este mês</button>
+      <button class="period-btn" onclick="setPeriod('trimestre',this)">Trimestre</button>
+      <button class="period-btn" onclick="setPeriod('semestre',this)">Semestre</button>
+    </div>
+  </div>
+
+  <!-- SCORE GERAL -->
+  <div class="sec-label">Score Geral GeFit</div>
+  <div style="background:var(--preto);border-radius:16px;padding:2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap;">
+    <div class="score-ring-container">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="14"/>
+        <circle cx="80" cy="80" r="68" fill="none" stroke="var(--azul-light)" stroke-width="14"
+          stroke-dasharray="427.3" stroke-dashoffset="427.3" stroke-linecap="round" id="scoreRingFill"/>
+      </svg>
+      <div class="score-ring-center">
+        <div class="score-ring-num" id="scoreGeralNum" style="color:var(--azul-light)">—</div>
+        <div class="score-ring-label">Score geral</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-width:260px;" id="scoreDetalhe"></div>
+  </div>
+
+  <!-- 5 PILARES -->
+  <div class="sec-label">Os 5 Pilares</div>
+  <div class="pilares-grid" id="pilaresGrid"></div>
+
+  <div class="divider"></div>
+
+  <!-- RESUMO TABLE -->
+  <div class="sec-label">Resumo consolidado</div>
+  <div class="resumo-card">
+    <div class="resumo-header">
+      <div class="resumo-header-title">Indicadores principais · Todos os pilares</div>
+      <div class="resumo-header-sub">Visão rápida para reunião de gestão</div>
+    </div>
+    <div class="resumo-row resumo-row-header">
+      <span class="resumo-col-title">Pilar</span>
+      <span class="resumo-col-title">Realizado</span>
+      <span class="resumo-col-title">Meta</span>
+      <span class="resumo-col-title">Status</span>
+    </div>
+    <div id="resumoBody"></div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- EDIT MODAL -->
+<div class="edit-overlay" id="editOverlay" onclick="fecharEditor()">
+  <div class="edit-box" onclick="event.stopPropagation()">
+    <div class="edit-box-title">Atualizar Indicadores</div>
+    <div class="edit-box-sub">Preencha os valores realizados e metas de cada pilar. O score é calculado automaticamente.</div>
+    <div id="editForm"></div>
+    <div class="edit-footer">
+      <button class="btn-cancel" onclick="fecharEditor()">Cancelar</button>
+      <button class="btn-save" onclick="salvarDados()">Salvar e atualizar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PILARES = [
+  {
+    id:'adm', classe:'p-adm', icon:'🎯', num:'Pilar 01',
+    nome:'ADM / Estratégico',
+    cor:'var(--ciano)', corHex:'#0891B2',
+    kpiPrincipal:{ label:'Faturamento mensal × meta', campo:'fat_real', campometa:'fat_meta', prefixo:'R$', sufixo:'' },
+    subs:[
+      { label:'Inadimplência', campo:'inadimplencia', sufixo:'%' },
+      { label:'Ticket médio', campo:'ticket_medio', prefixo:'R$' },
+    ]
+  },
+  {
+    id:'mkt', classe:'p-mkt', icon:'📣', num:'Pilar 02',
+    nome:'Marketing',
+    cor:'var(--roxo)', corHex:'#7C3AED',
+    kpiPrincipal:{ label:'Leads gerados no mês', campo:'leads_real', campometa:'leads_meta', prefixo:'', sufixo:'' },
+    subs:[
+      { label:'Taxa lead → exp.', campo:'tx_conversao_lead', sufixo:'%' },
+      { label:'Custo por lead', campo:'custo_lead', prefixo:'R$' },
+    ]
+  },
+  {
+    id:'com', classe:'p-com', icon:'💼', num:'Pilar 03',
+    nome:'Comercial',
+    cor:'var(--amarelo)', corHex:'#D97706',
+    kpiPrincipal:{ label:'Ticket médio de venda', campo:'ticket_venda_real', campometa:'ticket_venda_meta', prefixo:'R$', sufixo:'' },
+    subs:[
+      { label:'Exp. realizadas', campo:'exp_realizadas', sufixo:'' },
+      { label:'Taxa exp. → mat.', campo:'tx_conv_exp', sufixo:'%' },
+    ]
+  },
+  {
+    id:'tec', classe:'p-tec', icon:'🏋️', num:'Pilar 04',
+    nome:'Técnico',
+    cor:'var(--azul)', corHex:'#1B4FD8',
+    kpiPrincipal:{ label:'Alunos encarteirados c/ consultoria', campo:'encart_real', campometa:'encart_meta', prefixo:'', sufixo:'%' },
+    subs:[
+      { label:'Revisões realizadas', campo:'revisoes_real', sufixo:'' },
+      { label:'Revisões agendadas', campo:'revisoes_agend', sufixo:'' },
+    ]
+  },
+  {
+    id:'suc', classe:'p-suc', icon:'⭐', num:'Pilar 05',
+    nome:'Sucesso do Cliente',
+    cor:'var(--verde)', corHex:'#16A34A',
+    kpiPrincipal:{ label:'Retenção: Encarteirados × Não Encart.', campo:'ret_encart', campometa:'ret_naencart', prefixo:'', sufixo:'%' },
+    subs:[
+      { label:'Alunos ativos', campo:'alunos_ativos', sufixo:'' },
+      { label:'Cancelamentos', campo:'cancelamentos', sufixo:'' },
+    ]
+  },
+];
+
+const DADOS_DEFAULT = {
+  adm:{ fat_real:0, fat_meta:50000, inadimplencia:0, ticket_medio:0, score:0 },
+  mkt:{ leads_real:0, leads_meta:100, tx_conversao_lead:0, custo_lead:0, score:0 },
+  com:{ ticket_venda_real:0, ticket_venda_meta:200, exp_realizadas:0, tx_conv_exp:0, score:0 },
+  tec:{ encart_real:0, encart_meta:85, revisoes_real:0, revisoes_agend:0, score:0 },
+  suc:{ ret_encart:0, ret_naencart:0, alunos_ativos:0, cancelamentos:0, score:0 },
+  lastUpdate:'', period:'mes'
+};
+
+function loadDados(){ try{ const r=localStorage.getItem('acqu_exec_dados'); return r?JSON.parse(r):JSON.parse(JSON.stringify(DADOS_DEFAULT)); }catch(e){return JSON.parse(JSON.stringify(DADOS_DEFAULT));} }
+function saveDados(d){ try{ localStorage.setItem('acqu_exec_dados',JSON.stringify(d)); }catch(e){} }
+
+let DADOS = loadDados();
+
+function calcScore(pilar){
+  const d = DADOS[pilar.id];
+  if(pilar.id==='adm'){ return d.fat_meta>0?Math.min(100,Math.round((d.fat_real/d.fat_meta)*100)):0; }
+  if(pilar.id==='mkt'){ return d.leads_meta>0?Math.min(100,Math.round((d.leads_real/d.leads_meta)*100)):0; }
+  if(pilar.id==='com'){ return d.ticket_venda_meta>0?Math.min(100,Math.round((d.ticket_venda_real/d.ticket_venda_meta)*100)):0; }
+  if(pilar.id==='tec'){ return d.encart_meta>0?Math.min(100,Math.round((d.encart_real/d.encart_meta)*100)):0; }
+  if(pilar.id==='suc'){ const r=d.ret_encart||0; const n=d.ret_naencart||0; return n>0?Math.min(100,Math.max(0,Math.round(((r-n)/Math.max(r,n))*50+50))):r>0?100:0; }
+  return 0;
+}
+
+function statusClass(pct){ return pct>=85?'s-verde':pct>=65?'s-amar':'s-verm'; }
+function statusLabel(pct){ return pct>=85?'✓ No alvo':pct>=65?'Atenção':'Abaixo da meta'; }
+function fmtVal(v,p,s){ const n=parseFloat(v)||0; const f=n>=1000?(n>=1000000?(n/1000000).toFixed(1)+'M':(n/1000).toFixed(0)+'k'):n; return (p||'')+f+(s||''); }
+
+function render(){
+  const scores = PILARES.map(p=>calcScore(p));
+  const scoreGeral = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+
+  // Hero scores
+  document.getElementById('heroScores').innerHTML = PILARES.map((p,i)=>`
+    <div class="hero-score-item">
+      <div class="hero-score-num" style="color:${p.corHex}">${scores[i]}<span style="font-size:18px">%</span></div>
+      <div class="hero-score-label">${p.nome.split('/')[0].trim()}</div>
+    </div>`).join('');
+
+  // Score ring
+  const circ = 2*Math.PI*68;
+  const offset = circ - (scoreGeral/100)*circ;
+  document.getElementById('scoreRingFill').setAttribute('stroke-dashoffset', offset);
+  const ringColor = scoreGeral>=85?'#4ADE80':scoreGeral>=65?'#FBBF24':'#F87171';
+  document.getElementById('scoreRingFill').setAttribute('stroke', ringColor);
+  document.getElementById('scoreGeralNum').textContent = scoreGeral+'%';
+  document.getElementById('scoreGeralNum').style.color = ringColor;
+
+  // Score detalhe
+  document.getElementById('scoreDetalhe').innerHTML = PILARES.map((p,i)=>`
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:.75rem;">
+      <div style="font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px">${p.nome.split('/')[0].trim()}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:${p.corHex}">${scores[i]}%</div>
+    </div>`).join('');
+
+  // Pilares grid
+  document.getElementById('pilaresGrid').innerHTML = PILARES.map((p,i)=>{
+    const d = DADOS[p.id];
+    const score = scores[i];
+    const kp = p.kpiPrincipal;
+    const real = d[kp.campo]||0;
+    const meta = d[kp.campometa]||0;
+    const pct = meta>0?Math.min(100,Math.round((real/meta)*100)):0;
+    const barColor = score>=85?'#16A34A':score>=65?'#D97706':'#DC2626';
+    return `
+    <div class="pilar-card ${p.classe}">
+      <div class="pilar-header">
+        <div class="pilar-icon">${p.icon}</div>
+        <div class="pilar-meta">
+          <div class="pilar-num">${p.num}</div>
+          <div class="pilar-nome">${p.nome}</div>
+        </div>
+        <div class="pilar-score-wrap">
+          <div class="pilar-score">${score}%</div>
+          <div class="pilar-score-label">score</div>
+        </div>
+      </div>
+      <div class="pilar-body">
+        <div class="pilar-kpi-main">
+          <div class="pilar-kpi-main-label">${kp.label}</div>
+          <div class="pilar-kpi-main-val">${fmtVal(real,kp.prefixo,kp.sufixo)}</div>
+          <div class="pilar-kpi-main-meta">Meta: ${fmtVal(meta,kp.prefixo,kp.sufixo)} · ${pct}% atingido</div>
+          <div class="pilar-prog-bar"><div class="pilar-prog-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        </div>
+        <div class="pilar-subs">
+          ${p.subs.map(s=>`<div class="pilar-sub"><div class="pilar-sub-label">${s.label}</div><div class="pilar-sub-val" style="color:${p.corHex}">${fmtVal(d[s.campo]||0,s.prefixo,s.sufixo)}</div></div>`).join('')}
+        </div>
+      </div>
+      <div class="pilar-footer">
+        <span class="pilar-status ${statusClass(score)}">${statusLabel(score)}</span>
+        <span class="pilar-updated">${DADOS.lastUpdate?'Atualizado: '+DADOS.lastUpdate:'Sem dados ainda'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Resumo
+  document.getElementById('resumoBody').innerHTML = PILARES.map((p,i)=>{
+    const d = DADOS[p.id];
+    const kp = p.kpiPrincipal;
+    const real = d[kp.campo]||0;
+    const meta = d[kp.campometa]||0;
+    const score = scores[i];
+    return `
+    <div class="resumo-row">
+      <div class="resumo-pilar">
+        <div class="resumo-pilar-dot" style="background:${p.corHex}"></div>
+        <div><div class="resumo-pilar-nome">${p.nome}</div><div class="resumo-pilar-ind">${kp.label}</div></div>
+      </div>
+      <div class="resumo-val" style="color:${p.corHex}">${fmtVal(real,kp.prefixo,kp.sufixo)}</div>
+      <div class="resumo-meta">${fmtVal(meta,kp.prefixo,kp.sufixo)}</div>
+      <span class="pilar-status ${statusClass(score)}">${statusLabel(score)}</span>
+    </div>`;
+  }).join('');
+
+  if(DADOS.lastUpdate) document.getElementById('lastUpdate').textContent = DADOS.lastUpdate;
+}
+
+function abrirEditor(){
+  const form = document.getElementById('editForm');
+  form.innerHTML = PILARES.map(p=>{
+    const d = DADOS[p.id];
+    const allFields = [p.kpiPrincipal, ...p.subs];
+    const campos = [
+      { label:p.kpiPrincipal.label+' (realizado)', campo:p.kpiPrincipal.campo },
+      { label:'Meta', campo:p.kpiPrincipal.campometa },
+      ...p.subs.map(s=>({ label:s.label, campo:s.campo }))
+    ];
+    return `
+    <div class="edit-pilar-section">
+      <div class="edit-pilar-title" style="color:${p.corHex}">${p.icon} ${p.nome}</div>
+      <div class="edit-fields">
+        ${campos.map(c=>`
+          <div class="edit-field">
+            <label class="edit-label">${c.label}</label>
+            <input class="edit-input" data-pilar="${p.id}" data-campo="${c.campo}" type="number" min="0" value="${d[c.campo]||0}">
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('editOverlay').classList.add('show');
+}
+
+function fecharEditor(){ document.getElementById('editOverlay').classList.remove('show'); }
+
+function salvarDados(){
+  document.querySelectorAll('[data-pilar][data-campo]').forEach(inp=>{
+    const pid = inp.dataset.pilar;
+    const campo = inp.dataset.campo;
+    if(!DADOS[pid]) DADOS[pid]={};
+    DADOS[pid][campo] = parseFloat(inp.value)||0;
+  });
+  DADOS.lastUpdate = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  saveDados(DADOS);
+  fecharEditor();
+  render();
+  showToast('✓ Indicadores atualizados!');
+}
+
+function setPeriod(p,btn){
+  DADOS.period=p;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800); }
+
+render();
+</script>
+</body>
+</html>
