@@ -275,6 +275,17 @@ const PERFIS_DISPONIVEIS = [
   { valor:'consultor_ext',  label:'Consultor(a)'        },
 ];
 
+/* Mapear perfis do painel (label) para tipo interno */
+function normalizarTipo(tipo) {
+  const mapa = {
+    'admin':'admin', 'gestor':'gestor', 'lider_tecnico':'lider_tecnico',
+    'consultor':'consultor', 'treinador':'treinador', 'consultor_ext':'consultor',
+    'gestão':'gestor', 'liderança técnica':'lider_tecnico',
+    'liderança comercial':'consultor', 'treinador(a)':'treinador', 'consultor(a)':'consultor_ext'
+  };
+  return mapa[tipo?.toLowerCase()] || tipo || 'treinador';
+}
+
 function getUsuarios() {
   try {
     const raw = localStorage.getItem('acqu_usuarios');
@@ -317,11 +328,13 @@ const MODULOS_PERFIL = {
     { id:'revisao', nome:'Revisão de Treino', tag:'Técnico', desc:'Registre a revisão do planner do aluno a cada 21 dias e gere tarefas pendentes de ajuste.', icon:'📋', cor:'amar', arquivo:'revisao_treino.html', label:'Nova revisão' },
   ],
   gestor: [
-    { id:'dash-exec', nome:'Dashboard Executivo', tag:'Estratégico', desc:'Score dos 5 pilares GeFit: ADM, Marketing, Comercial, Técnico e Sucesso do Cliente com metas e indicadores.', icon:'🏆', cor:'verde', arquivo:'AC-Dashboard-Executivo.html', label:'Abrir dashboard' },
-    { id:'hub-gestor', nome:'Dashboard Gestor', tag:'Operacional', desc:'Visão consolidada do time técnico: KPIs, ranking de treinadores, NPS e funil de experiências.', icon:'🎯', cor:'azul', arquivo:'dashboard_gestor_v3.html', label:'Ver KPIs' },
-    { id:'dash-tecnico', nome:'Dashboard Técnico', tag:'Equipe', desc:'Indicadores da equipe: carteira, experiências, revisões e desempenho individual dos treinadores.', icon:'📊', cor:'ciano', arquivo:'AC-Dashboard-Equipe-Tecnica.html', label:'Ver indicadores' },
-    { id:'uc', nome:'Universidade Corporativa', tag:'Formação', desc:'Acompanhe o progresso individual de cada colaborador nas trilhas de formação.', icon:'🎓', cor:'roxo', arquivo:'AC-University-MVP.html', label:'Acompanhar UC' },
-    { id:'vendas', nome:'Painel de Vendas', tag:'Comercial', desc:'Funil de experiências, follow-ups e agenda semanal da equipe comercial.', icon:'💼', cor:'amar', arquivo:'painel_vendas.html', label:'Ver painel' },
+    { id:'dash-exec',    nome:'Dashboard Executivo',  tag:'Estratégico', desc:'Score dos 5 pilares GeFit: ADM, Marketing, Comercial, Técnico e Sucesso do Cliente.', icon:'🏆', cor:'verde',  arquivo:'AC-Dashboard-Executivo.html',       label:'Abrir dashboard' },
+    { id:'dash-tecnico', nome:'Dashboard Técnico',    tag:'Equipe',      desc:'Indicadores da equipe técnica: carteira, experiências, revisões e desempenho individual.', icon:'📊', cor:'azul',   arquivo:'AC-Dashboard-Equipe-Tecnica.html',   label:'Ver indicadores' },
+    { id:'vendas',       nome:'Painel de Vendas',     tag:'Comercial',   desc:'Funil completo de experiências, follow-ups e agenda semanal da equipe comercial.', icon:'💼', cor:'amar',   arquivo:'painel_vendas.html',                label:'Ver painel' },
+    { id:'hub-gestor',   nome:'Dashboard Gestor',     tag:'Operacional', desc:'Visão consolidada do time: KPIs, ranking de treinadores, NPS e funil de experiências.', icon:'🎯', cor:'ciano',  arquivo:'dashboard_gestor_v3.html',          label:'Ver KPIs' },
+    { id:'retencao',     nome:'Sistema de Retenção',  tag:'Técnico',     desc:'Acesso ao sistema técnico: planners, carteira de alunos, revisões e diário do treinador.', icon:'🏋️', cor:'roxo',  arquivo:'sistema_integrado_v3.html',         label:'Abrir sistema' },
+    { id:'uc',           nome:'Universidade Corp.',   tag:'Formação',    desc:'Acompanhe o progresso individual de cada colaborador nas trilhas de formação.', icon:'🎓', cor:'roxo',  arquivo:'AC-University-MVP.html',            label:'Acompanhar UC' },
+    { id:'importar',     nome:'Importar Carteira',    tag:'Dados',       desc:'Importe a lista de alunos via CSV diretamente para o sistema.', icon:'📤', cor:'ciano',  arquivo:'importar_carteira.html',            label:'Importar CSV' },
   ],
   consultor: [
     { id:'vendas', nome:'Painel de Vendas', tag:'Principal', desc:'Gerencie o funil completo de experiências, follow-ups automáticos e agenda semanal.', icon:'💼', cor:'amar', arquivo:'painel_vendas.html', label:'Abrir painel' },
@@ -361,9 +374,13 @@ function fazerLogin() {
   err.classList.remove('show');
   if (!email || !senha) { err.textContent = 'Preencha e-mail e senha.'; err.classList.add('show'); return; }
 
-  const user = getUsuarios().find(u => u.email.toLowerCase() === email && u.senha === senha);
+  /* Busca em todos os usuários: admin fixo + criados pelo painel */
+  const todosUsuarios = getUsuarios();
+  const user = todosUsuarios.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha);
 
   if (!user) {
+    /* Debug: mostrar quais emails existem no console */
+    console.log('Usuários cadastrados:', todosUsuarios.map(u=>u.email));
     err.textContent = 'E-mail ou senha incorretos. Verifique e tente novamente.';
     err.classList.add('show');
     return;
@@ -371,7 +388,7 @@ function fazerLogin() {
 
   usuarioAtual = user;
   perfilAtual  = user.tipo;
-  localStorage.setItem('acqu_session', JSON.stringify({ id: user.id, tipo: user.tipo }));
+  localStorage.setItem('acqu_session', JSON.stringify({ id: user.id, tipo: user.tipo, nome: user.nome }));
   abrirHub();
 }
 
@@ -696,9 +713,9 @@ function fecharModalUsuario() {
 
 function salvarUsuario() {
   const nome  = document.getElementById('u-nome').value.trim();
-  const email = document.getElementById('u-email').value.trim();
+  const email = document.getElementById('u-email').value.trim().toLowerCase();
   const senha = document.getElementById('u-senha').value.trim();
-  const tipo  = document.getElementById('u-tipo').value;
+  const tipo  = normalizarTipo(document.getElementById('u-tipo').value);
   const id    = document.getElementById('u-id').value;
 
   if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
@@ -707,16 +724,20 @@ function salvarUsuario() {
 
   if (id) {
     const idx = lista.findIndex(u=>u.id===id);
-    if (idx>=0) lista[idx] = { id, nome, email, senha, tipo };
+    if (idx>=0) lista[idx] = { id, nome, email: email.toLowerCase(), senha, tipo };
   } else {
+    /* Verificar se e-mail já existe */
+    if (lista.find(u => u.email.toLowerCase() === email)) {
+      alert('Este e-mail já está cadastrado.'); return;
+    }
     const novoId = 'u_' + Date.now();
-    lista.push({ id: novoId, nome, email, senha, tipo });
+    lista.push({ id: novoId, nome, email: email.toLowerCase(), senha, tipo });
   }
 
   salvarUsuarios(lista);
   fecharModalUsuario();
   renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
-  showToast('✓ Usuário salvo com sucesso!');
+  showToast('✓ Usuário salvo! Pode fazer login com: ' + email);
 }
 
 function deletarUsuario(id) {
@@ -787,7 +808,8 @@ function verificarSessao() {
     const raw = localStorage.getItem('acqu_session');
     if (raw) {
       const sess = JSON.parse(raw);
-      const user = USUARIOS.find(u => u.id === sess.id && u.tipo === sess.tipo);
+      /* Busca em todos os usuários incluindo os criados pelo painel */
+      const user = getUsuarios().find(u => u.id === sess.id);
       if (user) {
         usuarioAtual = user;
         perfilAtual  = user.tipo;
