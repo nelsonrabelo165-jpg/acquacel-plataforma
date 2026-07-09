@@ -195,6 +195,7 @@ body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;
   .admin-grid{grid-template-columns:1fr;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -259,9 +260,10 @@ body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;
 /* ══════════════════════════════
    SUPABASE
 ══════════════════════════════ */
-/* ══ SUPABASE (apenas para dados — não para Auth) ══ */
+/* ══ SUPABASE ══ */
 const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 /* ══ USUÁRIOS — admin fixo + demais salvos no localStorage ══ */
 const ADMIN_FIXO = { id:'admin', nome:'Administrador', email:'admin@acquacel.com.br', senha:'acquacel2026', tipo:'admin' };
@@ -286,20 +288,62 @@ function normalizarTipo(tipo) {
   return mapa[tipo?.toLowerCase()] || tipo || 'treinador';
 }
 
-function getUsuarios() {
+/* Cache local de usuários — preenchido ao carregar */
+let _usuariosCache = [ADMIN_FIXO];
+
+function getUsuarios() { return _usuariosCache; }
+
+async function carregarUsuariosDoSupabase() {
   try {
+    const { data, error } = await sb.from('hub_usuarios').select('*').order('nome');
+    if (error) throw error;
+    _usuariosCache = [ADMIN_FIXO, ...(data || [])];
+  } catch(e) {
+    console.warn('Supabase offline, usando cache local:', e.message);
+    try {
+      const raw = localStorage.getItem('acqu_usuarios');
+      _usuariosCache = [ADMIN_FIXO, ...(raw ? JSON.parse(raw) : [])];
+    } catch(e2) { _usuariosCache = [ADMIN_FIXO]; }
+  }
+}
+
+async function salvarUsuarioSupabase(usuario) {
+  const { id, nome, email, senha, tipo } = usuario;
+  const isNew = id.startsWith('u_');
+  try {
+    if (isNew) {
+      const { data, error } = await sb.from('hub_usuarios').insert({ nome, email, senha, tipo }).select().single();
+      if (error) throw error;
+      return data;
+    } else {
+      const { data, error } = await sb.from('hub_usuarios').update({ nome, email, senha, tipo }).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    }
+  } catch(e) {
+    console.warn('Erro ao salvar no Supabase:', e.message);
+    /* Fallback: salvar no localStorage */
     const raw = localStorage.getItem('acqu_usuarios');
     const lista = raw ? JSON.parse(raw) : [];
-    return [ADMIN_FIXO, ...lista];
-  } catch(e) { return [ADMIN_FIXO]; }
+    if (isNew) { lista.push(usuario); }
+    else { const idx = lista.findIndex(u=>u.id===id); if(idx>=0) lista[idx]=usuario; }
+    localStorage.setItem('acqu_usuarios', JSON.stringify(lista));
+    return usuario;
+  }
 }
 
-function salvarUsuarios(lista) {
-  const semAdmin = lista.filter(u => u.id !== 'admin');
-  localStorage.setItem('acqu_usuarios', JSON.stringify(semAdmin));
+async function deletarUsuarioSupabase(id) {
+  try {
+    await sb.from('hub_usuarios').delete().eq('id', id);
+  } catch(e) {
+    const raw = localStorage.getItem('acqu_usuarios');
+    const lista = (raw ? JSON.parse(raw) : []).filter(u=>u.id!==id);
+    localStorage.setItem('acqu_usuarios', JSON.stringify(lista));
+  }
+  await carregarUsuariosDoSupabase();
 }
 
-const USUARIOS = getUsuarios();
+const USUARIOS = [ADMIN_FIXO];
 
 /* ══════════════════════════════
    PERFIS E MÓDULOS
@@ -711,7 +755,7 @@ function fecharModalUsuario() {
   document.getElementById('modal-usuario').style.display = 'none';
 }
 
-function salvarUsuario() {
+async function salvarUsuario() {
   const nome  = document.getElementById('u-nome').value.trim();
   const email = document.getElementById('u-email').value.trim().toLowerCase();
   const senha = document.getElementById('u-senha').value.trim();
@@ -720,30 +764,24 @@ function salvarUsuario() {
 
   if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
 
-  const lista = getUsuarios().filter(u => u.id !== 'admin');
+  /* Verificar e-mail duplicado */
+  const todos = getUsuarios();
+  const duplicado = todos.find(u => u.email.toLowerCase() === email && u.id !== id);
+  if (duplicado) { alert('Este e-mail já está cadastrado.'); return; }
 
-  if (id) {
-    const idx = lista.findIndex(u=>u.id===id);
-    if (idx>=0) lista[idx] = { id, nome, email: email.toLowerCase(), senha, tipo };
-  } else {
-    /* Verificar se e-mail já existe */
-    if (lista.find(u => u.email.toLowerCase() === email)) {
-      alert('Este e-mail já está cadastrado.'); return;
-    }
-    const novoId = 'u_' + Date.now();
-    lista.push({ id: novoId, nome, email: email.toLowerCase(), senha, tipo });
-  }
+  const novoId = id || ('u_' + Date.now());
+  const usuario = { id: novoId, nome, email, senha, tipo };
 
-  salvarUsuarios(lista);
+  await salvarUsuarioSupabase(usuario);
+  await carregarUsuariosDoSupabase();
   fecharModalUsuario();
   renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
-  showToast('✓ Usuário salvo! Pode fazer login com: ' + email);
+  showToast('✓ Usuário salvo! Login: ' + email + ' · Senha: ' + senha);
 }
 
-function deletarUsuario(id) {
+async function deletarUsuario(id) {
   if (!confirm('Remover este usuário? Esta ação não pode ser desfeita.')) return;
-  const lista = getUsuarios().filter(u => u.id !== 'admin' && u.id !== id);
-  salvarUsuarios(lista);
+  await deletarUsuarioSupabase(id);
   renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
   showToast('Usuário removido.');
 }
@@ -822,7 +860,7 @@ function verificarSessao() {
 }
 
 /* INIT */
-verificarSessao();
+carregarUsuariosDoSupabase().then(() => verificarSessao());
 </script>
 </body>
 </html>
