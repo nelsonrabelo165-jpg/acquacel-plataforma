@@ -334,13 +334,14 @@ async function salvarUsuarioSupabase(usuario) {
 
 async function deletarUsuarioSupabase(id) {
   try {
-    await sb.from('hub_usuarios').delete().eq('id', id);
+    const { error } = await sb.from('hub_usuarios').delete().eq('id', id);
+    if (error) throw error;
   } catch(e) {
+    console.warn('Erro ao deletar no Supabase:', e.message);
     const raw = localStorage.getItem('acqu_usuarios');
     const lista = (raw ? JSON.parse(raw) : []).filter(u=>u.id!==id);
     localStorage.setItem('acqu_usuarios', JSON.stringify(lista));
   }
-  await carregarUsuariosDoSupabase();
 }
 
 const USUARIOS = [ADMIN_FIXO];
@@ -672,7 +673,7 @@ function renderAdminExtra() {
         <td style="font-size:12px;color:var(--texto2)">${u.senha}</td>
         <td>
           <button onclick="editarUsuario('${u.id}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--borda2);background:none;color:var(--texto2);cursor:pointer;margin-right:4px">Editar</button>
-          <button onclick="deletarUsuario('${u.id}')" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--verm-border);background:var(--verm-dim);color:var(--vermelho);cursor:pointer">Remover</button>
+          <button onclick="deletarUsuario('${u.id}', this)" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--verm-border);background:var(--verm-dim);color:var(--vermelho);cursor:pointer">Remover</button>
         </td>
       </tr>`).join('');
 
@@ -761,34 +762,51 @@ function fecharModalUsuario() {
 }
 
 async function salvarUsuario() {
-  const nome  = document.getElementById('u-nome').value.trim();
-  const email = document.getElementById('u-email').value.trim().toLowerCase();
-  const senha = document.getElementById('u-senha').value.trim();
-  const tipo  = normalizarTipo(document.getElementById('u-tipo').value);
-  const id    = document.getElementById('u-id').value;
+  const btnSalvar = document.querySelector('#modal-usuario .btn-save') || document.querySelector('[onclick="salvarUsuario()"]');
+  if (btnSalvar && btnSalvar.disabled) return; // Impede clique duplo
+  if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.textContent = 'Salvando...'; }
 
-  if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
+  try {
+    const nome  = document.getElementById('u-nome').value.trim();
+    const email = document.getElementById('u-email').value.trim().toLowerCase();
+    const senha = document.getElementById('u-senha').value.trim();
+    const tipo  = normalizarTipo(document.getElementById('u-tipo').value);
+    const id    = document.getElementById('u-id').value;
 
-  /* Verificar e-mail duplicado */
-  const todos = getUsuarios();
-  const duplicado = todos.find(u => u.email.toLowerCase() === email && u.id !== id);
-  if (duplicado) { alert('Este e-mail já está cadastrado.'); return; }
+    if (!nome || !email || !senha) { alert('Preencha todos os campos.'); return; }
 
-  const novoId = id || ('u_' + Date.now());
-  const usuario = { id: novoId, nome, email, senha, tipo };
+    /* Verificar e-mail duplicado */
+    const todos = getUsuarios();
+    const duplicado = todos.find(u => u.email.toLowerCase() === email && u.id !== id);
+    if (duplicado) { alert('Este e-mail já está cadastrado.'); return; }
 
-  await salvarUsuarioSupabase(usuario);
-  await carregarUsuariosDoSupabase();
-  fecharModalUsuario();
-  renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
-  showToast('✓ Usuário salvo! Login: ' + email + ' · Senha: ' + senha);
+    const novoId = id || ('u_' + Date.now());
+    const usuario = { id: novoId, nome, email, senha, tipo };
+
+    await salvarUsuarioSupabase(usuario);
+    await carregarUsuariosDoSupabase();
+    fecharModalUsuario();
+    renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
+    showToast('✓ Usuário salvo! Login: ' + email + ' · Senha: ' + senha);
+  } catch(e) {
+    showToast('Erro ao salvar. Tente novamente.');
+  } finally {
+    if (btnSalvar) { btnSalvar.disabled = false; btnSalvar.textContent = 'Salvar usuário'; }
+  }
 }
 
-async function deletarUsuario(id) {
+async function deletarUsuario(id, btn) {
   if (!confirm('Remover este usuário? Esta ação não pode ser desfeita.')) return;
-  await deletarUsuarioSupabase(id);
-  renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
-  showToast('Usuário removido.');
+  if (btn) { btn.disabled = true; btn.textContent = 'Removendo...'; }
+  try {
+    await deletarUsuarioSupabase(id);
+    await carregarUsuariosDoSupabase();
+    renderHub((usuarioAtual.nome||'').split(' ')[0], PERFIS[perfilAtual]||PERFIS.admin);
+    showToast('✓ Usuário removido.');
+  } catch(e) {
+    showToast('Erro ao remover. Tente novamente.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Remover'; }
+  }
 }
 
 /* ══════════════════════════════
