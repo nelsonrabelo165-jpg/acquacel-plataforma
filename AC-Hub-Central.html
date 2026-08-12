@@ -359,10 +359,11 @@ const PERFIS = {
 /* Módulos por perfil */
 const MODULOS_PERFIL = {
   treinador: [
-    { id:'hub-treinador', nome:'Sistema de Retenção', tag:'Operacional', desc:'Carteira de alunos, experiências, revisões de treino, planner digital e diário de indicadores.', icon:'🏋️', cor:'azul', arquivo:'sistema_integrado_v3.html', label:'Abrir sistema' },
-    { id:'uc', nome:'Universidade Corporativa', tag:'Formação', desc:'Trilha técnica com 5 capítulos, quizzes de fixação, biblioteca de scripts e certificado de conclusão.', icon:'🎓', cor:'roxo', arquivo:'AC-University-MVP.html', label:'Acessar UC' },
-    { id:'revisao', nome:'Revisão de Treino', tag:'Técnico', desc:'Registre a revisão do planner do aluno a cada 21 dias e gere tarefas pendentes de ajuste.', icon:'📋', cor:'verde', arquivo:'revisao_treino.html', label:'Nova revisão' },
-    { id:'diario', nome:'Diário do Turno', tag:'Indicadores', desc:'Lance seus 7 indicadores operacionais diários em menos de 3 minutos.', icon:'📓', cor:'amar', arquivo:'diario_treinador.html', label:'Preencher diário' },
+    { id:'hub-treinador', nome:'Sistema de Retenção',     tag:'Operacional', desc:'Carteira de alunos, experiências, revisões de treino, planner digital e diário de indicadores.', icon:'🏋️', cor:'azul',  arquivo:'sistema_integrado_v3.html',         label:'Abrir sistema' },
+    { id:'uc',            nome:'Universidade Corporativa', tag:'Formação',    desc:'Trilha técnica com 5 capítulos, quizzes de fixação, biblioteca de scripts e certificado.', icon:'🎓', cor:'roxo',  arquivo:'AC-University-MVP.html',            label:'Acessar UC' },
+    { id:'c01',           nome:'Scripts Comerciais',       tag:'Comercial',   desc:'Central de scripts de abordagem, mapeamento, consultoria e reativação — Cap. C01.', icon:'📋', cor:'verde', arquivo:'AC-UC-C01-CentralScripts.html',      label:'Ver scripts' },
+    { id:'revisao',       nome:'Revisão de Treino',        tag:'Técnico',     desc:'Registre a revisão do planner do aluno a cada 21 dias e gere tarefas pendentes de ajuste.', icon:'🔄', cor:'amar',  arquivo:'revisao_treino.html',               label:'Nova revisão' },
+    { id:'diario',        nome:'Diário do Turno',          tag:'Indicadores', desc:'Lance seus 7 indicadores operacionais diários em menos de 3 minutos.', icon:'📓', cor:'ciano', arquivo:'diario_treinador.html',             label:'Preencher diário' },
   ],
   lider_tecnico: [
     { id:'dash-exec', nome:'Dashboard Executivo', tag:'Estratégico', desc:'Score dos 5 pilares GeFit com indicadores principais de cada área.', icon:'🏆', cor:'verde', arquivo:'AC-Dashboard-Executivo.html', label:'Abrir dashboard' },
@@ -374,23 +375,27 @@ const MODULOS_PERFIL = {
   gestor: [
     { id:'dash-exec',    nome:'Dashboard Executivo',  tag:'Estratégico', desc:'Score dos 5 pilares GeFit: ADM, Marketing, Comercial, Técnico e Sucesso do Cliente.', icon:'🏆', cor:'verde',  arquivo:'AC-Dashboard-Executivo.html',       label:'Abrir dashboard' },
     { id:'dash-tecnico', nome:'Dashboard Técnico',    tag:'Equipe',      desc:'Indicadores da equipe técnica: carteira, experiências, revisões e desempenho individual.', icon:'📊', cor:'azul',   arquivo:'AC-Dashboard-Equipe-Tecnica.html',   label:'Ver indicadores' },
-    { id:'vendas',       nome:'Painel de Vendas',     tag:'Comercial',   desc:'Funil completo de experiências, follow-ups e agenda semanal da equipe comercial.', icon:'💼', cor:'amar',   arquivo:'painel_vendas.html',                label:'Ver painel' },
+    { id:'vendas',       nome:'Painel de Vendas',      tag:'Comercial',   desc:'Funil completo de experiências, follow-ups e agenda semanal da equipe comercial.', icon:'💼', cor:'amar',   arquivo:'painel_vendas.html',               label:'Ver painel' },
+    { id:'campanhas',   nome:'Campanhas Comerciais',   tag:'Marketing',   desc:'Gerencie campanhas de captação, Kanban de leads e registro de vendas por consultora.', icon:'📣', cor:'azul',  arquivo:'AC-Campanhas-Comerciais.html',    label:'Ver campanhas' },
     { id:'hub-gestor',   nome:'Dashboard Gestor',     tag:'Operacional', desc:'Visão consolidada do time: KPIs, ranking de treinadores, NPS e funil de experiências.', icon:'🎯', cor:'ciano',  arquivo:'dashboard_gestor_v3.html',          label:'Ver KPIs' },
     { id:'retencao',     nome:'Sistema de Retenção',  tag:'Técnico',     desc:'Acesso ao sistema técnico: planners, carteira de alunos, revisões e diário do treinador.', icon:'🏋️', cor:'roxo',  arquivo:'sistema_integrado_v3.html',         label:'Abrir sistema' },
     { id:'uc',           nome:'Universidade Corp.',   tag:'Formação',    desc:'Acompanhe o progresso individual de cada colaborador nas trilhas de formação.', icon:'🎓', cor:'roxo',  arquivo:'AC-University-MVP.html',            label:'Acompanhar UC' },
     { id:'importar',     nome:'Importar Carteira',    tag:'Dados',       desc:'Importe a lista de alunos via CSV diretamente para o sistema.', icon:'📤', cor:'ciano',  arquivo:'importar_carteira.html',            label:'Importar CSV' },
   ],
   consultor: [
-    { id:'vendas', nome:'Painel de Vendas', tag:'Principal', desc:'Gerencie o funil completo de experiências, follow-ups automáticos e agenda semanal.', icon:'💼', cor:'amar', arquivo:'painel_vendas.html', label:'Abrir painel' },
-    { id:'uc', nome:'Universidade Corporativa', tag:'Formação', desc:'Trilha de formação e desenvolvimento profissional da Acquacel.', icon:'🎓', cor:'roxo', arquivo:'AC-University-MVP.html', label:'Acessar UC' },
-    { id:'conversor', nome:'Conversor de Carteira', tag:'Utilitário', desc:'Converta exportações de qualquer sistema de gestão para o formato padrão. Funciona offline.', icon:'🔄', cor:'ciano', arquivo:'conversor_carteira.html', label:'Abrir conversor' },
+    { id:'vendas',    nome:'Painel de Vendas',        tag:'Principal',  desc:'Gerencie o funil completo de experiências, follow-ups automáticos e agenda semanal.', icon:'💼', cor:'amar',  arquivo:'painel_vendas.html',               label:'Abrir painel' },
+    { id:'campanhas', nome:'Campanhas Comerciais',    tag:'Marketing',  desc:'Gerencie campanhas de captação, Kanban de leads e registro de vendas.', icon:'📣', cor:'azul',  arquivo:'AC-Campanhas-Comerciais.html',     label:'Ver campanhas' },
+    { id:'c01',       nome:'Scripts Comerciais',      tag:'Formação',   desc:'Central de scripts de abordagem, mapeamento, consultoria e reativação — Cap. C01.', icon:'📋', cor:'verde', arquivo:'AC-UC-C01-CentralScripts.html',    label:'Ver scripts' },
+    { id:'uc',        nome:'Universidade Corporativa',tag:'Formação',   desc:'Trilha de formação e desenvolvimento profissional da Acquacel.', icon:'🎓', cor:'roxo',  arquivo:'AC-University-MVP.html',           label:'Acessar UC' },
+    { id:'conversor', nome:'Conversor de Carteira',   tag:'Utilitário', desc:'Converta exportações de qualquer sistema de gestão para o formato padrão. Funciona offline.', icon:'🔄', cor:'ciano', arquivo:'conversor_carteira.html',          label:'Abrir conversor' },
   ],
   admin: [
     { id:'dash-exec', nome:'Dashboard Executivo', tag:'Estratégico', desc:'Score dos 5 pilares GeFit: ADM, Marketing, Comercial, Técnico e Sucesso do Cliente.', icon:'🏆', cor:'verde', arquivo:'AC-Dashboard-Executivo.html', label:'Abrir dashboard' },
     { id:'hub-gestor', nome:'Dashboard Gestor', tag:'Operacional', desc:'Visão consolidada do time técnico: KPIs, ranking de treinadores, NPS e funil.', icon:'🎯', cor:'azul', arquivo:'dashboard_gestor_v3.html', label:'Ver KPIs' },
     { id:'dash-tecnico', nome:'Dashboard Técnico', tag:'Equipe', desc:'Indicadores da equipe: carteira, experiências, revisões e desempenho individual.', icon:'📊', cor:'ciano', arquivo:'AC-Dashboard-Equipe-Tecnica.html', label:'Ver indicadores' },
     { id:'uc', nome:'Universidade Corporativa', tag:'Formação', desc:'Plataforma de formação e desenvolvimento de colaboradores.', icon:'🎓', cor:'roxo', arquivo:'AC-University-MVP.html', label:'Acessar UC' },
-    { id:'vendas', nome:'Painel de Vendas', tag:'Comercial', desc:'Funil de experiências, follow-ups e agenda da equipe comercial.', icon:'💼', cor:'amar', arquivo:'painel_vendas.html', label:'Ver painel' },
+    { id:'vendas',    nome:'Painel de Vendas',      tag:'Comercial', desc:'Funil de experiências, follow-ups e agenda da equipe comercial.', icon:'💼', cor:'amar',  arquivo:'painel_vendas.html',            label:'Ver painel' },
+    { id:'campanhas', nome:'Campanhas Comerciais',   tag:'Marketing', desc:'Campanhas de captação, Kanban de leads e registro de vendas.', icon:'📣', cor:'azul',  arquivo:'AC-Campanhas-Comerciais.html',  label:'Ver campanhas' },
     { id:'importar', nome:'Importar Carteira', tag:'Dados', desc:'Importe a lista de alunos via CSV diretamente para o banco de dados.', icon:'📤', cor:'amarelo', arquivo:'importar_carteira.html', label:'Importar' },
   ],
 };

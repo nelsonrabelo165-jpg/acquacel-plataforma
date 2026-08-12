@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cap. C01 — Central de Scripts Comerciais | Acquacel University</title>
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════
+  TEMPLATE MESTRE — UNIVERSIDADE CORPORATIVA (UC)
+  ═══════════════════════════════════════════════════════════════════════
+  Este arquivo unifica o padrão encontrado em 3 UCs já criadas
+  (Acquacel University, UC GeFit, UC Acquacel). Use-o como ponto de
+  partida para qualquer capítulo novo, de qualquer academia/marca.
+
+  COMO USAR (leia o Manual-Padrao-UC.md para o guia completo):
+  1. Substitua todos os campos {{ENTRE_CHAVES}} — são ~12 no total.
+  2. Ajuste a paleta de cores em :root (bloco "AJUSTE DE MARCA").
+  3. Na aba Conteúdo, mantenha só os componentes que este capítulo
+     precisa (cada um está marcado com um comentário
+     "COMPONENTE: ..." — apague o bloco inteiro se não for usar).
+  4. Reescreva o array `questoes` no <script> final com as perguntas
+     do quiz deste capítulo (mesmo formato, é só editar o conteúdo).
+  5. Atualize a lista de capítulos da trilha na sidebar.
+
+  NÃO precisa mexer em: JS de tabs, JS de quiz, JS de checklist,
+  grid/layout — isso é o "motor" e é igual em todas as UCs.
+  ═══════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ═══ AJUSTE DE MARCA — troque estes 6 valores pela paleta da academia ═══ */
+    --cor:         #1B4FD8;   /* cor primária da marca */
+    --cor-mid:     #2563EB;
+    --cor-light:   #3B82F6;
+    --cor-pale:    #DBEAFE;
+    --cor-dim:     rgba(27,79,216,0.08);
+    --cor-border:  rgba(27,79,216,0.22);
+    /* ═══ Cores semânticas — mantenha iguais em todas as UCs (não são de marca) ═══ */
+    --verde:       #16A34A;
+    --verde-dim:   rgba(22,163,74,0.08);
+    --verde-border:rgba(22,163,74,0.22);
+    --vermelho:    #DC2626;
+    --verm-dim:    rgba(220,38,38,0.07);
+    /* ═══ Neutros — mantenha iguais (funcionam bem em qualquer marca) ═══ */
+    --fundo:       #F8FAFF;
+    --fundo2:      #FFFFFF;
+    --fundo3:      #F1F5FB;
+    --borda:       #E2E8F0;
+    --borda2:      #CBD5E1;
+    --texto:       #1E293B;
+    --texto2:      #475569;
+    --texto3:      #94A3B8;
+    --preto:       #0A0F1E;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--fundo); color:var(--texto); font-family:'Barlow',sans-serif; font-size:15px; line-height:1.65; }
+
+  /* HEADER */
+  .uc-header { background:var(--preto); border-bottom:1px solid rgba(255,255,255,0.07); padding:0 1.75rem; display:flex; align-items:center; justify-content:space-between; height:54px; position:sticky; top:0; z-index:200; gap:12px; }
+  .uc-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .uc-logo-badge { width:32px; height:32px; background:var(--cor); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff; font-family:'Barlow Condensed',sans-serif; }
+  .uc-logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; letter-spacing:0.08em; text-transform:uppercase; color:#fff; }
+  .uc-logo-text span { color:var(--cor-light); }
+  .uc-nav { display:flex; gap:2px; }
+  .uc-nav a { color:rgba(255,255,255,0.45); text-decoration:none; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; padding:5px 12px; border-radius:5px; transition:all .15s; cursor:pointer; }
+  .uc-nav a:hover { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.8); }
+  .uc-nav a.active { background:rgba(59,130,246,0.18); color:var(--cor-light); }
+  .uc-header-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .badge-trilha { background:var(--cor-dim); border:1px solid var(--cor-border); color:var(--cor-light); font-size:10px; font-weight:700; padding:3px 10px; border-radius:4px; letter-spacing:0.1em; text-transform:uppercase; }
+  .badge-dept { font-size:10px; font-weight:600; color:rgba(255,255,255,0.3); letter-spacing:0.08em; text-transform:uppercase; }
+
+  /* LAYOUT */
+  .layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 54px); }
+
+  /* SIDEBAR */
+  .sidebar { background:var(--fundo2); border-right:1px solid var(--borda); padding:1.5rem 0; position:sticky; top:54px; height:calc(100vh - 54px); overflow-y:auto; }
+  .sidebar-section { padding:0 1rem; margin-bottom:1.5rem; }
+  .sidebar-section-title { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; letter-spacing:0.22em; text-transform:uppercase; color:var(--texto3); padding:0 0.5rem; margin-bottom:0.5rem; }
+  .sidebar-link { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; color:var(--texto2); text-decoration:none; font-size:13px; transition:all .15s; cursor:pointer; background:none; border:none; width:100%; text-align:left; font-family:'Barlow',sans-serif; }
+  .sidebar-link:hover { background:var(--fundo3); color:var(--texto); }
+  .sidebar-link.active { background:var(--cor-dim); color:var(--cor); }
+  .sidebar-link .dot { width:6px; height:6px; border-radius:50%; background:var(--borda2); flex-shrink:0; }
+  .sidebar-link.active .dot { background:var(--cor); }
+  .sidebar-progress { margin:0.75rem 1rem 0; padding:0.875rem 1rem; background:var(--fundo3); border-radius:8px; border:1px solid var(--borda); }
+  .sidebar-progress-label { font-size:11px; color:var(--texto2); margin-bottom:6px; }
+  .progress-bar { height:4px; background:var(--borda); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--cor); border-radius:2px; width:0%; transition:width .4s ease; }
+  .progress-text { font-size:11px; color:var(--cor); margin-top:5px; font-weight:600; }
+  .cap-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:6px; font-size:12px; color:var(--texto3); border:1px solid transparent; }
+  .cap-item.current { background:var(--cor-dim); border-color:var(--cor-border); color:var(--cor); font-weight:600; }
+  .cap-item.locked { opacity:0.45; }
+  .cap-num { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; letter-spacing:0.14em; color:inherit; width:28px; flex-shrink:0; }
+
+  /* MAIN */
+  .main { padding:2.5rem 3rem 4rem; max-width:860px; }
+
+  /* BREADCRUMB */
+  .breadcrumb { font-size:12px; color:var(--texto3); margin-bottom:1.5rem; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .breadcrumb span { color:var(--texto2); }
+  .breadcrumb .sep { color:var(--borda2); }
+
+  /* HERO */
+  .aula-hero { background:var(--preto); border-radius:14px; padding:2.5rem; margin-bottom:2rem; position:relative; overflow:hidden; }
+  .aula-hero::before { content:'C01'; position:absolute; right:1.5rem; top:50%; transform:translateY(-50%); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:110px; color:rgba(59,130,246,0.07); line-height:1; pointer-events:none; user-select:none; }
+  .aula-hero::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse 80% 60% at 0% 50%, var(--cor-dim) 0%, transparent 70%); pointer-events:none; }
+  .aula-tag { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.22em; text-transform:uppercase; color:var(--cor-light); margin-bottom:0.875rem; position:relative; z-index:1; }
+  .aula-titulo { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(28px,4vw,42px); line-height:1.0; color:#fff; margin-bottom:0.5rem; position:relative; z-index:1; }
+  .aula-subtitulo { font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:1.5rem; max-width:520px; position:relative; z-index:1; }
+  .aula-meta { display:flex; gap:1.5rem; flex-wrap:wrap; position:relative; z-index:1; }
+  .aula-meta-item { font-size:12px; color:rgba(255,255,255,0.35); display:flex; align-items:center; gap:5px; }
+  .aula-meta-item strong { color:rgba(255,255,255,0.6); }
+  .etapas-pill-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.07); position:relative; z-index:1; }
+  .etapa-pill { font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 11px; border-radius:100px; border:1px solid var(--cor-border); color:var(--cor-light); background:var(--cor-dim); }
+
+  /* TABS */
+  .tabs { display:flex; gap:2px; border-bottom:2px solid var(--borda); margin-bottom:2rem; overflow-x:auto; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { padding:10px 18px; font-size:12px; font-weight:700; color:var(--texto3); background:none; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:all .15s; white-space:nowrap; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:-2px; }
+  .tab-btn:hover { color:var(--texto); }
+  .tab-btn.active { color:var(--cor); border-bottom-color:var(--cor); }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* TYPOGRAPHY */
+  .section-label { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; letter-spacing:0.3em; text-transform:uppercase; color:var(--cor); margin-bottom:0.5rem; display:flex; align-items:center; gap:8px; }
+  .section-label::before { content:''; width:20px; height:2px; background:var(--cor); display:inline-block; }
+  .section-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(20px,3vw,28px); color:var(--preto); margin-bottom:1rem; line-height:1.05; text-transform:uppercase; letter-spacing:0.01em; }
+  .section-title em { font-style:normal; color:var(--cor); }
+  .prose { color:var(--texto); line-height:1.75; margin-bottom:1.25rem; }
+  .prose p { margin-bottom:0.875rem; }
+  .prose p:last-child { margin-bottom:0; }
+  strong.dest { color:var(--cor); font-weight:700; }
+  .divider { height:1px; background:var(--borda); margin:2.25rem 0; }
+
+  /* CALLOUTS — 3 variantes: padrão / erro / sucesso */
+  .callout { background:var(--cor-dim); border-left:3px solid var(--cor); border-radius:0 10px 10px 0; padding:1rem 1.25rem; margin:1.25rem 0; font-size:14px; color:var(--texto); line-height:1.65; }
+  .callout strong { color:var(--cor); }
+  .callout-erro { background:var(--verm-dim); border-left-color:var(--vermelho); }
+  .callout-erro strong { color:var(--vermelho); }
+  .callout-verde { background:var(--verde-dim); border-left-color:var(--verde); }
+  .callout-verde strong { color:var(--verde); }
+
+  /* COMPONENTE: COMPARATIVO ✕ / ✓ */
+  .compare-wrap { border:1px solid var(--borda); border-radius:12px; overflow:hidden; margin:1.25rem 0; }
+  .compare-header { display:grid; grid-template-columns:1fr 1fr; background:var(--preto); }
+  .compare-header div { padding:12px 20px; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; }
+  .compare-header .col-neg { color:rgba(255,255,255,0.4); border-right:1px solid rgba(255,255,255,0.07); }
+  .compare-header .col-pos { color:var(--cor-light); }
+  .compare-row { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--borda); }
+  .compare-row:last-child { border-bottom:none; }
+  .compare-row div { padding:11px 18px; font-size:13px; border-right:1px solid var(--borda); display:flex; align-items:flex-start; gap:8px; line-height:1.5; }
+  .compare-row div:last-child { border-right:none; }
+  .compare-row .col-neg { color:var(--texto2); background:var(--fundo2); }
+  .compare-row .col-neg::before { content:'✕'; color:var(--vermelho); font-size:10px; flex-shrink:0; margin-top:2px; font-weight:900; }
+  .compare-row .col-pos { color:var(--texto); background:var(--cor-dim); }
+  .compare-row .col-pos::before { content:'✓'; color:var(--verde); font-size:10px; flex-shrink:0; margin-top:2px; font-weight:900; }
+
+  /* COMPONENTE: GRID DE DIMENSÕES (ex.: "3 Esferas") — N cards conceituais */
+  .esferas-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:1.25rem 0; }
+  .esfera-card { border:1px solid var(--borda); border-radius:12px; padding:1.25rem; background:var(--fundo2); transition:border-color .15s; }
+  .esfera-card:hover { border-color:var(--cor-border); }
+  .esfera-num { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; letter-spacing:0.22em; text-transform:uppercase; color:var(--cor); margin-bottom:0.5rem; }
+  .esfera-nome { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:17px; text-transform:uppercase; color:var(--preto); margin-bottom:0.5rem; }
+  .esfera-desc { font-size:12px; color:var(--texto2); line-height:1.55; }
+
+  /* COMPONENTE: JORNADA / FLUXO EM ETAPAS */
+  .jornada { display:flex; gap:0; margin:1.5rem 0; overflow:hidden; border-radius:10px; border:1px solid var(--borda); flex-wrap:wrap; }
+  .jornada-step { flex:1; min-width:90px; padding:0.875rem 0.625rem; text-align:center; background:var(--fundo2); border-right:1px solid var(--borda); }
+  .jornada-step:last-child { border-right:none; }
+  .jornada-step.ativo { background:var(--cor-dim); }
+  .jornada-num { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:800; color:var(--cor); letter-spacing:0.1em; margin-bottom:4px; }
+  .jornada-nome { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:800; color:var(--preto); letter-spacing:0.04em; text-transform:uppercase; }
+  .jornada-sub { font-size:9px; color:var(--texto3); margin-top:2px; }
+
+  /* COMPONENTE: SEGMENTAÇÃO DE PÚBLICO (2 colunas) */
+  .perfil-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--borda); border-radius:10px; overflow:hidden; margin:1rem 0; }
+  .perfil-col { background:var(--fundo2); padding:1.25rem; }
+  .perfil-header { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--cor); margin-bottom:0.875rem; }
+  .perfil-item { font-size:13px; color:var(--texto2); padding:6px 0; border-bottom:1px solid var(--borda); display:flex; gap:8px; align-items:flex-start; }
+  .perfil-item:last-child { border-bottom:none; }
+  .perfil-item::before { content:'◆'; font-size:7px; color:var(--texto3); margin-top:5px; flex-shrink:0; }
+
+  /* COMPONENTE: LISTA DE PASSOS NUMERADOS (com tempo/dica) */
+  .passos-lista { display:flex; flex-direction:column; gap:10px; margin:1.25rem 0; }
+  .passo-card { border:1px solid var(--borda); border-radius:10px; overflow:hidden; }
+  .passo-header { display:flex; align-items:center; gap:10px; padding:0.75rem 1.125rem; background:var(--fundo3); }
+  .passo-num { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:13px; color:var(--cor); }
+  .passo-titulo { font-weight:700; font-size:13px; color:var(--preto); flex:1; }
+  .passo-tempo { font-size:11px; color:var(--texto3); }
+  .passo-body { padding:0.875rem 1.125rem; font-size:13px; color:var(--texto2); line-height:1.6; }
+  .passo-dica { font-size:12px; color:var(--cor); font-style:italic; margin-top:0.5rem; }
+
+  /* COMPONENTE: TRATAMENTO DE OBJEÇÕES */
+  .obj-card { border:1px solid var(--borda); border-radius:10px; margin:1rem 0; overflow:hidden; }
+  .obj-hdr { display:flex; align-items:center; gap:10px; padding:0.875rem 1.125rem; background:var(--verm-dim); border-bottom:1px solid var(--borda); }
+  .obj-badge { font-size:9px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--vermelho); }
+  .obj-title { font-weight:700; font-size:14px; color:var(--texto); }
+  .obj-body { padding:1rem 1.125rem; }
+  .obj-diag { font-size:12px; color:var(--texto2); margin-bottom:0.75rem; font-style:italic; }
+  .obj-resposta { font-size:13px; color:var(--texto); line-height:1.65; }
+
+  /* COMPONENTE: TABELA DE INDICADORES */
+  .ind-table { width:100%; border:1px solid var(--borda); border-radius:10px; overflow:hidden; border-collapse:separate; border-spacing:0; margin:1rem 0; }
+  .ind-table th { background:var(--preto); color:#fff; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; padding:10px 14px; text-align:left; }
+  .ind-table td { padding:10px 14px; font-size:13px; border-top:1px solid var(--borda); color:var(--texto2); }
+  .ind-table tr:nth-child(even) td { background:var(--fundo3); }
+
+  /* COMPONENTE: DESTAQUES NUMÉRICOS (KPIs em linha) */
+  .stat-row { display:flex; gap:12px; flex-wrap:wrap; margin:1.25rem 0; }
+  .stat-card { flex:1; min-width:120px; border:1px solid var(--borda); border-radius:10px; padding:1rem 1.125rem; background:var(--fundo2); text-align:center; }
+  .stat-num { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:26px; color:var(--cor); }
+  .stat-label { font-size:11px; color:var(--texto2); margin-top:2px; }
+
+  /* SCRIPTS (aba Scripts) */
+  .script-box { background:var(--fundo2); border:1px solid var(--borda); border-radius:10px; margin:1rem 0; overflow:hidden; }
+  .script-header { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 1.25rem; border-bottom:1px solid var(--borda); background:var(--fundo3); }
+  .script-tag { font-size:10px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--cor); }
+  .script-copy-btn { font-size:11px; color:var(--texto3); background:none; border:1px solid var(--borda); border-radius:4px; padding:3px 10px; cursor:pointer; transition:all .15s; }
+  .script-copy-btn:hover { border-color:var(--cor-border); color:var(--cor); }
+  .script-body { padding:1.25rem; font-size:14px; color:var(--texto); line-height:1.75; }
+  .script-body p { margin-bottom:0.75rem; }
+  .script-body p:last-child { margin-bottom:0; }
+  .script-placeholder { color:var(--cor-mid); font-style:italic; }
+  .script-obs { font-size:12px; color:var(--texto2); font-style:italic; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--borda); }
+
+  /* QUIZ (aba Quiz) */
+  .quiz-wrapper { background:var(--fundo2); border:1px solid var(--borda); border-radius:14px; overflow:hidden; }
+  .quiz-top { padding:1.25rem 1.5rem; border-bottom:1px solid var(--borda); display:flex; align-items:center; justify-content:space-between; background:var(--preto); }
+  .quiz-top-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:18px; color:#fff; letter-spacing:0.04em; }
+  .quiz-top-meta { font-size:12px; color:rgba(255,255,255,0.4); }
+  .quiz-progress-bar { height:3px; background:var(--borda); }
+  .quiz-progress-fill { height:100%; background:var(--cor); transition:width .3s ease; }
+  .quiz-body { padding:2rem 1.5rem; min-height:280px; }
+  .quiz-q-num { font-size:9px; font-weight:800; letter-spacing:0.22em; color:var(--cor); text-transform:uppercase; margin-bottom:0.5rem; }
+  .quiz-question { font-size:17px; font-weight:600; color:var(--preto); line-height:1.45; margin-bottom:1.5rem; }
+  .quiz-options { display:flex; flex-direction:column; gap:8px; }
+  .quiz-option { padding:0.875rem 1.125rem; background:var(--fundo3); border:1px solid var(--borda); border-radius:8px; cursor:pointer; font-size:14px; color:var(--texto); transition:all .15s; text-align:left; font-family:'Barlow',sans-serif; }
+  .quiz-option:hover:not(:disabled) { border-color:var(--cor-border); background:var(--cor-dim); }
+  .quiz-option.correct { background:var(--verde-dim); border-color:var(--verde-border); color:var(--verde); }
+  .quiz-option.wrong { background:var(--verm-dim); border-color:rgba(220,38,38,0.25); color:var(--vermelho); }
+  .quiz-option:disabled { cursor:default; }
+  .quiz-feedback { margin-top:1rem; padding:0.875rem 1.125rem; border-radius:8px; font-size:13px; line-height:1.6; display:none; }
+  .quiz-feedback.show { display:block; }
+  .quiz-feedback.ok { background:var(--verde-dim); border:1px solid var(--verde-border); color:var(--verde); }
+  .quiz-feedback.err { background:var(--verm-dim); border:1px solid rgba(220,38,38,0.22); color:var(--vermelho); }
+  .quiz-footer { padding:1rem 1.5rem; border-top:1px solid var(--borda); display:flex; align-items:center; justify-content:space-between; background:var(--fundo3); }
+  .quiz-score { font-size:13px; color:var(--texto2); }
+  .quiz-score strong { color:var(--texto); }
+  .btn-primary { background:var(--cor); color:#fff; border:none; padding:9px 22px; border-radius:7px; font-size:13px; font-weight:700; cursor:pointer; transition:opacity .15s; font-family:'Barlow',sans-serif; letter-spacing:0.04em; }
+  .btn-primary:hover { opacity:0.88; }
+  .btn-primary:disabled { opacity:0.4; cursor:default; }
+  .quiz-resultado { display:none; padding:3rem 1.5rem; text-align:center; }
+  .quiz-resultado.show { display:block; }
+  .resultado-score { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:56px; margin-bottom:0.5rem; }
+  .resultado-score.aprovado { color:var(--verde); }
+  .resultado-score.reprovado { color:var(--vermelho); }
+  .resultado-msg { font-size:16px; font-weight:600; color:var(--texto); margin-bottom:0.375rem; }
+  .resultado-sub { font-size:13px; color:var(--texto2); margin-bottom:1.5rem; }
+
+  /* REVISÃO RÁPIDA (aba Revisão) */
+  .revisao-card { border:1px solid var(--borda); border-radius:12px; padding:1.5rem; background:var(--fundo2); }
+  .revisao-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px; color:var(--preto); margin-bottom:1.125rem; letter-spacing:0.02em; }
+  .revisao-item { display:flex; gap:12px; padding:0.75rem 0; border-bottom:1px solid var(--borda); font-size:13px; color:var(--texto2); line-height:1.6; }
+  .revisao-item:last-child { border-bottom:none; }
+  .revisao-item strong { color:var(--texto); }
+  .revisao-check { width:22px; height:22px; border-radius:50%; background:var(--cor-dim); color:var(--cor); font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .checklist-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:0.75rem; }
+  .check-pill { display:flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--borda); border-radius:100px; font-size:12px; color:var(--texto2); cursor:pointer; transition:all .15s; user-select:none; }
+  .check-pill:hover { border-color:var(--cor-border); }
+  .check-pill.checked { background:var(--verde-dim); border-color:var(--verde-border); color:var(--verde); }
+  .check-pill .ck { font-size:11px; }
+  .check-status { font-size:11px; color:var(--texto3); margin-top:0.625rem; }
+
+  /* GUIA DO GESTOR (aba Gestor) */
+  .gestor-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:1rem 0; }
+  .gestor-card { border:1px solid var(--borda); border-radius:12px; padding:1.25rem; background:var(--fundo2); }
+  .gestor-card-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; color:var(--preto); margin-bottom:0.875rem; }
+  .gestor-item { font-size:12.5px; color:var(--texto2); padding:5px 0; line-height:1.55; border-bottom:1px solid var(--borda); }
+  .gestor-item:last-child { border-bottom:none; }
+  .kpi-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:0.75rem; }
+  .kpi-chip { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:var(--cor-dim); color:var(--cor); border:1px solid var(--cor-border); }
+
+  /* COMPONENTE: SELETOR DE ÁREA (Piscina Infantil / Piscina Adultos / Musculação) */
+  .area-switch { display:flex; gap:8px; flex-wrap:wrap; margin:1.25rem 0 1.75rem; padding:0.875rem; background:var(--fundo3); border:1px solid var(--borda); border-radius:12px; }
+  .area-switch-label { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--texto3); width:100%; margin-bottom:2px; }
+  .area-pill { font-size:12.5px; font-weight:700; padding:7px 16px; border-radius:100px; border:1px solid var(--borda2); background:var(--fundo2); color:var(--texto2); cursor:pointer; transition:all .15s; font-family:'Barlow',sans-serif; }
+  .area-pill:hover { border-color:var(--cor-border); }
+  .area-pill.active { background:var(--cor); border-color:var(--cor); color:#fff; }
+  .area-group { display:none; }
+  .area-group.active { display:block; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns:1fr; }
+    .sidebar { display:none; }
+    .main { padding:1.5rem 1.25rem 3rem; }
+    .esferas-grid, .compare-header, .compare-row, .perfil-grid, .gestor-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="uc-header">
+  <div class="uc-logo">
+    <div class="uc-logo-badge">A</div>
+    <div class="uc-logo-text">Acquacel <span>University</span></div>
+  </div>
+  <nav class="uc-nav">
+    <a class="active">Trilha Comercial</a>
+  </nav>
+  <div class="uc-header-right">
+    <span class="badge-trilha">Comercial</span>
+    <span class="badge-dept">CRM · Vendas</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Neste capítulo</div>
+      <a class="sidebar-link active" onclick="switchTab('conteudo')"><span class="dot"></span> Contexto</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('secao-2')"><span class="dot"></span> Metodologia Acquacel</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('secao-3')"><span class="dot"></span> O Caminho do Lead</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('secao-4')"><span class="dot"></span> Por Área da Acquacel</a>
+      <a class="sidebar-link" onclick="switchTab('conteudo');scrollToSection('secao-5')"><span class="dot"></span> Mapa de Objeções</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Artefatos</div>
+      <a class="sidebar-link" onclick="switchTab('script')"><span class="dot"></span> Scripts por Área</a>
+      <a class="sidebar-link" onclick="switchTab('quiz')"><span class="dot"></span> Quiz</a>
+      <a class="sidebar-link" onclick="switchTab('revisao')"><span class="dot"></span> Revisão rápida</a>
+      <a class="sidebar-link" onclick="switchTab('gestor')"><span class="dot"></span> Guia do gestor</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Trilha Comercial</div>
+      <div class="cap-item current"><span class="cap-num">C01</span><span>Central de Scripts Comerciais</span></div>
+      <div class="cap-item locked"><span class="cap-num">C02</span><span>Em breve</span></div>
+      <div class="cap-item locked"><span class="cap-num">C03</span><span>Em breve</span></div>
+    </div>
+    <div class="sidebar-progress">
+      <div class="sidebar-progress-label">Seu progresso neste módulo</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0% concluído</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="breadcrumb">
+      Acquacel University <span class="sep">›</span>
+      <span>Comercial</span> <span class="sep">›</span>
+      <span>Cap. C01 — Central de Scripts Comerciais</span>
+    </div>
+
+    <div class="aula-hero">
+      <div class="aula-tag">Cap. C01 · Comercial · Documento Mestre</div>
+      <div class="aula-titulo">Central de Scripts Comerciais</div>
+      <div class="aula-subtitulo">A metodologia comercial da Acquacel — do primeiro contato ao fechamento — adaptada para cada área: Piscina Infantil, Piscina Adultos e Musculação.</div>
+      <div class="aula-meta">
+        <div class="aula-meta-item">⏱ <strong>Duração:</strong> 40 min</div>
+        <div class="aula-meta-item">👤 <strong>Público:</strong> Comercial · Recepção</div>
+        <div class="aula-meta-item">🎯 <strong>Nível:</strong> Fundamental</div>
+        <div class="aula-meta-item">✅ <strong>Quiz:</strong> 8 questões · 70% mínimo</div>
+      </div>
+      <div class="etapas-pill-row">
+        <span class="etapa-pill">Metodologia Acquacel</span>
+        <span class="etapa-pill">Piscina Infantil</span>
+        <span class="etapa-pill">Piscina Adultos</span>
+        <span class="etapa-pill">Musculação</span>
+        <span class="etapa-pill">18 Objeções</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('conteudo')">📖 Conteúdo</button>
+      <button class="tab-btn" onclick="switchTab('script')">📋 Scripts</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">✅ Quiz</button>
+      <button class="tab-btn" onclick="switchTab('revisao')">⚡ Revisão Rápida</button>
+      <button class="tab-btn" onclick="switchTab('gestor')">🎯 Guia do Gestor</button>
+    </div>
+
+    <!-- ═══════════════════ TAB: CONTEÚDO ═══════════════════ -->
+    <div class="tab-pane active" id="tab-conteudo">
+
+      <!-- Bloco de abertura — sempre presente em todo capítulo -->
+      <div>
+        <div class="section-label">Contexto</div>
+        <div class="section-title">Por que este capítulo <em>existe?</em></div>
+        <div class="prose">
+          <p>Todo mundo que atende um lead na Acquacel — WhatsApp, ligação ou recepção — precisa falar a mesma língua comercial. Sem um método comum, cada conversa vira uma tentativa isolada: um consultor empurra desconto, outro esquece de propor o próximo passo, outro repete a mesma mensagem genérica pra um lead que já ficou uma semana sem resposta.</p>
+          <p>Este capítulo consolida a metodologia <strong class="dest">Acquacel</strong> — já validada — como padrão único da Acquacel, com uma diferença importante: os scripts aqui não são genéricos de "academia". Eles são escritos pensando na Piscina Infantil, na Piscina Adultos (hidroginástica e natação) e na Musculação separadamente, porque a dor, a linguagem e o gatilho de decisão mudam de público pra público.</p>
+        </div>
+        <div class="callout callout-erro">
+          <strong>O padrão que precisamos eliminar:</strong> mensagem genérica repetida → perguntar "quer que eu te mande os planos?" → falar de desconto antes de gerar valor → deixar a conversa em aberto sem propor um próximo passo concreto.
+        </div>
+        <div class="callout callout-verde">
+          <strong>O padrão Acquacel:</strong> Acolher com conexão real → Qualificar a dor por trás do pedido → entregar a Única Coisa (o presente: mapeamento de sintomas, consultoria ou avaliação) → Incentivar propondo horário, nunca perguntando "se quer".
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- GRID DE DIMENSÕES — Os 4 pilares do Acquacel -->
+      <div id="secao-2">
+        <div class="section-label">Metodologia</div>
+        <div class="section-title">Os 4 Pilares do <em>Acquacel</em></div>
+        <div class="prose"><p>Toda conversa comercial da Acquacel — não importa a área — segue esta ordem. É a estrutura que não muda; o que muda é o tom, exemplo, e a "Única Coisa" oferecida em cada área.</p></div>
+        <div class="esferas-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="esfera-card"><div class="esfera-num">A</div><div class="esfera-nome">Acolher / Atenção</div><div class="esfera-desc">Criar conexão real antes de qualquer coisa. Se o lead chegou até nós, acolhemos. Se estamos reabordando quem sumiu, chamamos atenção com uma headline que gera reação.</div></div>
+          <div class="esfera-card"><div class="esfera-num">Q</div><div class="esfera-nome">Qualificar</div><div class="esfera-desc">Descobrir a dor real por trás do pedido — por que aquela pessoa (ou o filho dela) quer entrar na água ou treinar agora, não só o que ela disse de cara.</div></div>
+          <div class="esfera-card"><div class="esfera-num">Ú</div><div class="esfera-nome">Única Coisa</div><div class="esfera-desc">O presente: mapeamento de sintomas, consultoria ou avaliação — que faz a pessoa enxergar valor antes de qualquer conversa de preço.</div></div>
+          <div class="esfera-card"><div class="esfera-num">I</div><div class="esfera-nome">Incentivar</div><div class="esfera-desc">Propor o próximo passo com segurança e horário sugerido. Nunca perguntar "quer?" — sempre afirmar o caminho.</div></div>
+        </div>
+        <div class="callout">
+          <strong>Regra de ouro:</strong> Acolher/Atenção → Qualificar → Única Coisa → Incentivar. Nessa ordem, sempre — em qualquer área da Acquacel.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- JORNADA — O Caminho do Lead -->
+      <div id="secao-3">
+        <div class="section-label">Método</div>
+        <div class="section-title">O Caminho do <em>Lead</em></div>
+        <div class="prose"><p>Da chegada no WhatsApp até o agendamento — o fluxo é o mesmo pra qualquer área, só muda o script usado em cada etapa (aba Scripts).</p></div>
+        <div class="jornada">
+          <div class="jornada-step ativo"><div class="jornada-num">01</div><div class="jornada-nome">1º Contato</div><div class="jornada-sub">Texto + áudio</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">02</div><div class="jornada-nome">Sem resposta?</div><div class="jornada-sub">Direciona p/ ligação</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">03</div><div class="jornada-nome">Recusou ligar?</div><div class="jornada-sub">Pede um áudio</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">04</div><div class="jornada-nome">Qualificou</div><div class="jornada-sub">Conduz p/ Única Coisa</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">05</div><div class="jornada-nome">Objeção?</div><div class="jornada-sub">Confirma antes de tratar</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">06</div><div class="jornada-nome">Incentivar</div><div class="jornada-sub">Propõe horário</div></div>
+          <div class="jornada-step ativo"><div class="jornada-num">07</div><div class="jornada-nome">Sem resposta</div><div class="jornada-sub">Encerramento com classe</div></div>
+        </div>
+        <div class="callout callout-verde">
+          <strong>Os 3 destinos possíveis</strong> de toda conversa — nunca deixar em aberto: 🎁 Experiência Gratuita (leads mornos) · ☕ Visita Presencial (leads quentes) · ✍️ Matrícula/Consultoria (fechamento direto).
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- SEGMENTAÇÃO DE PÚBLICO adaptada — 3 áreas da Acquacel -->
+      <div id="secao-4">
+        <div class="section-label">Personalização</div>
+        <div class="section-title">O Mesmo Método, <em>3 Linguagens</em></div>
+        <div class="prose"><p>A estrutura Acquacel não muda entre áreas — o que muda é a dor que qualificamos e o presente que oferecemos como Única Coisa. Isso está refletido nos scripts da próxima aba, já separados por área.</p></div>
+        <div class="perfil-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="perfil-col">
+            <div class="perfil-header">🦭 Piscina Infantil</div>
+            <div class="perfil-item">Quem decide é o responsável — não a criança. A dor comum: medo da água, insegurança dos pais, ou "meu filho não presta atenção em outro lugar".</div>
+            <div class="perfil-item" style="color:var(--verde);font-weight:600">→ Única Coisa: aula-teste + explicação da jornada por níveis (Foquinha → Tubarão), mostrando que existe progressão visível.</div>
+          </div>
+          <div class="perfil-col">
+            <div class="perfil-header">🏊 Piscina Adultos</div>
+            <div class="perfil-item">Hidroginástica e natação adulta. Dor comum: dor articular, sedentarismo, vergonha do próprio condicionamento, ou indicação médica.</div>
+            <div class="perfil-item" style="color:var(--cor);font-weight:600">→ Única Coisa: avaliação de mobilidade/condicionamento + aula-teste, com foco em segurança e baixo impacto.</div>
+          </div>
+          <div class="perfil-col">
+            <div class="perfil-header">🏋️ Musculação</div>
+            <div class="perfil-item">Dor comum: objetivo estético ou de saúde, insegurança de "não saber usar os aparelhos", histórico de academias impessoais.</div>
+            <div class="perfil-item" style="color:var(--verde);font-weight:600">→ Única Coisa: avaliação de bioimpedância + mapeamento de sintomas, mostrando acompanhamento próximo desde o dia 1.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CADÊNCIAS -->
+      <div>
+        <div class="section-label">Cadência</div>
+        <div class="section-title">Tipos de Cadência <em>e Descanso</em></div>
+        <div class="prose"><p>Cada situação tem uma cadência própria — duração ativa, número de contatos, e um tempo de silêncio depois que ela termina sem resposta. Nunca repita a mesma mensagem duas vezes dentro da mesma cadência.</p></div>
+        <table class="ind-table">
+          <tr><th>Tipo</th><th>Quando usar</th><th>Duração ativa</th><th>Contatos</th><th>Descanso após encerrar</th></tr>
+          <tr><td>Aquisição (lead novo)</td><td>Lead acabou de chegar</td><td>10–15 dias</td><td>8–10</td><td>30 dias</td></tr>
+          <tr><td>Conversão (travou na objeção)</td><td>Lead qualificado que não fechou</td><td>7–10 dias</td><td>5–8</td><td>30 dias</td></tr>
+          <tr><td>Campanha / Desconectado</td><td>Ação pontual ou sazonal</td><td>5–7 dias</td><td>4–7</td><td>30 dias</td></tr>
+          <tr><td>Relacionamento (plano novo)</td><td>Aluno recém-matriculado</td><td>Contínuo</td><td>Variável</td><td>Contínuo — não encerra</td></tr>
+          <tr><td>Reativação (ex-aluno/inativo)</td><td>30+ dias sem interação/frequência</td><td>4–7 dias (curta)</td><td>3–5</td><td>60 dias (ex-aluno) · 30 dias (inativo)</td></tr>
+          <tr><td>Renovação</td><td>Plano vencendo (D-15 a D-2)</td><td>13 dias</td><td>Variável</td><td>15 dias</td></tr>
+        </table>
+        <div class="callout callout-erro">
+          <strong>Atenção:</strong> as duas últimas mensagens de qualquer cadência são especiais — a penúltima avisa que o contato vai reduzir, a última é uma despedida real com a porta aberta (script B.10). Muita gente responde justamente à última mensagem — é normal, e vale comemorar cada retorno.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PLAYBOOK DE ROLEPLAY -->
+      <div>
+        <div class="section-label">Treino</div>
+        <div class="section-title">Playbook de <em>Roleplay Comercial</em></div>
+        <div class="prose"><p>Vendas não melhoram com motivação — melhoram com treino estruturado. Ritual semanal: 2 sessões de roleplay por semana (40 min no total), uma focada em condução da conversa, outra em ancoragem e objeções.</p></div>
+        <div class="passos-lista">
+          <div class="passo-card">
+            <div class="passo-header"><span class="passo-num">1</span><span class="passo-titulo">Contexto do cenário</span><span class="passo-tempo">5–7 min</span></div>
+            <div class="passo-body">O líder apresenta uma situação real (ex.: "lead de 38 anos, quer emagrecer, já tentou academia antes, está comparando preços"). Objetivo do consultor: conduzir até o agendamento.</div>
+          </div>
+          <div class="passo-card">
+            <div class="passo-header"><span class="passo-num">2</span><span class="passo-titulo">Aplicação do Acquacel</span><span class="passo-tempo">até 10 pts</span></div>
+            <div class="passo-body">Avalia se o consultor passou pelos 4 pilares na ordem certa, com pergunta aberta no Acolher, exploração real da dor no Qualificar, conexão clara no Única Coisa e condução segura no Incentivar.<div class="passo-dica">💡 A (0–2) · Q (0–3) · Ú (0–3) · I (0–2)</div></div>
+          </div>
+          <div class="passo-card">
+            <div class="passo-header"><span class="passo-num">3</span><span class="passo-titulo">Ancoragem de valor</span><span class="passo-tempo">até 5 pts</span></div>
+            <div class="passo-body">Fluxo obrigatório: Revisão → Método → Cesta de valor → Âncora → Contraste. O consultor precisa reforçar o que já foi dito, apresentar o método, mostrar os diferenciais e criar uma referência de valor antes de qualquer número.</div>
+          </div>
+          <div class="passo-card">
+            <div class="passo-header"><span class="passo-num">4</span><span class="passo-titulo">Tratamento de objeções</span><span class="passo-tempo">até 5 pts</span></div>
+            <div class="passo-body">O líder provoca objeções ("Está caro", "Vou pensar"). O consultor nunca defende o preço — sempre retoma o valor através de uma pergunta estratégica.</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-num">16–20</div><div class="stat-label">Consultor preparado</div></div>
+          <div class="stat-card"><div class="stat-num">12–15</div><div class="stat-label">Em evolução</div></div>
+          <div class="stat-card"><div class="stat-num">≤11</div><div class="stat-label">Precisa treino intensivo</div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PERFIL DO CONSULTOR -->
+      <div>
+        <div class="section-label">Perfil</div>
+        <div class="section-title">Consultor Acquacel <em>x o que não funciona</em></div>
+        <div class="compare-wrap">
+          <div class="compare-header">
+            <div class="col-neg">✕ Não funciona</div>
+            <div class="col-pos">✓ Perfil Acquacel</div>
+          </div>
+          <div class="compare-row"><div class="col-neg">"Distribuidor de tabela" — "temos planos a partir de..."</div><div class="col-pos">Curioso — faz perguntas reais</div></div>
+          <div class="compare-row"><div class="col-neg">"Operador de WhatsApp" — "qualquer coisa me chama"</div><div class="col-pos">Comunicador — transmite segurança</div></div>
+          <div class="compare-row"><div class="col-neg">"Tirador de pedidos" — "qual plano você quer?"</div><div class="col-pos">Disciplinado — executa as cadências</div></div>
+          <div class="compare-row"><div class="col-neg">Improvisador — atende diferente a cada vez</div><div class="col-pos">Responsável — sabe que todo lead tem dono</div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- MAPA DE OBJEÇÕES — 11 objeções representativas (base para expandir) -->
+      <div id="secao-5">
+        <div class="section-label">Objeções</div>
+        <div class="section-title">Mapa de <em>Objeções</em></div>
+        <div class="prose"><p>Nunca responda objeção defendendo — pergunte primeiro. Use a técnica de confirmação: <em>"E se não fosse [a objeção], você se matricularia agora?"</em>. Se a resposta for sim, a objeção é real e vale a pena trabalhar a fundo.</p></div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Todas as áreas</span><span class="obj-title">"Está caro" / "Vou pensar"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Quase nunca é sobre o valor em si — é sobre não ter enxergado valor suficiente ainda.</div>
+            <div class="obj-resposta">"Entendo — antes de pensarmos em valor, deixa eu te perguntar: se o investimento não fosse questão, isso faria sentido pra você agora? [confirma] Então vamos ver juntos como encaixar isso, porque o que importa primeiro é [o resultado/a segurança/a evolução], não é?"</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Piscina Infantil</span><span class="obj-title">"Meu filho tem medo de água"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Não é objeção de compra — é a dor central que justifica a matrícula, não o contrário.</div>
+            <div class="obj-resposta">"Isso é exatamente o que a nossa metodologia trabalha desde o primeiro nível — a Foquinha é feita pra criança que nunca teve contato com a água, no ritmo dela. Posso te mostrar como funciona essa primeira fase?"</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Piscina Adultos</span><span class="obj-title">"Tenho dor no joelho/coluna, não sei se aguento"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Medo de se machucar mais, não falta de vontade.</div>
+            <div class="obj-resposta">"Por isso a hidroginástica costuma ser recomendada justamente pra quem tem esse tipo de dor — o impacto na água é muito menor. Antes da primeira aula a gente faz uma avaliação rápida pra te posicionar com segurança."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Musculação</span><span class="obj-title">"Já tentei academia antes e não continuei"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">O problema não foi a pessoa — foi a falta de acompanhamento próximo.</div>
+            <div class="obj-resposta">"Faz muito sentido — a maioria desiste não por falta de vontade, mas por falta de acompanhamento de verdade. Aqui a avaliação inicial já entra com bioimpedância e um mapeamento pra gente saber exatamente onde focar com você."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Todas as áreas</span><span class="obj-title">"Já frequento outro lugar / não tenho tempo"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Pode ser real ou uma saída educada — a técnica de confirmação separa as duas.</div>
+            <div class="obj-resposta">"Entendo, e respeito isso. Só uma pergunta: se o tempo não fosse problema, você trocaria pra cá? [confirma] Então deixa eu te mostrar rapidinho o que costuma fazer a diferença — não toma mais que alguns minutos."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Todas as áreas</span><span class="obj-title">"Vou pensar / vou perguntar em casa"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Quase sempre é falta de segurança na decisão, não falta de interesse real.</div>
+            <div class="obj-resposta">"Faz todo sentido conversar em casa. Só pra eu te ajudar melhor nessa conversa: o que mais pesa pra vocês decidirem — é o valor, o horário, ou outra coisa? Assim eu já te passo a informação certa."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Todas as áreas</span><span class="obj-title">"Estou comparando com outro lugar"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Sinal de lead qualificado — ele já decidiu que quer, só está validando onde.</div>
+            <div class="obj-resposta">"Que ótimo que você está pesquisando com calma — mostra que você leva isso a sério. O que você mais valoriza quando compara? [aguarda resposta] Deixa eu te mostrar como a gente entrega isso."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Todas as áreas</span><span class="obj-title">"Não tenho horário compatível"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Pode ser real, mas geralmente falta mostrar a grade de horários disponível antes de a pessoa desistir sozinha.</div>
+            <div class="obj-resposta">"Entendo — antes de descartar, deixa eu te mostrar os horários que temos disponíveis pra [modalidade], porque às vezes encaixa melhor do que parece."</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Piscina Infantil</span><span class="obj-title">"Meu filho já tentou natação e não gostou"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Provavelmente uma experiência sem metodologia clara — a criança se sentiu perdida, não é rejeição à água.</div>
+            <div class="obj-resposta">"Entendo a preocupação — e é bem comum isso acontecer quando não existe uma jornada clara por trás. Aqui a gente trabalha por níveis, no ritmo da criança, então ela sempre sabe onde está e o que vem a seguir. Que tal conhecer sem compromisso?"</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Piscina Adultos</span><span class="obj-title">"Tenho vergonha do meu condicionamento atual"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Medo de julgamento, não falta de vontade — precisa de acolhimento antes de qualquer argumento técnico.</div>
+            <div class="obj-resposta">"Isso é mais comum do que você imagina — a maioria das pessoas que começa aqui está exatamente nesse ponto. A turma é bem acolhedora, e o ritmo é sempre respeitando o seu. Vamos marcar uma experiência pra você sentir na prática?"</div>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-hdr"><span class="obj-badge">Objeção · Musculação</span><span class="obj-title">"Não sei usar os aparelhos / tenho vergonha"</span></div>
+          <div class="obj-body">
+            <div class="obj-diag">Medo de errar na frente dos outros — precisa reforçar acompanhamento, não autonomia forçada.</div>
+            <div class="obj-resposta">"Fica tranquilo(a) que ninguém começa sabendo — por isso a primeira etapa é sempre a avaliação com acompanhamento, pra te ensinar direitinho antes de qualquer coisa. Você não vai ficar sozinho(a) nisso."</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Nota:</strong> este mapa já cobre 11 das 18 objeções do documento original. As 7 restantes (concorrência com preço fechado, indicação pendente, mudança recente de cidade, contrato vigente em outro lugar, entre outras) entram na próxima rodada de expansão deste capítulo.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- COMPARATIVO — Frases proibidas x Frases oficiais Acquacel -->
+      <div>
+        <div class="section-label">Linguagem</div>
+        <div class="section-title">Frases Proibidas <em>x</em> Frases Oficiais</div>
+        <div class="prose"><p>Vale pra qualquer área da Acquacel — nunca deixe uma pergunta passiva no lugar de uma proposta com segurança.</p></div>
+        <div class="compare-wrap">
+          <div class="compare-header">
+            <div class="col-neg">✕ Nunca usar</div>
+            <div class="col-pos">✓ Frase oficial Acquacel</div>
+          </div>
+          <div class="compare-row"><div class="col-neg">"Se tiver interesse..."</div><div class="col-pos">"Isso merece uma conversa."</div></div>
+          <div class="compare-row"><div class="col-neg">"Posso te mandar os planos?"</div><div class="col-pos">"Seu presente continua reservado."</div></div>
+          <div class="compare-row"><div class="col-neg">"Quer que eu te ligue?"</div><div class="col-pos">"Vou te ligar, leva só 2 a 3 minutos."</div></div>
+          <div class="compare-row"><div class="col-neg">"Você gostaria de voltar a treinar?"</div><div class="col-pos">"Vamos colocar a conversa em dia."</div></div>
+          <div class="compare-row"><div class="col-neg">"Qualquer coisa a gente se fala."</div><div class="col-pos">"Consigo um encaixe amanhã ou depois — qual fica melhor pra você?"</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════ TAB: SCRIPTS ═══════════════════ -->
+    <div class="tab-pane" id="tab-script">
+      <div class="section-label">Artefato</div>
+      <div class="section-title">Scripts por <em>Área</em></div>
+      <div class="prose"><p>Use os campos em <span class="script-placeholder">[colchetes]</span> com as informações reais. Adapte o tom — nunca o processo Acquacel.</p></div>
+
+      <div class="area-switch">
+        <div class="area-switch-label">Escolha a área para ver os scripts adaptados</div>
+        <button class="area-pill active" onclick="switchArea('infantil', this)">🦭 Piscina Infantil</button>
+        <button class="area-pill" onclick="switchArea('adultos', this)">🏊 Piscina Adultos</button>
+        <button class="area-pill" onclick="switchArea('musculacao', this)">🏋️ Musculação</button>
+      </div>
+
+      <!-- ═══ ÁREA: PISCINA INFANTIL ═══ -->
+      <div class="area-group active" id="area-infantil">
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Texto</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-1')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-1">
+            <p>Oi, [nome do responsável]! Que bom receber seu contato 💙 Vi que você tem interesse na natação infantil aqui na Acquacel. Só pra eu te indicar certinho: qual a idade do(a) [nome da criança] e ele(a) já teve algum contato com a água antes?</p>
+            <div class="script-obs">Nunca a mesma mensagem duas vezes. Sempre pergunte idade + histórico com a água — é o que qualifica o nível de entrada (Foquinha em diante).</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Áudio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-2')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-2">
+            <p>Oi! Que alegria saber que o(a) [nome da criança] pode fazer parte da nossa turminha aqui na Acquacel 💙 A gente tem uma metodologia própria, com níveis que vão desde o primeiro contato com a água até a autonomia total — e os pais acompanham cada conquista de perto. Vou te ligar rapidinho, leva só 2 a 3 minutinhos, pra te contar como funciona e já separar um presente de boas-vindas pra vocês.</p>
+            <div class="script-obs">O áudio não repete as perguntas do texto — reforça acolhimento e já justifica a ligação, sem perguntar se a pessoa quer.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.2 · Agendamento de Aula-Teste</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-3')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-3">
+            <p>Perfeito! Pelo que você me contou, o(a) [nome da criança] vai começar no nível Foquinha — que é exatamente pensado pra esse primeiro contato com a água, no ritmo dele(a). Consigo encaixar uma aula-teste amanhã às [horário] ou [horário alternativo] — qual fica melhor pra vocês?</p>
+            <div class="script-obs">Sempre conecte o nível/mascote à idade e à dor relatada (medo, insegurança). Nunca pergunte "quer agendar?" — já proponha dois horários.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.10 · Encerramento de Cadência</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-4')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-4">
+            <p>[nome do responsável], não quero encher sua caixinha de mensagem 💙 Vou deixar de te chamar por aqui, mas o presente do(a) [nome da criança] continua reservado caso vocês queiram conhecer a metodologia. Qualquer momento, é só me chamar que eu já retomo de onde paramos.</p>
+            <div class="script-obs">Última mensagem da cadência — despedida real, porta aberta, nunca cobrança.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.4 · Renovação de Plano</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-5')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-5">
+            <p>Oi, [nome do responsável]! Passando pra avisar que o plano do(a) [nome da criança] está próximo do vencimento. Ele(a) está evoluindo muito bem — já está no nível [nível atual]! Vamos garantir a continuidade da jornada? Consigo fechar a renovação com [benefício/condição] até [data].</p>
+            <div class="script-obs">Sempre mencionar o nível/progresso atual antes de falar de renovação — reforça o valor já entregue.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.9 · Reconexão de Lead Frio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-6')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-6">
+            <p>Oi, [nome do responsável]! Faz um tempo que conversamos sobre o(a) [nome da criança] na natação 💙 Ficou pela metade nossa conversa — o presente de aula-teste continua disponível. Como estão as coisas por aí?</p>
+            <div class="script-obs">Headline de reconexão, sem "seja bem-vindo" — a pessoa já nos conhece.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.14 · Reconexão de Ex-Aluno</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-7')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-7">
+            <p>Sentimos falta do(a) [nome da criança] na piscina! 💙 Muita coisa boa aconteceu por aqui desde que vocês saíram. Que tal voltar pra conhecer as novidades? Separei um horário especial de reencontro.</p>
+            <div class="script-obs">Headline forte ("sentimos falta"), nunca "seja bem-vindo" — a apresentação entra no Qualificar, não aqui.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.16 · Onboarding Pós-Matrícula (D+7)</span><button class="script-copy-btn" onclick="copyScript(this,'sc-inf-8')">Copiar</button></div>
+          <div class="script-body" id="sc-inf-8">
+            <p>Oi, [nome do responsável]! Já faz uma semana que o(a) [nome da criança] começou com a gente — como está sendo essa primeira fase? Alguma dúvida sobre o nível ou a rotina das aulas?</p>
+            <div class="script-obs">Check-in genuíno, não venda — reforça acompanhamento próximo logo no início da jornada.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══ ÁREA: PISCINA ADULTOS ═══ -->
+      <div class="area-group" id="area-adultos">
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Texto</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-1')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-1">
+            <p>Oi, [nome]! Que bom ter seu contato por aqui 💙 Vi seu interesse na [hidroginástica/natação adulta]. Pra te indicar certinho: você já pratica atividade física atualmente, ou seria um recomeço?</p>
+            <div class="script-obs">Pergunta objetiva que já revela se a dor é sedentarismo, retomada pós-lesão, ou evolução técnica.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Áudio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-2')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-2">
+            <p>Oi! Fico feliz com seu interesse na Acquacel 💙 A gente trabalha com uma avaliação de mobilidade antes de começar, exatamente pra você treinar com segurança e no seu ritmo — sem impacto, sem pressa. Vou te ligar rapidinho, 2 a 3 minutinhos, pra entender melhor sua rotina e já separar seu presente de boas-vindas.</p>
+            <div class="script-obs">Reforce segurança/baixo impacto logo de cara — é a principal objeção silenciosa desse público.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.2 · Agendamento de Aula-Teste</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-3')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-3">
+            <p>Show, [nome]! Vamos fazer uma avaliação rápida antes da sua primeira aula, só pra eu te posicionar direitinho na turma. Consigo um horário amanhã de manhã ou à tarde — qual funciona melhor pra você?</p>
+            <div class="script-obs">Sempre oferecer a avaliação como parte do cuidado, nunca como burocracia extra.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.10 · Encerramento de Cadência</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-4')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-4">
+            <p>[nome], vou parar por aqui pra não incomodar 💙 Seu presente de avaliação continua reservado sempre que fizer sentido pra você. Qualquer momento, é só me chamar.</p>
+            <div class="script-obs">Mesma lógica da despedida real — sem pressão, porta aberta.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.4 · Renovação de Plano</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-5')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-5">
+            <p>Oi, [nome]! Passando pra avisar que seu plano está próximo do vencimento. Notei sua evolução na [hidroginástica/natação] esse período — vamos garantir a continuidade? Consigo fechar com [benefício/condição] até [data].</p>
+            <div class="script-obs">Mencione algo específico da evolução/frequência da pessoa — evita soar automático.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.9 · Reconexão de Lead Frio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-6')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-6">
+            <p>Oi, [nome]! Faz um tempo que conversamos sobre a [hidroginástica/natação] aqui na Acquacel 💙 Sua avaliação continua reservada. Como você está?</p>
+            <div class="script-obs">Reconexão direta, sem repetir a mesma abordagem do primeiro contato.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.13 · Reativação de Inativo</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-7')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-7">
+            <p>Cadê você, [nome]? 💙 Notamos que faz um tempo que não te vemos por aqui. Está tudo bem? Separei um horário essa semana pra você retomar no seu ritmo, sem pressão.</p>
+            <div class="script-obs">Headline de atenção ("cadê você"), nunca "seja bem-vindo" — a pessoa já é aluna.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.16 · Onboarding Pós-Matrícula (D+7)</span><button class="script-copy-btn" onclick="copyScript(this,'sc-adu-8')">Copiar</button></div>
+          <div class="script-body" id="sc-adu-8">
+            <p>Oi, [nome]! Uma semana com a gente — como está sendo? Sentiu diferença na mobilidade/disposição? Qualquer ajuste que precisar, me chama.</p>
+            <div class="script-obs">Check-in de acompanhamento, reforça segurança/baixo impacto do início.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══ ÁREA: MUSCULAÇÃO ═══ -->
+      <div class="area-group" id="area-musculacao">
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Texto</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-1')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-1">
+            <p>Oi, [nome]! Que bom receber seu contato 💙 Vi seu interesse na musculação aqui na Acquacel. Me conta rapidinho: qual seu principal objetivo agora — emagrecimento, ganho de força, condicionamento, ou é mais indicação de saúde?</p>
+            <div class="script-obs">A pergunta de objetivo já direciona qual será a "Única Coisa" oferecida (bioimpedância x mapeamento de sintomas).</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.1 · 1º Contato — Áudio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-2')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-2">
+            <p>Oi! Fico feliz com seu interesse na Acquacel 💙 Aqui a gente começa com uma avaliação de bioimpedância e um mapeamento de sintomas — assim você já sai sabendo exatamente onde focar, com acompanhamento de perto desde o primeiro dia. Vou te ligar rapidinho, 2 a 3 minutinhos, pra te contar como funciona.</p>
+            <div class="script-obs">Reforce acompanhamento próximo — é o principal diferencial contra experiências anteriores de "academia impessoal".</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.2 · Agendamento de Avaliação</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-3')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-3">
+            <p>Perfeito, [nome]! Vamos agendar sua avaliação de bioimpedância + mapeamento — leva cerca de 20 minutos e já sai com um direcionamento claro do seu treino. Consigo encaixar amanhã às [horário] ou [horário alternativo], qual prefere?</p>
+            <div class="script-obs">A avaliação é o presente (Única Coisa) — nunca ofereça direto "vir treinar" sem passar por ela primeiro.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.10 · Encerramento de Cadência</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-4')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-4">
+            <p>[nome], vou deixar de te chamar por aqui pra não incomodar 💙 Sua avaliação gratuita continua reservada sempre que fizer sentido. Qualquer momento, é só me chamar que eu já retomo.</p>
+            <div class="script-obs">Despedida real — nunca insista após a penúltima e última tentativa.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.4 · Renovação de Plano</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-5')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-5">
+            <p>Oi, [nome]! Seu plano está próximo do vencimento. Vi sua evolução na avaliação de [data] — vamos manter o ritmo? Consigo fechar a renovação com [benefício/condição] até [data].</p>
+            <div class="script-obs">Sempre citar um dado concreto da avaliação/evolução antes de falar de renovação.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.9 · Reconexão de Lead Frio</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-6')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-6">
+            <p>Oi, [nome]! Faz um tempo que conversamos sobre a musculação aqui na Acquacel 💙 Sua avaliação de bioimpedância continua reservada. Ainda faz sentido pra você?</p>
+            <div class="script-obs">Retoma com referência específica ao presente oferecido — reforça que ele continua disponível.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.13 · Reativação de Inativo</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-7')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-7">
+            <p>Cadê você, [nome]? 💙 Notamos sua ausência nos últimos treinos. Bora colocar a rotina em dia? Separei um horário essa semana pra reavaliarmos seus objetivos juntos.</p>
+            <div class="script-obs">Headline de atenção — nunca soar como cobrança, e sim como cuidado genuíno.</div>
+          </div>
+        </div>
+
+        <div class="script-box">
+          <div class="script-header"><span class="script-tag">B.16 · Onboarding Pós-Matrícula (D+7)</span><button class="script-copy-btn" onclick="copyScript(this,'sc-mus-8')">Copiar</button></div>
+          <div class="script-body" id="sc-mus-8">
+            <p>Oi, [nome]! Uma semana de treino — como está sendo? Já se sentindo à vontade com os aparelhos? Qualquer dúvida no percurso, me chama que a gente ajusta junto.</p>
+            <div class="script-obs">Reforça acompanhamento próximo, principal diferencial contra experiências anteriores.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout" style="margin-top:1.5rem">
+        <strong>Próxima expansão:</strong> restam 7 blocos do documento original (B.5 nova turma, B.6 prospecção ativa, B.7 recepção presencial, B.8 despertar de interesse, B.11 cadência 10x15 completa, B.12 leads antigos, B.17 cadência de renovação detalhada D-15 a D-2) — entram na próxima rodada, no mesmo padrão de 3 áreas.
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- GERADOR DE SCRIPT PERSONALIZADO -->
+      <div>
+        <div class="section-label">Ferramenta</div>
+        <div class="section-title">Gerador de Script <em>Personalizado</em></div>
+        <div class="prose"><p>Monta uma mensagem combinando a estrutura Acquacel com o diferencial e o benefício da situação atual — sem IA, 100% offline. Revise sempre antes de enviar.</p></div>
+
+        <div class="script-box">
+          <div class="script-body">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <label style="font-size:12px;font-weight:700;color:var(--texto2);display:block;margin-bottom:4px">Área</label>
+                <select id="genArea" style="width:100%;padding:9px 12px;border:1px solid var(--borda2);border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px">
+                  <option value="Piscina Infantil">Piscina Infantil</option>
+                  <option value="Piscina Adultos">Piscina Adultos (Hidroginástica/Natação)</option>
+                  <option value="Musculação">Musculação</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:700;color:var(--texto2);display:block;margin-bottom:4px">Complete: "O que faz a Acquacel diferente é ___"</label>
+                <input type="text" id="genDiferencial" placeholder="ex.: acompanhar cada aluno de perto, do primeiro dia à evolução" style="width:100%;padding:9px 12px;border:1px solid var(--borda2);border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px">
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:700;color:var(--texto2);display:block;margin-bottom:4px">Complete: "E agora você também tem direito a ___"</label>
+                <input type="text" id="genBeneficio" placeholder="ex.: uma aula-teste gratuita e um mapeamento inicial" style="width:100%;padding:9px 12px;border:1px solid var(--borda2);border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px">
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:700;color:var(--texto2);display:block;margin-bottom:4px">Nome do lead (opcional)</label>
+                <input type="text" id="genNome" placeholder="ex.: Marina" style="width:100%;padding:9px 12px;border:1px solid var(--borda2);border-radius:8px;font-family:'Barlow',sans-serif;font-size:14px">
+              </div>
+              <button class="btn-primary" style="align-self:flex-start" onclick="gerarScript()">Gerar Script</button>
+            </div>
+            <div class="script-obs" id="genResultadoWrap" style="display:none;margin-top:1rem;padding-top:1rem">
+              <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--cor);margin-bottom:8px">Mensagem gerada</div>
+              <div id="genResultado" style="font-size:14px;color:var(--texto);line-height:1.7;background:var(--fundo3);padding:14px 16px;border-radius:8px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ TAB: QUIZ ═══════════════════ -->
+    <div class="tab-pane" id="tab-quiz">
+      <div class="quiz-wrapper">
+        <div class="quiz-top">
+          <div class="quiz-top-title">Quiz — Cap. C01</div>
+          <div class="quiz-top-meta" id="quizMeta">Questão 1 de 8</div>
+        </div>
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressBar" style="width:0%"></div></div>
+        <div class="quiz-body" id="quizBody">
+          <div class="quiz-q-num" id="quizQNum">Questão 1 de 8</div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+        </div>
+        <div class="quiz-resultado" id="quizResultado">
+          <div class="resultado-score" id="resultadoScore">0%</div>
+          <div class="resultado-msg" id="resultadoMsg"></div>
+          <div class="resultado-sub" id="resultadoSub"></div>
+          <button class="btn-primary" onclick="reiniciarQuiz()">Refazer quiz</button>
+        </div>
+        <div class="quiz-footer">
+          <div class="quiz-score">Acertos: <strong id="quizAcertos">0</strong>/<span id="quizTotal">0</span></div>
+          <button class="btn-primary" id="btnProximo" onclick="proximaQuestao()" disabled>Próxima →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ TAB: REVISÃO RÁPIDA ═══════════════════ -->
+    <div class="tab-pane" id="tab-revisao">
+      <div class="section-label">Artefato</div>
+      <div class="section-title">Cartão de <em>Revisão Rápida</em></div>
+      <div class="prose"><p>Leia esses pontos antes de aplicar o conteúdo. São os fundamentos do Cap. C01. Internalize — não memorize.</p></div>
+
+      <div class="revisao-card">
+        <div class="revisao-title">⚡ C01 — Central de Scripts Comerciais</div>
+        <div class="revisao-item"><div class="revisao-check">1</div><div><strong>Acquacel: Acolher → Qualificar → Única Coisa → Incentivar.</strong> Ordem fixa, em qualquer área da Acquacel.</div></div>
+        <div class="revisao-item"><div class="revisao-check">2</div><div><strong>A Única Coisa muda por área.</strong> Piscina Infantil = aula-teste + níveis. Piscina Adultos = avaliação de mobilidade. Musculação = bioimpedância + mapeamento.</div></div>
+        <div class="revisao-item"><div class="revisao-check">3</div><div><strong>Incentivar é propor, nunca perguntar.</strong> Sempre com horário sugerido, nunca "quer que eu...?" ou "sem compromisso".</div></div>
+        <div class="revisao-item"><div class="revisao-check">4</div><div><strong>Objeção não se defende, se pergunta.</strong> Use a técnica de confirmação antes de aprofundar qualquer resposta.</div></div>
+        <div class="revisao-item"><div class="revisao-check">5</div><div><strong>Todo lead novo recebe texto + áudio.</strong> Nunca a mesma mensagem duas vezes.</div></div>
+      </div>
+
+      <div style="margin-top:1.5rem">
+        <div class="section-label">Checklist</div>
+        <div class="checklist-row" id="checklistRow">
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Sei qual script usar pra cada área (Infantil/Adultos/Musculação)</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Sei aplicar a técnica de confirmação de objeção</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Nunca uso as frases proibidas da tabela</span>
+          <span class="check-pill" onclick="toggleCheck(this)"><span class="ck">○</span> Sempre proponho horário ao incentivar</span>
+        </div>
+        <div class="check-status" id="checkStatus">0 de 4 etapas confirmadas</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ TAB: GUIA DO GESTOR ═══════════════════ -->
+    <div class="tab-pane" id="tab-gestor">
+      <div class="section-label">Artefato · Para gestores e líderes</div>
+      <div class="section-title">Guia do Gestor — <em>Cap. C01</em></div>
+      <div class="prose"><p>O que observar em campo, como cobrar a aplicação e quais indicadores se movem quando este capítulo está sendo aplicado.</p></div>
+
+      <div class="gestor-grid">
+        <div class="gestor-card">
+          <div class="gestor-card-title">🔍 O que observar em campo</div>
+          <div class="gestor-item">Se o consultor pergunta idade/histórico já no 1º contato (Infantil) ou objetivo/rotina (Adultos/Musculação)</div>
+          <div class="gestor-item">Se a "Única Coisa" oferecida bate com a área certa — nunca oferecer avaliação de bioimpedância pra piscina infantil, por exemplo</div>
+          <div class="gestor-item">Se o próximo passo é sempre proposto com horário, nunca deixado em aberto</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📣 Como cobrar a aplicação</div>
+          <div class="gestor-item">Ouvir 2-3 áudios/ligações reais por semana, por consultor</div>
+          <div class="gestor-item">Revisar conversas de WhatsApp encerradas sem os 3 destinos (Experiência/Visita/Matrícula)</div>
+          <div class="gestor-item">Corrigir em particular, nunca em grupo — reforçando o script certo, não só apontando o erro</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📋 Pauta de reunião</div>
+          <div class="gestor-item">Quantos leads de cada área (Infantil/Adultos/Musculação) receberam a Única Coisa certa esta semana?</div>
+          <div class="gestor-item">Alguma objeção nova apareceu que ainda não está mapeada?</div>
+          <div class="gestor-item">Algum lead ficou mais de 48h sem resposta?</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📊 Indicadores vinculados</div>
+          <div class="gestor-item">Taxa de agendamento de experiência/avaliação por lead qualificado, segmentado por área</div>
+          <div class="gestor-item">Tempo médio de primeira resposta</div>
+          <div class="kpi-row">
+            <span class="kpi-chip">Taxa de Agendamento</span>
+            <span class="kpi-chip">Tempo de Resposta</span>
+            <span class="kpi-chip">Conversão em Matrícula</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-verde" style="margin-top:1.5rem">
+        <strong>Quando este capítulo está sendo aplicado bem:</strong> cada lead recebe a linguagem certa pra sua área desde a primeira mensagem, nenhuma conversa fica sem os 3 destinos possíveis, e o time para de usar frases genéricas ou passivas — a conversa sempre propõe, nunca só pergunta.
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Ritual de Gestão</div>
+      <div class="section-title">Indicadores <em>por Frequência</em></div>
+      <table class="ind-table">
+        <tr><th>Indicador</th><th>Frequência</th></tr>
+        <tr><td>Leads · Tentativas · Contatos · Agendamentos · Comparecimento · Conversão</td><td>Diária</td></tr>
+        <tr><td>Ticket médio · Renovação</td><td>Semanal</td></tr>
+        <tr><td>Retenção · Indicações</td><td>Mensal</td></tr>
+      </table>
+
+      <div class="gestor-grid" style="margin-top:1rem">
+        <div class="gestor-card">
+          <div class="gestor-card-title">🗓️ Reunião diária (10 min)</div>
+          <div class="gestor-item">Metas, indicadores do dia anterior, prioridades de hoje</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">🗓️ Reunião semanal (30 min)</div>
+          <div class="gestor-item">Feedback, melhorias, sessão de roleplay</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">🗓️ Reunião mensal (60 min)</div>
+          <div class="gestor-item">Performance, ranking do time, evolução por consultor</div>
+        </div>
+        <div class="gestor-card">
+          <div class="gestor-card-title">📈 Benchmarks de referência</div>
+          <div class="gestor-item">30–50 tentativas/dia · 20–30 contatos/dia · 5–10 agendamentos/dia por consultor</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// QUIZ — edite apenas o conteúdo do array `questoes` abaixo.
+// Formato: q = pergunta, opts = 4 alternativas, correta = índice (0-3),
+// exp = explicação mostrada após responder.
+// ═══════════════════════════════════════════════════════════════════════
+const questoes=[
+  {q:"Qual é a ordem correta da metodologia Acquacel?",opts:["Qualificar → Acolher → Incentivar → Única Coisa","Acolher/Atenção → Qualificar → Única Coisa → Incentivar","Única Coisa → Acolher → Qualificar → Incentivar","Incentivar → Qualificar → Acolher → Única Coisa"],correta:1,exp:"A ordem é sempre Acolher/Atenção → Qualificar → Única Coisa → Incentivar — em qualquer área da Acquacel."},
+  {q:"Um lead que sumiu há 20 dias está sendo reabordado. O 'A' do Acquacel deve ser:",opts:["Acolher, com 'seja bem-vindo(a)'","Chamar Atenção, com uma headline que gera reação","Pular direto pra Qualificar","Perguntar se ele quer continuar"],correta:1,exp:"Quando somos nós reabordando alguém que sumiu, o 'A' é Chamar Atenção — a frase precisa funcionar como headline, não como boas-vindas."},
+  {q:"Qual é a 'Única Coisa' recomendada para um lead de Piscina Infantil?",opts:["Avaliação de bioimpedância","Aula-teste + explicação da jornada por níveis","Desconto na primeira mensalidade","Avaliação de mobilidade"],correta:1,exp:"Para a Piscina Infantil, a Única Coisa é a aula-teste conectada à jornada de níveis/mascotes, mostrando progressão visível pros pais."},
+  {q:"Um lead diz 'está caro'. Qual a primeira ação correta?",opts:["Oferecer desconto imediatamente","Defender o preço explicando os diferenciais","Usar a técnica de confirmação: 'E se não fosse o valor, você se matricularia agora?'","Encerrar a conversa e aguardar"],correta:2,exp:"Nunca se defende uma objeção — primeiro se confirma se ela é real, com a técnica de confirmação."},
+  {q:"Qual frase está alinhada ao princípio do Incentivar?",opts:["'Quer que eu te mande os planos?'","'Se tiver interesse, me chama.'","'Consigo um encaixe amanhã ou depois — qual fica melhor pra você?'","'Qualquer coisa a gente se fala.'"],correta:2,exp:"Incentivar é propor com segurança e horário sugerido — nunca perguntas passivas ou saídas fáceis."},
+  {q:"Para um lead de Musculação com objetivo de saúde, a Única Coisa ideal é:",opts:["Aula-teste na piscina","Avaliação de bioimpedância + mapeamento de sintomas","Desconto na matrícula","Visita guiada sem avaliação"],correta:1,exp:"Musculação usa bioimpedância + mapeamento de sintomas como o presente que gera valor antes de falar de preço."},
+  {q:"Todo lead novo deve receber no primeiro contato:",opts:["Só uma mensagem de texto","Só uma ligação direta","Texto + áudio complementares, nunca a mesma mensagem duas vezes","Um catálogo de planos em PDF"],correta:2,exp:"A regra de ouro do primeiro contato é texto + áudio complementares — nunca repetir a mesma mensagem."},
+  {q:"Qual desses NÃO é um dos 3 destinos possíveis de toda conversa comercial?",opts:["Experiência Gratuita","Visita Presencial","Matrícula/Consultoria","Deixar em aberto até o lead decidir"],correta:3,exp:"Toda conversa precisa terminar em um dos 3 destinos concretos — nunca em aberto."}
+];
+
+/* ═══ MOTOR — não precisa editar daqui pra baixo ═══ */
+let qAtual=0,acertos=0,respondidas=0,selecionado=null;
+
+function renderQuestao(){
+  const q=questoes[qAtual];
+  document.getElementById('quizQNum').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizMeta').textContent=`Questão ${qAtual+1} de ${questoes.length}`;
+  document.getElementById('quizQuestion').textContent=q.q;
+  document.getElementById('quizProgressBar').style.width=`${((qAtual+1)/questoes.length)*100}%`;
+  document.getElementById('quizFeedback').className='quiz-feedback';
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('btnProximo').disabled=true;
+  selecionado=null;
+  const opts=document.getElementById('quizOptions');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-option';btn.textContent=o;
+    btn.onclick=()=>selecionar(i);opts.appendChild(btn);
+  });
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+}
+
+function selecionar(idx){
+  if(selecionado!==null)return;
+  selecionado=idx;
+  const q=questoes[qAtual];
+  const opts=document.querySelectorAll('.quiz-option');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('quizFeedback');
+  if(idx===q.correta){opts[idx].classList.add('correct');acertos++;fb.textContent='✓ Correto! '+q.exp;fb.className='quiz-feedback show ok';}
+  else{opts[idx].classList.add('wrong');opts[q.correta].classList.add('correct');fb.textContent='✗ Incorreto. '+q.exp;fb.className='quiz-feedback show err';}
+  respondidas++;
+  document.getElementById('quizAcertos').textContent=acertos;
+  document.getElementById('quizTotal').textContent=respondidas;
+  document.getElementById('btnProximo').disabled=false;
+  updateProgress(respondidas/questoes.length*0.6);
+}
+
+function proximaQuestao(){qAtual++;if(qAtual>=questoes.length){mostrarResultado();return;}renderQuestao();}
+
+function mostrarResultado(){
+  document.getElementById('quizBody').style.display='none';
+  const pct=Math.round((acertos/questoes.length)*100);
+  const NOTA_MINIMA=70; // ajuste se a UC usar outro corte
+  const aprovado=pct>=NOTA_MINIMA;
+  document.getElementById('quizResultado').className='quiz-resultado show';
+  document.getElementById('resultadoScore').textContent=pct+'%';
+  document.getElementById('resultadoScore').className='resultado-score '+(aprovado?'aprovado':'reprovado');
+  document.getElementById('resultadoMsg').textContent=aprovado?'✓ Aprovado! Você está pronto para avançar.':'✗ Abaixo do mínimo. Revise o conteúdo e tente novamente.';
+  document.getElementById('resultadoSub').textContent=`${acertos} de ${questoes.length} questões corretas. Mínimo: ${NOTA_MINIMA}%.`;
+  document.getElementById('btnProximo').disabled=true;
+  updateProgress(1);
+}
+
+function reiniciarQuiz(){qAtual=0;acertos=0;respondidas=0;selecionado=null;document.getElementById('quizBody').style.display='block';document.getElementById('quizResultado').className='quiz-resultado';renderQuestao();}
+
+function switchTab(id){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4};
+  if(map[id]!==undefined){document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');}
+  if(id==='quiz'&&respondidas===0)renderQuestao();
+}
+
+function copyScript(btn,id){
+  const text=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',1800);});
+}
+
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  el.querySelector('.ck').textContent=el.classList.contains('checked')?'✓':'○';
+  const total=document.querySelectorAll('.check-pill').length;
+  const checked=document.querySelectorAll('.check-pill.checked').length;
+  document.getElementById('checkStatus').textContent=`${checked} de ${total} etapas confirmadas`;
+  updateProgress(checked/total*0.4);
+}
+
+function updateProgress(pct){
+  const p=Math.min(100,Math.round(pct*100));
+  document.getElementById('progressFill').style.width=p+'%';
+  document.getElementById('progressText').textContent=p+'% concluído';
+}
+
+function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+function switchArea(area,btn){
+  document.querySelectorAll('.area-group').forEach(g=>g.classList.remove('active'));
+  document.querySelectorAll('.area-pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('area-'+area).classList.add('active');
+  btn.classList.add('active');
+}
+
+function gerarScript(){
+  const area=document.getElementById('genArea').value;
+  const dif=document.getElementById('genDiferencial').value.trim()||'[complete o diferencial]';
+  const ben=document.getElementById('genBeneficio').value.trim()||'[complete o benefício]';
+  const nome=document.getElementById('genNome').value.trim()||'[nome]';
+  const msg=`Oi, ${nome}! Que bom receber seu contato na Acquacel 💙 Trabalhamos com ${area} e o que faz a gente diferente é ${dif}. E agora você também tem direito a ${ben}. Consigo te mostrar isso de perto — que tal amanhã ou depois, qual fica melhor pra você?`;
+  document.getElementById('genResultado').textContent=msg;
+  document.getElementById('genResultadoWrap').style.display='block';
+}
+
+renderQuestao();
+</script>
+</body>
+</html>

@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campanhas Comerciais · Acquacel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#0E0E0E;--fundo2:#161616;--fundo3:#1E1E1E;
+  --laranja:#F28C0F;--texto:#E8E4DC;--texto2:#9A9488;
+  --verde:#3DBA7A;--vermelho:#E05252;--azul:#4A9FE0;--roxo:#B57BEE;
+  --borda:rgba(232,228,220,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4,button,select{font-family:'Barlow Condensed',sans-serif;letter-spacing:.01em;}
+a{color:inherit;}
+
+/* AUTH (mesmo padrão da Central de Scripts) */
+#appWrap{display:none;}
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:16px;padding:38px 34px;width:100%;max-width:420px;}
+.auth-logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;color:var(--laranja);letter-spacing:2px;text-align:center;margin-bottom:2px;}
+.auth-sub{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--texto2);margin-bottom:26px;}
+.auth-err{background:rgba(224,82,82,.12);border:1px solid var(--vermelho);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--vermelho);margin-bottom:14px;display:none;}
+.auth-err.show{display:block;}
+.auth-fg{margin-bottom:14px;}
+.auth-fl{display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;}
+.auth-fi{width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:11px 13px;border-radius:9px;font-size:14.5px;font-family:inherit;}
+.auth-fi:focus{outline:none;border-color:var(--laranja);}
+.auth-checking{text-align:center;color:var(--texto2);font-size:14px;padding:60px 20px;}
+
+/* HEADER */
+header.top{position:sticky;top:0;z-index:50;background:rgba(14,14,14,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:16px;padding:14px 24px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:.03em;color:var(--laranja);display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo span{color:var(--texto);font-weight:600;}
+.btn-back{border:1px solid var(--borda);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:var(--texto2);text-decoration:none;transition:.15s;}
+.btn-back:hover{color:var(--texto);border-color:var(--laranja);}
+.badge{margin-left:auto;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto2);font-size:13px;font-weight:600;padding:6px 12px;border-radius:20px;}
+.user-chip{display:flex;align-items:center;gap:10px;}
+.user-chip .uinfo{font-size:12.5px;color:var(--texto2);text-align:right;line-height:1.3;}
+.user-chip .uinfo b{color:var(--texto);display:block;font-size:13px;}
+.btn-logout{background:var(--fundo3);border:1px solid var(--borda);color:var(--texto2);font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;}
+.btn-logout:hover{border-color:var(--vermelho);color:var(--vermelho);}
+
+main{padding:28px 24px 80px;}
+#viewLista{max-width:1100px;margin:0 auto;}
+
+/* HERO */
+.hero{border:1px solid var(--borda);border-radius:16px;background:linear-gradient(160deg,var(--fundo2),var(--fundo3));padding:28px 30px;margin-bottom:26px;}
+.hero h1{font-size:30px;font-weight:800;margin-bottom:6px;}
+.hero p{color:var(--texto2);font-size:15px;max-width:640px;}
+
+/* TABS internas (Lista de Campanhas / Nova Campanha) */
+.itabs{display:flex;gap:4px;border-bottom:1px solid var(--borda);margin-bottom:24px;}
+.itab-btn{background:none;border:none;color:var(--texto2);font-size:15.5px;font-weight:700;padding:11px 16px;cursor:pointer;border-bottom:2px solid transparent;}
+.itab-btn.active{color:var(--laranja);border-bottom-color:var(--laranja);}
+.ipane{display:none;}
+.ipane.active{display:block;animation:fadein .2s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* CAMPAIGN LIST */
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.camp-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:18px;cursor:pointer;transition:.15s;}
+.camp-card:hover{border-color:var(--laranja);}
+.camp-card h4{font-size:17px;font-weight:700;margin-bottom:4px;}
+.camp-card .cmeta{font-size:12.5px;color:var(--texto2);margin-bottom:10px;}
+.camp-status{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.st-planejamento{background:rgba(154,148,136,.15);color:var(--texto2);}
+.st-ativa{background:rgba(61,186,122,.15);color:var(--verde);}
+.st-encerrada{background:rgba(154,148,136,.1);color:var(--texto2);}
+.camp-perfis{display:flex;gap:6px;flex-wrap:wrap;}
+.ptag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.ptag-leads{background:rgba(242,140,15,.15);color:var(--laranja);}
+.ptag-rematricula{background:rgba(181,123,238,.15);color:var(--roxo);}
+.ptag-renovacao{background:rgba(74,159,224,.15);color:var(--azul);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--texto2);}
+
+/* FORM */
+.section{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:24px 26px;margin-bottom:20px;}
+.section h3{font-size:17px;font-weight:700;margin-bottom:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.fg label{display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;}
+.fi,.fsel{width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:10px 13px;border-radius:9px;font-size:14.5px;font-family:inherit;}
+.fi:focus,.fsel:focus{outline:none;border-color:var(--laranja);}
+.chk-row{display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;}
+.chk-row input{width:18px;height:18px;accent-color:var(--laranja);}
+.chk-sub{margin-left:28px;padding-left:12px;border-left:2px solid var(--borda);display:none;}
+.chk-sub.show{display:block;}
+.btn-primary{background:var(--laranja);color:#0E0E0E;border:none;font-weight:800;font-size:14.5px;padding:11px 24px;border-radius:9px;cursor:pointer;}
+.btn-primary:disabled{opacity:.4;cursor:default;}
+.btn-primary:hover:not(:disabled){filter:brightness(1.08);}
+.btn-gh{background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);font-weight:700;font-size:14px;padding:10px 20px;border-radius:9px;cursor:pointer;}
+.btn-gh:hover{border-color:var(--laranja);color:var(--laranja);}
+
+/* UPLOAD STEPS */
+.step-indicator{display:flex;gap:6px;margin-bottom:22px;}
+.step-dot{flex:1;height:4px;border-radius:4px;background:var(--fundo3);}
+.step-dot.active{background:var(--laranja);}
+.step-dot.done{background:var(--verde);}
+.upload-drop{border:2px dashed var(--borda);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:.15s;}
+.upload-drop:hover{border-color:var(--laranja);}
+.upload-drop input{display:none;}
+table.map-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+table.map-table th,table.map-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--borda);}
+table.map-table th{color:var(--laranja);font-size:11.5px;text-transform:uppercase;}
+.onda-box{background:var(--fundo3);border:1px solid var(--borda);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+.onda-box h4{font-size:14.5px;margin-bottom:8px;}
+.cons-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13.5px;}
+.cons-row input{width:70px;text-align:center;background:var(--fundo2);border:1px solid var(--borda);color:var(--texto);border-radius:6px;padding:5px;}
+.warn-box{background:rgba(242,140,15,.1);border:1px solid var(--laranja);border-radius:10px;padding:12px 16px;font-size:13.5px;margin-bottom:16px;}
+.alert-box{background:rgba(224,82,82,.1);border:1px solid var(--vermelho);border-radius:10px;padding:12px 16px;font-size:13.5px;margin-bottom:16px;}
+
+/* KANBAN */
+.kb-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.kb-header h2{font-size:24px;font-weight:800;}
+.kb-ptabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.kb-ptab{background:var(--fundo2);border:1px solid var(--borda);color:var(--texto2);font-size:13.5px;font-weight:700;padding:8px 16px;border-radius:9px;cursor:pointer;}
+.kb-ptab.active{color:#0E0E0E;background:var(--laranja);border-color:var(--laranja);}
+.kb-search{width:100%;max-width:360px;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:9px 13px;border-radius:9px;font-size:14px;margin-bottom:16px;}
+.kb-summary{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:18px 20px;margin-bottom:18px;}
+.kb-sum-row{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:12px;}
+.kb-sum-item{min-width:100px;}
+.kb-sum-item .n{font-size:22px;font-weight:800;color:var(--laranja);line-height:1.1;}
+.kb-sum-item .l{font-size:11px;color:var(--texto2);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;}
+.kb-sum-fin{display:flex;gap:26px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--borda);font-size:12.5px;color:var(--texto2);}
+.kb-sum-fin b{color:var(--texto);}
+
+/* AGENDA */
+.ag-section{margin-bottom:26px;}
+.ag-section h3{font-size:16px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.ag-section .cnt{background:var(--fundo3);color:var(--texto2);border-radius:20px;padding:2px 10px;font-size:12px;}
+.ag-item{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:12px 16px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:.15s;}
+.ag-item:hover{border-color:var(--laranja);}
+.ag-item.overdue{border-left:3px solid var(--vermelho);}
+.ag-item.today{border-left:3px solid var(--laranja);}
+.ag-item .agn{font-weight:700;font-size:14.5px;}
+.ag-item .agm{font-size:12px;color:var(--texto2);margin-top:2px;}
+.ag-item .agd{font-size:12.5px;font-weight:700;color:var(--laranja);white-space:nowrap;}
+.ag-day-group{margin-bottom:14px;}
+.ag-day-group h4{font-size:13px;color:var(--texto2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+.ag-empty{color:var(--texto2);font-size:13.5px;padding:14px 0;}
+.vd-filtros{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:22px;}
+.vd-filtros .fg{margin-bottom:0;}
+.vd-cons-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:26px;}
+.vd-cons-card{background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:16px;}
+.vd-cons-card h4{font-size:15px;margin-bottom:8px;}
+.vd-cons-card .vtot{font-size:24px;font-weight:800;color:var(--verde);}
+.vd-cons-card .vbar{height:6px;background:var(--fundo3);border-radius:4px;margin:8px 0;overflow:hidden;}
+.vd-cons-card .vbar-fill{height:100%;background:var(--laranja);}
+.vd-cons-card .vbreak{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--texto2);margin-top:8px;}
+table.vd-table{width:100%;border-collapse:collapse;font-size:13px;}
+table.vd-table th,table.vd-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--borda);}
+table.vd-table th{color:var(--laranja);font-size:11px;text-transform:uppercase;}
+.ag-quickstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:26px;}
+.ag-qs-item{background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:16px;text-align:center;}
+.ag-qs-item .n{font-size:32px;font-weight:800;line-height:1;}
+.ag-qs-item .l{font-size:11.5px;color:var(--texto2);margin-top:6px;text-transform:uppercase;letter-spacing:.02em;}
+.qs-exp{border-color:rgba(242,140,15,.4);}
+.qs-exp .n{color:var(--laranja);}
+.qs-visita{border-color:rgba(61,186,122,.4);}
+.qs-visita .n{color:var(--verde);}
+.qs-atraso{border-color:rgba(224,82,82,.4);}
+.qs-atraso .n{color:var(--vermelho);}
+.qs-hoje{border-color:rgba(242,140,15,.4);}
+.qs-hoje .n{color:var(--laranja);}
+
+.ag-view-toggle{display:flex;gap:6px;margin-bottom:18px;}
+.ag-vt-btn{background:var(--fundo2);border:1px solid var(--borda);color:var(--texto2);font-size:13.5px;font-weight:700;padding:8px 16px;border-radius:9px;cursor:pointer;}
+.ag-vt-btn.active{color:#0E0E0E;background:var(--laranja);border-color:var(--laranja);}
+
+.ag-carteira{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;}
+.ag-cart-item{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;}
+.ag-cart-dot{width:10px;height:10px;border-radius:50%;}
+.ag-cart-item .n{font-size:18px;font-weight:800;}
+.ag-cart-item .l{font-size:12px;color:var(--texto2);}
+.ag-cart-item.ag-cart-inativo{border-style:dashed;opacity:.7;}
+.ag-cart-badge{display:inline-block;background:var(--fundo3);color:var(--texto2);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:1px 6px;border-radius:5px;margin-left:6px;}
+
+.ag-cal-nav{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.ag-cal-nav button{background:var(--fundo2);border:1px solid var(--borda);color:var(--texto);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;}
+.ag-cal-nav button:hover{border-color:var(--laranja);}
+.ag-cal-nav .lbl{font-size:15px;font-weight:700;}
+.ag-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.ag-cal-day{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:8px;min-height:150px;}
+.ag-cal-day.is-today{border-color:var(--laranja);}
+.ag-cal-day h5{font-size:11.5px;color:var(--texto2);text-transform:uppercase;margin-bottom:6px;}
+.ag-cal-day.is-today h5{color:var(--laranja);}
+.ag-cal-event{border-radius:6px;padding:4px 7px;margin-bottom:4px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.3;}
+.ce-leads{background:rgba(242,140,15,.18);color:var(--laranja);}
+.ce-rematricula{background:rgba(181,123,238,.18);color:var(--roxo);}
+.ce-renovacao{background:rgba(74,159,224,.18);color:var(--azul);}
+.kb-search:focus{outline:none;border-color:var(--laranja);}
+.kb-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;cursor:grab;user-select:none;}
+.kb-board.dragging-board{cursor:grabbing;}
+.kb-col{flex:0 0 240px;background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:0;min-height:120px;max-height:calc(100vh - 230px);overflow-y:auto;display:flex;flex-direction:column;}
+.kb-col.col-end{background:#141a16;border-color:rgba(61,186,122,.25);}
+.kb-col.col-wait{background:#171615;}
+.kb-col.drag-over{border-color:var(--laranja);background:rgba(242,140,15,.06);}
+.kb-col-inner{padding:0 12px 12px;}
+.kb-col h4{position:sticky;top:0;z-index:2;background:var(--fundo2);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--texto2);margin:0;padding:12px 12px 8px;display:flex;justify-content:space-between;}
+.kb-col.col-end h4{background:#171f1a;}
+.kb-col.col-wait h4{background:#1a1918;}
+.kb-col h4 .cnt{background:var(--fundo3);color:var(--texto);border-radius:10px;padding:1px 8px;font-size:11.5px;}
+.kb-card{background:var(--fundo3);border:1px solid var(--borda);border-radius:9px;padding:10px 12px;margin-top:8px;cursor:grab;transition:.15s;}
+.kb-card.dragging{opacity:.35;}
+.kb-card:hover{border-color:var(--laranja);}
+.kb-card h5{font-size:13.5px;font-weight:700;margin-bottom:4px;}
+.kb-card .kmeta{font-size:11px;color:var(--texto2);margin-bottom:5px;}
+.kb-card .kbadge{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:6px;background:rgba(242,140,15,.15);color:var(--laranja);}
+.kb-card .knext{font-size:11px;color:var(--texto2);margin-top:5px;font-style:italic;}
+.ptag-leads-b{border-left:3px solid var(--laranja);}
+.ptag-rematricula-b{border-left:3px solid var(--roxo);}
+.ptag-renovacao-b{border-left:3px solid var(--azul);}
+
+/* CARD POPUP */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:24px 26px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-hd h3{font-size:18px;font-weight:700;}
+.btn-x{background:none;border:none;color:var(--texto2);font-size:22px;cursor:pointer;line-height:1;}
+.motivo-btn{display:block;width:100%;text-align:left;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:10px 14px;border-radius:8px;margin-bottom:8px;cursor:pointer;font-size:13.5px;}
+.motivo-btn:hover{border-color:var(--vermelho);color:var(--vermelho);}
+
+/* MODO ATENDIMENTO */
+.at-proxima{background:rgba(242,140,15,.1);border:1px solid var(--laranja);border-radius:10px;padding:12px 16px;margin-bottom:14px;}
+.at-proxima b{color:var(--laranja);}
+.at-script-box{background:var(--fundo3);border:1px solid var(--borda);border-radius:10px;padding:14px 16px;margin-bottom:14px;position:relative;}
+.at-script-tipo{font-size:11px;color:var(--laranja);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px;}
+.at-script-texto{font-size:14px;line-height:1.6;color:var(--texto);white-space:pre-wrap;}
+.at-copy-btn{position:absolute;top:12px;right:12px;background:var(--fundo2);border:1px solid var(--borda);color:var(--texto);font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:7px;cursor:pointer;}
+.at-copy-btn:hover{border-color:var(--laranja);color:var(--laranja);}
+.at-divider{height:1px;background:var(--borda);margin:16px 0;}
+.at-trava-msg{background:rgba(224,82,82,.12);border:1px solid var(--vermelho);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--vermelho);margin-bottom:14px;display:none;}
+.at-trava-msg.show{display:block;}
+.at-collapse-btn{background:none;border:none;color:var(--texto2);font-size:12.5px;font-weight:600;cursor:pointer;padding:6px 0;text-decoration:underline;}
+.at-checks{display:flex;flex-direction:column;gap:2px;margin-bottom:14px;border:1px solid var(--borda);border-radius:10px;padding:4px;background:var(--fundo3);}
+.at-check-item{display:flex;align-items:center;gap:10px;padding:9px 10px;cursor:pointer;border-radius:7px;font-size:13.5px;}
+.at-check-item:hover{background:var(--fundo2);}
+.at-check-item input{width:17px;height:17px;accent-color:var(--laranja);cursor:pointer;}
+.at-qual-box{background:rgba(61,186,122,.06);border:1px solid rgba(61,186,122,.35);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.at-qual-tipo{font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;}
+.at-qual-box textarea{width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:10px 12px;border-radius:8px;font-size:13.5px;font-family:inherit;resize:vertical;}
+.at-qual-box textarea:focus{outline:none;border-color:var(--verde);}
+.at-qual-meta{font-size:11.5px;color:var(--texto2);margin-top:6px;}
+.at-perfil-box{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.at-perfil-lbl{font-size:12.5px;color:var(--texto2);font-weight:600;}
+.at-perfil-btn{background:var(--fundo3);border:1px solid var(--borda);color:var(--texto2);font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;}
+.at-perfil-btn:hover{border-color:var(--laranja);}
+.at-perfil-btn.ativo{color:#0E0E0E;background:var(--texto2);border-color:var(--texto2);}
+.at-perfil-btn.ativo.p5{background:var(--azul);border-color:var(--azul);}
+.at-perfil-btn.ativo.p95{background:var(--laranja);border-color:var(--laranja);}
+.at-script-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.at-tab-btn{background:var(--fundo3);border:1px solid var(--borda);color:var(--texto2);font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;}
+.at-tab-btn.active{color:#0E0E0E;background:var(--laranja);border-color:var(--laranja);}
+.kb-card .kperfil{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:5px;margin-left:4px;}
+.kperfil-5{background:rgba(74,159,224,.2);color:var(--azul);}
+.kperfil-95{background:rgba(242,140,15,.2);color:var(--laranja);}
+.divider{height:1px;background:var(--borda);margin:14px 0;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--fundo3);border:1px solid var(--laranja);color:var(--texto);padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;transition:.3s;z-index:999;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="screen-checking"><div class="auth-checking">Verificando acesso...</div></div>
+
+<div class="auth-screen" id="screen-login" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo">Acquacel</div>
+    <div class="auth-sub">Módulo de Campanhas</div>
+    <div class="auth-err" id="login-err"></div>
+    <div class="auth-fg"><label class="auth-fl">E-mail</label><input class="auth-fi" type="email" id="login-email" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="auth-fg"><label class="auth-fl">Senha</label><input class="auth-fi" type="password" id="login-senha" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-primary" style="width:100%;padding:12px;" id="btn-login" onclick="doLogin()">Entrar</button>
+    <p style="text-align:center;font-size:12px;color:var(--texto2);margin-top:18px;">Normalmente você acessa direto pelo Desafio ROI 21 Dias (já logado).</p>
+  </div>
+</div>
+
+<div id="appWrap">
+<header class="top">
+  <a href="index.html" class="logo">Acquacel</a>
+  <a href="AC-Hub-Central.html" class="btn-back">← Hub Central</a>
+  <div class="badge">Acquacel · Módulo Comercial</div>
+  <div class="user-chip">
+    <div class="uinfo"><b id="userNome">—</b><span id="userAcademia">—</span></div>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+</header>
+
+<main>
+  <div id="viewLista">
+  <div class="hero">
+    <h1>Campanhas</h1>
+    <p>Planeje campanhas mensais por perfil (Leads Novos, Rematrícula, Ciclo Renovação), suba a lista e organize a divisão em ciclos semanais.</p>
+  </div>
+
+  <div class="itabs">
+    <button class="itab-btn active" onclick="switchITab('lista')">Minhas Campanhas</button>
+    <button class="itab-btn" onclick="switchITab('agenda');carregarAgenda()">📅 Minha Agenda</button>
+    <button class="itab-btn" onclick="switchITab('vendas');carregarLivroVendas()">💰 Vendas</button>
+    <button class="itab-btn" onclick="abrirNovaCampanhaEmBranco()">+ Nova Campanha</button>
+  </div>
+
+  <!-- ===================== ABA: LISTA DE CAMPANHAS ===================== -->
+  <div class="ipane active" id="itab-lista">
+    <div class="camp-grid" id="campGrid"></div>
+  </div>
+
+  <!-- ===================== ABA: AGENDA ===================== -->
+  <div class="ipane" id="itab-agenda">
+    <div id="agendaWrap"></div>
+  </div>
+
+  <!-- ===================== ABA: VENDAS ===================== -->
+  <div class="ipane" id="itab-vendas">
+    <div id="vendasWrap"></div>
+  </div>
+
+  <!-- ===================== ABA: NOVA CAMPANHA ===================== -->
+  <div class="ipane" id="itab-nova">
+    <div id="wizardWrap">
+
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="wstep" id="wstep-1">
+        <div class="section">
+          <h3>1. Dados da Campanha</h3>
+          <div class="form-row">
+            <div class="fg"><label>Nome da campanha</label><input class="fi" id="w-nome" placeholder="Ex: Agosto — Mês dos Pais"></div>
+            <div class="fg"><label>Mês de referência</label><input class="fi" type="month" id="w-mes"></div>
+          </div>
+          <div class="fg" style="margin-bottom:14px"><label>Investimento em tráfego pago (R$)</label><input class="fi" type="number" id="w-invest" placeholder="0" min="0"></div>
+
+          <label style="display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:4px;">Perfis desta campanha</label>
+          <label class="chk-row"><input type="checkbox" id="w-perfil-leads" onchange="toggleRenovSub()"> Leads Novos</label>
+          <label class="chk-row"><input type="checkbox" id="w-perfil-rematricula" onchange="toggleRenovSub()"> Rematrícula (Ex-Alunos)</label>
+          <label class="chk-row"><input type="checkbox" id="w-perfil-renovacao" onchange="toggleRenovSub()"> Ciclo Renovação</label>
+          <div class="chk-sub" id="renov-sub">
+            <label class="chk-row"><input type="checkbox" checked disabled> Mês vigente (sempre incluso)</label>
+            <label class="chk-row"><input type="checkbox" id="w-renov-anterior"> + Mês anterior (não renovados)</label>
+            <label class="chk-row"><input type="checkbox" id="w-renov-seguinte"> + Mês seguinte (antecipação)</label>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="salvarCampanhaBase()">Continuar →</button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="wstep" id="wstep-2" style="display:none">
+        <div class="section">
+          <h3>2. Upload da Lista</h3>
+          <p style="color:var(--texto2);font-size:13.5px;margin-bottom:14px">Suba uma planilha por perfil. Progresso: <span id="perfilProgresso"></span></p>
+          <div class="fg" style="margin-bottom:16px"><label>Perfil desta lista</label><select class="fsel" id="w-perfil-upload"></select></div>
+
+          <p style="color:var(--texto2);font-size:12.5px;margin-bottom:16px">Não precisa seguir uma ordem exata de colunas — no próximo passo você mapeia manualmente qual coluna é qual campo. <a onclick="baixarModeloCSV()" style="color:var(--laranja);cursor:pointer;text-decoration:underline">📥 Baixar modelo de planilha (CSV)</a></p>
+
+          <div id="uploadArea">
+            <div class="upload-drop" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+              <input type="file" id="fileInput" accept=".csv" onchange="handleFile(this.files[0])">
+              <div style="font-size:15px;font-weight:700;margin-bottom:6px">📄 Clique ou arraste o arquivo CSV aqui</div>
+              <div style="font-size:12.5px;color:var(--texto2)">Exporte do seu sistema de gestão como CSV (separado por vírgula ou ponto e vírgula)</div>
+            </div>
+            <p style="text-align:center;margin-top:12px;font-size:12.5px;color:var(--texto2)">Ainda não tem lista pronta? <a onclick="pularUploadPerfil()" style="color:var(--laranja);cursor:pointer;text-decoration:underline">Ativar este funil vazio</a> e adicione cards manualmente pelo Kanban quando surgirem.</p>
+          </div>
+
+          <div id="mapArea" style="display:none;margin-top:18px">
+            <h4 style="font-size:14.5px;margin-bottom:10px">Mapeamento de colunas</h4>
+            <div id="mapFields"></div>
+            <button class="btn-gh" style="margin-top:12px" onclick="processarMapeamento()">Processar lista →</button>
+          </div>
+
+          <div id="crossCheckArea" style="display:none;margin-top:18px"></div>
+        </div>
+        <button class="btn-gh" onclick="voltarStep(1)">← Voltar</button>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="wstep" id="wstep-3" style="display:none">
+        <div class="section">
+          <h3>3. Divisão em Ciclos Ativados</h3>
+          <div id="ondaConfigArea"></div>
+        </div>
+        <button class="btn-gh" onclick="voltarStep(2)">← Voltar</button>
+      </div>
+
+    </div>
+  </div>
+  </div><!-- /viewLista -->
+
+  <!-- ===================== KANBAN VIEW ===================== -->
+  <div id="viewKanban" style="display:none">
+    <div class="kb-header">
+      <button class="btn-back" style="text-decoration:none" onclick="fecharKanban()">← Minhas Campanhas</button>
+      <h2 id="kbCampNome"></h2>
+    </div>
+    <div class="kb-ptabs" id="kbPerfilTabs"></div>
+    <div class="kb-summary" id="kbSummary"></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <input class="kb-search" id="kbSearch" placeholder="🔍 Buscar por nome ou código..." oninput="renderKanbanBoard()" style="margin-bottom:0;flex:1;min-width:220px">
+      <button class="btn-primary" onclick="abrirNovoCardManual()">+ Adicionar Card</button>
+      <button class="btn-gh" onclick="abrirGerenciarTreinadores()">👥 Treinadores(as)</button>
+    </div>
+    <div class="kb-board" id="kbBoard"></div>
+  </div>
+
+</main>
+
+<!-- MODAL: DETALHE DO CARD (Fase 2 — leitura + mover etapa + perdas) -->
+<div class="modal-ov" id="m-card">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-hd"><h3 id="cardModalNome">Card</h3><button class="btn-x" onclick="tentarFecharCardModal()">×</button></div>
+    <div id="cardModalBody"></div>
+  </div>
+</div>
+
+<!-- MODAL: MOTIVO DE PERDA -->
+<div class="modal-ov" id="m-perda">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-hd"><h3>Enviar para Perdas</h3><button class="btn-x" onclick="closeM('m-perda')">×</button></div>
+    <p style="font-size:13px;color:var(--texto2);margin-bottom:14px">Selecione o motivo:</p>
+    <div id="motivosList"></div>
+  </div>
+</div>
+
+<div class="modal-ov" id="m-novo-card">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-hd"><h3>+ Adicionar Card Manualmente</h3><button class="btn-x" onclick="closeM('m-novo-card')">×</button></div>
+    <p style="font-size:12.5px;color:var(--texto2);margin-bottom:14px">Use isso pra leads/alunos que chegaram fora da planilha original (indicação, walk-in, ou enquanto não há integração automática com o sistema de gestão da academia).</p>
+    <div class="form-row">
+      <div class="fg"><label>Nome *</label><input class="fi" id="nc-nome" placeholder="Nome completo"></div>
+      <div class="fg"><label>Telefone</label><input class="fi" id="nc-telefone" placeholder="11999998888"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Código de matrícula/visita</label><input class="fi" id="nc-codigo"></div>
+      <div class="fg"><label>Idade</label><input class="fi" type="number" id="nc-idade"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Plano atual</label><input class="fi" id="nc-plano"></div>
+      <div class="fg"><label>Ticket médio (R$)</label><input class="fi" type="number" id="nc-ticket"></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Consultora responsável</label><select class="fsel" id="nc-consultora"></select></div>
+    <div class="fg" style="margin-bottom:16px"><label>Etapa inicial no Kanban</label><select class="fsel" id="nc-etapa"></select></div>
+    <button class="btn-primary" style="width:100%" onclick="salvarNovoCardManual()">Adicionar ao Kanban</button>
+  </div>
+</div>
+
+<div class="modal-ov" id="m-agendar-compromisso">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-hd"><h3 id="ac-titulo">Agendar Compromisso</h3><button class="btn-x" onclick="cancelarAgendamentoModal()">×</button></div>
+    <p style="font-size:12.5px;color:var(--texto2);margin-bottom:16px" id="ac-subtitulo"></p>
+    <div class="form-row">
+      <div class="fg"><label>Data</label><input class="fi" type="date" id="ac-data"></div>
+      <div class="fg"><label>Hora</label><input class="fi" type="time" id="ac-hora" value="09:00"></div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:6px" onclick="confirmarAgendamentoModal()">Confirmar</button>
+  </div>
+</div>
+
+<div class="modal-ov" id="m-treinadores">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hd"><h3>👥 Treinadores(as)</h3><button class="btn-x" onclick="closeM('m-treinadores')">×</button></div>
+    <p style="font-size:12.5px;color:var(--texto2);margin-bottom:14px">Equipe técnica que recebe os alunos nas experiências, consultorias e avaliações.</p>
+    <div id="listaTreinadores" style="margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px">
+      <input class="fi" id="novoTreinadorNome" placeholder="Nome do(a) treinador(a)" style="flex:1">
+      <button class="btn-primary" onclick="adicionarTreinador()">+ Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="m-venda">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-hd"><h3>💰 Registrar Venda</h3><button class="btn-x" onclick="cancelarVendaModal()">×</button></div>
+    <p style="font-size:12.5px;color:var(--texto2);margin-bottom:14px">Antes de marcar como Convertido, confirme os dados da venda — vira uma linha automática no seu Livro de Vendas.</p>
+    <div class="form-row">
+      <div class="fg"><label>Nome do Cliente</label><input class="fi" id="v-nome"></div>
+      <div class="fg"><label>Nº Matrícula</label><input class="fi" id="v-matricula"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Perfil da Venda</label>
+        <select class="fsel" id="v-perfil">
+          <option value="novo">Novo</option>
+          <option value="renovacao">Renovação</option>
+          <option value="rematricula">Rematrícula</option>
+          <option value="upgrade">Upgrade</option>
+        </select>
+      </div>
+      <div class="fg"><label>Tipo</label>
+        <select class="fsel" id="v-tipo">
+          <option value="agendado">Agendado</option>
+          <option value="espontaneo">Espontâneo</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Valor da Venda (R$) *</label><input class="fi" type="number" id="v-valor" placeholder="0,00" min="0"></div>
+      <div class="fg"><label>Saldo Devedor (R$)</label><input class="fi" type="number" id="v-saldo" placeholder="0,00" min="0"></div>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Forma de Pagamento</label>
+      <select class="fsel" id="v-pgto">
+        <option value="cartao_credito">Cartão de Crédito</option>
+        <option value="cartao_debito">Cartão de Débito</option>
+        <option value="pix">Pix</option>
+        <option value="dinheiro">Dinheiro</option>
+        <option value="boleto">Boleto</option>
+        <option value="recorrencia">Recorrência (assinatura)</option>
+      </select>
+    </div>
+    <div class="divider"></div>
+    <div class="form-row" style="margin-bottom:16px">
+      <div class="fg"><label>Recebido/Lançado por</label><select class="fsel" id="v-lancado-por"></select></div>
+      <div class="fg"><label>Venda atribuída a</label><select class="fsel" id="v-atribuido-a"></select></div>
+    </div>
+    <p style="font-size:11.5px;color:var(--texto2);margin-top:-10px;margin-bottom:16px">"Lançado por" é quem está registrando agora. "Atribuída a" é quem fez o CRM/agendou — é essa pessoa que recebe o crédito da venda, mesmo que outra tenha atendido no fechamento.</p>
+    <button class="btn-primary" style="width:100%" onclick="confirmarVendaModal()">✅ Confirmar Venda e Converter</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// SUPABASE — mesmo projeto usado pelo Desafio ROI / Central de Scripts
+// ══════════════════════════════════════════
+const SB_URL='https://oevngnabqlxsensaohdv.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloZXltemlybWhqb2tleXRva29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNzE4MDksImV4cCI6MjA5Njg0NzgwOX0.Bi7XXVbg1AhUF-_LcRQoTgUnEDkOds5Pqk51fTzpoF0';
+const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const HR={...H,'Prefer':'return=representation'};
+async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json();}
+async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:HR,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json();}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+async function sbPatch(t,id,b){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:H,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());}
+const ROLES_PERMITIDOS=['gestor','admin','consultor'];
+
+function toast(msg,err){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.borderColor=err?'var(--vermelho)':'var(--laranja)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ══════════════════════════════════════════
+// AUTENTICAÇÃO — mesmo padrão da Central de Scripts (tabela gestores)
+// ══════════════════════════════════════════
+let sessao=null;
+
+function mostrarTela(id){
+  document.getElementById('screen-checking').style.display='none';
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('appWrap').style.display='none';
+  const el=document.getElementById(id);
+  if(el)el.style.display=(id==='appWrap')?'block':'flex';
+}
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const senha=document.getElementById('login-senha').value;
+  const err=document.getElementById('login-err');err.classList.remove('show');
+  if(!email||!senha){err.textContent='Preencha e-mail e senha.';err.classList.add('show');return;}
+  const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Verificando...';
+  try{
+    const res=await sbGet('hub_usuarios',`email=eq.${encodeURIComponent(email)}&senha=eq.${encodeURIComponent(senha)}&select=id,nome,email,tipo`);
+    if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){
+      err.textContent='E-mail ou senha incorretos, ou acesso não autorizado.';err.classList.add('show');
+      btn.disabled=false;btn.textContent='Entrar';return;
+    }
+    sessionStorage.setItem('acqu_sessao',JSON.stringify(res[0]));
+    iniciarApp(res[0]);
+  }catch(e){err.textContent='Erro de conexão.';err.classList.add('show');console.error(e);}
+  btn.disabled=false;btn.textContent='Entrar';
+}
+function doLogout(){sessionStorage.removeItem('acqu_sessao');mostrarTela('screen-login');}
+
+async function checkSession(){
+  const params=new URLSearchParams(window.location.search);
+  const uidAuto=params.get('uid');
+  if(uidAuto){
+    try{
+      const res=await sbGet('hub_usuarios',`id=eq.${encodeURIComponent(uidAuto)}&select=id,nome,email,tipo`);
+      if(res&&res.length&&ROLES_PERMITIDOS.includes(res[0].role)){
+        sessionStorage.setItem('acqu_sessao',JSON.stringify(res[0]));
+        iniciarApp(res[0]);return;
+      }
+    }catch(e){console.error(e);}
+  }
+  const raw=sessionStorage.getItem('acqu_sessao');
+  if(!raw){mostrarTela('screen-login');return;}
+  let s;try{s=JSON.parse(raw);}catch(e){mostrarTela('screen-login');return;}
+  try{
+    const res=await sbGet('hub_usuarios',`id=eq.${encodeURIComponent(s.id)}&select=id,nome,email,tipo`);
+    if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){sessionStorage.removeItem('acqu_sessao');mostrarTela('screen-login');return;}
+    iniciarApp(res[0]);
+  }catch(e){console.error(e);mostrarTela('screen-login');}
+}
+
+let consultoras=[];
+let treinadores=[];
+async function iniciarApp(s){
+  sessao=s;
+  sessionStorage.setItem('acqu_sessao',JSON.stringify(s));
+  document.getElementById('userNome').textContent=s.nome||s.email;
+  document.getElementById('userAcademia').textContent=s.role==='admin'?'Acquacel · Master':(s.role==='consultor'?'Consultor(a)':'Gestor(a)');
+  mostrarTela('appWrap');
+  try{
+    consultoras=s.academia_id?await sbGet('consultoras',`academia_id=eq.${s.academia_id}&select=id,nome,meta,meta_tipo`):[];
+  }catch(e){console.error(e);consultoras=[];}
+  try{
+    treinadores=s.academia_id?await sbGet('treinadores',`academia_id=eq.${s.academia_id}&ativo=eq.true&select=id,nome`):[];
+  }catch(e){console.error(e);treinadores=[];}
+  // Consultor(a) não cria campanha nem sobe listas — só trabalha o próprio Kanban
+  if(s.role==='consultor'){
+    const btnNova=document.querySelectorAll('.itab-btn')[3];
+    if(btnNova)btnNova.style.display='none';
+  }
+  await carregarCampanhas();
+}
+checkSession();
+
+// ══════════════════════════════════════════
+// TABS INTERNAS
+// ══════════════════════════════════════════
+const ITAB_INDEX={lista:0,agenda:1,vendas:2,nova:3};
+function switchITab(tab){
+  document.querySelectorAll('.ipane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.itab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('itab-'+tab).classList.add('active');
+  document.querySelectorAll('.itab-btn')[ITAB_INDEX[tab]].classList.add('active');
+}
+function abrirNovaCampanhaEmBranco(){
+  resetWizard();
+  switchITab('nova');
+}
+
+// ══════════════════════════════════════════
+// LISTA DE CAMPANHAS
+// ══════════════════════════════════════════
+const PERFIL_LABEL={leads:'Leads Novos',rematricula:'Rematrícula',renovacao:'Renovação'};
+let minhasCampanhas=[];
+async function carregarCampanhas(){
+  if(!sessao.academia_id){document.getElementById('campGrid').innerHTML='<div class="empty-state">Sem academia vinculada a este usuário.</div>';return;}
+  try{
+    const camps=await sbGet('campanhas',`academia_id=eq.${sessao.academia_id}&order=created_at.desc`);
+    minhasCampanhas=camps;
+    const grid=document.getElementById('campGrid');
+    if(!camps.length){grid.innerHTML='<div class="empty-state">Nenhuma campanha ainda. Clique em "+ Nova Campanha" pra começar.</div>';return;}
+    grid.innerHTML=camps.map(c=>`
+      <div class="camp-card" onclick="abrirCampanhaExistente('${c.id}')">
+        <span class="camp-status st-${c.status}">${c.status.toUpperCase()}</span>
+        <h4>${c.nome}</h4>
+        <div class="cmeta">${c.mes_referencia} · R$${(c.investimento_trafego||0).toLocaleString('pt-BR')} investido</div>
+        <div class="camp-perfis">${(c.perfis||[]).map(p=>`<span class="ptag ptag-${p}">${PERFIL_LABEL[p]||p}</span>`).join('')}</div>
+        ${c.status==='planejamento'?'<div style="margin-top:8px;font-size:12px;color:var(--laranja)">↻ Clique para continuar o upload</div>':''}
+      </div>`).join('');
+  }catch(e){console.error(e);toast('Erro ao carregar campanhas',true);}
+}
+
+// ══════════════════════════════════════════
+// KANBAN (Fase 2)
+// ══════════════════════════════════════════
+const ETAPAS={
+  leads:[
+    {k:'lista',l:'Lista/Iniciar Cadência'},{k:'tentativa1',l:'1ª Tentativa/Contato'},
+    {k:'atendimento',l:'Iniciou Atendimento'},{k:'exp_agendada',l:'Experiência Agendada'},
+    {k:'exp_iniciada',l:'Experiência Iniciada'},{k:'agendada_matricula',l:'Agendada Visita/Matrícula'},
+    {k:'convertido',l:'Convertido',end:true},{k:'cadencia_futura',l:'Cadência Futura',end:true,wait:true}
+  ],
+  rematricula:[
+    {k:'lista',l:'Lista/Iniciar Cadência'},{k:'tentativa1',l:'1ª Tentativa/Contato'},
+    {k:'atendimento',l:'Iniciou Atendimento'},{k:'exp_agendada',l:'Experiência Agendada'},
+    {k:'exp_iniciada',l:'Experiência Iniciada'},{k:'agendada_matricula',l:'Agendada Visita/Matrícula'},
+    {k:'convertido',l:'Convertido',end:true},{k:'cadencia_futura',l:'Cadência Futura',end:true,wait:true}
+  ],
+  renovacao:[
+    {k:'lista',l:'Lista/Iniciar Cadência'},{k:'tentativa1',l:'1ª Tentativa/Contato'},
+    {k:'atendimento',l:'Iniciou Atendimento'},{k:'consultoria_agendada',l:'Consultoria/Avaliação Agendada'},
+    {k:'feedback_matricula',l:'Agendada Feedback/Matrícula'},
+    {k:'convertido',l:'Convertido',end:true},{k:'cadencia_futura',l:'Cadência Futura',end:true,wait:true}
+  ]
+};
+const PTAG_CLASS={leads:'ptag-leads',rematricula:'ptag-rematricula',renovacao:'ptag-renovacao'};
+
+let kbCampanha=null,kbCards=[],kbPerfilAtivo=null;
+
+// ══════════════════════════════════════════
+// AGENDA (Fase 4) — cruza cards de TODAS as campanhas ativas da academia
+// ══════════════════════════════════════════
+// Os 2 tipos de Agendamento que contam pra produtividade da consultora de vendas.
+// "consultoria_agendada" (avaliação/consultoria da equipe técnica) fica de fora daqui —
+// não conta como produtividade dela, mas ainda aparece em "Em Cadência Ativa" pra ela
+// continuar acompanhando o card (ex: lead/ex-aluno ainda não matriculado).
+const ETAPAS_AG_EXPERIENCIA=['exp_agendada']; // controle = agendar/registrar o INÍCIO (dia 1) da experiência
+const ETAPAS_AG_VISITA=['agendada_matricula','feedback_matricula']; // conhecer academia, café, feedback, renovação, upgrade
+const ETAPAS_AGENDADAS=[...ETAPAS_AG_EXPERIENCIA,...ETAPAS_AG_VISITA];
+let agendaCampanhaPorCard={}; // cardId -> campanha (pra abrir o Kanban certo ao clicar)
+
+let ultimosCardsAgenda=[];
+let agendaView='lista';
+let agendaWeekOffset=0;
+
+// ══════════════════════════════════════════
+// LIVRO DE VENDAS — total por consultora, % de meta, breakdown por tipo, período
+// ══════════════════════════════════════════
+const PERFIL_VENDA_LABEL={novo:'Novos',renovacao:'Renovações',rematricula:'Rematrículas',upgrade:'Upgrades'};
+let vendasPeriodo=[];
+
+async function carregarLivroVendas(){
+  const wrap=document.getElementById('vendasWrap');
+  const hoje=new Date().toISOString().slice(0,10);
+  wrap.innerHTML=`
+    <div class="vd-filtros">
+      <div class="fg"><label class="fl">De</label><input class="fi" type="date" id="vd-inicio" value="${hoje}"></div>
+      <div class="fg"><label class="fl">Até</label><input class="fi" type="date" id="vd-fim" value="${hoje}"></div>
+      <button class="btn-primary" onclick="aplicarFiltroVendas()">Filtrar</button>
+      <button class="btn-gh" onclick="document.getElementById('vd-inicio').value=document.getElementById('vd-fim').value=new Date().toISOString().slice(0,10);aplicarFiltroVendas()">Hoje</button>
+    </div>
+    <div id="vendasConteudo"><div class="ag-empty">Carregando...</div></div>
+  `;
+  await aplicarFiltroVendas();
+}
+
+async function aplicarFiltroVendas(){
+  const inicio=document.getElementById('vd-inicio').value;
+  const fim=document.getElementById('vd-fim').value;
+  const el=document.getElementById('vendasConteudo');
+  if(!sessao.academia_id){el.innerHTML='<div class="ag-empty">Sem academia vinculada.</div>';return;}
+  try{
+    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:'';
+    vendasPeriodo=await sbGet('vendas',`academia_id=eq.${sessao.academia_id}&data=gte.${inicio}&data=lte.${fim}${filtroConsultora}&order=data.desc`);
+    renderLivroVendas();
+  }catch(e){console.error(e);el.innerHTML='<div class="ag-empty">Erro ao carregar. Veja o console.</div>';}
+}
+
+function renderLivroVendas(){
+  const el=document.getElementById('vendasConteudo');
+  const porConsultora={};
+  vendasPeriodo.forEach(v=>{
+    const cid=v.consultora_id||'sem_atribuicao';
+    if(!porConsultora[cid])porConsultora[cid]={total:0,qtd:0,porTipo:{}};
+    porConsultora[cid].total+=parseFloat(v.valor)||0;
+    porConsultora[cid].qtd++;
+    porConsultora[cid].porTipo[v.perfil_venda]=(porConsultora[cid].porTipo[v.perfil_venda]||0)+1;
+  });
+
+  const cards=Object.keys(porConsultora).map(cid=>{
+    const dados=porConsultora[cid];
+    const cons=consultoras.find(c=>c.id===cid);
+    const nome=cons?cons.nome:'Sem consultora atribuída';
+    let pctMeta=null;
+    if(cons&&cons.meta>0){
+      const base=cons.meta_tipo==='planos'?dados.qtd:dados.total;
+      pctMeta=Math.min(100,Math.round(base/cons.meta*100));
+    }
+    const breakdown=Object.keys(dados.porTipo).map(p=>`${PERFIL_VENDA_LABEL[p]||p}: ${dados.porTipo[p]}`).join(' · ');
+    return`
+      <div class="vd-cons-card">
+        <h4>${nome}</h4>
+        <div class="vtot">R$${dados.total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+        <div style="font-size:12px;color:var(--texto2)">${dados.qtd} venda${dados.qtd===1?'':'s'}</div>
+        ${pctMeta!==null?`<div class="vbar"><div class="vbar-fill" style="width:${pctMeta}%"></div></div><div style="font-size:11.5px;color:var(--texto2)">${pctMeta}% da meta</div>`:''}
+        <div class="vbreak">${breakdown||'—'}</div>
+      </div>`;
+  }).join('');
+
+  const totalGeral=vendasPeriodo.reduce((s,v)=>s+(parseFloat(v.valor)||0),0);
+
+  el.innerHTML=`
+    <div style="margin-bottom:16px;font-size:14px;color:var(--texto2)">Total do período: <b style="color:var(--verde);font-size:18px">R$${totalGeral.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b> em ${vendasPeriodo.length} venda${vendasPeriodo.length===1?'':'s'}</div>
+    <div class="vd-cons-cards">${cards||'<div class="ag-empty">Nenhuma venda nesse período.</div>'}</div>
+    ${vendasPeriodo.length?`
+    <h3 style="font-size:15px;margin-bottom:10px">Detalhamento</h3>
+    <table class="vd-table">
+      <tr><th>Data</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Lançado por</th><th>Atribuída a</th><th>Conferido</th></tr>
+      ${vendasPeriodo.map(v=>`
+        <tr>
+          <td>${new Date(v.data+'T00:00:00').toLocaleDateString('pt-BR')}</td>
+          <td>${v.nome_cliente}</td>
+          <td>${PERFIL_VENDA_LABEL[v.perfil_venda]||v.perfil_venda}</td>
+          <td>R$${(parseFloat(v.valor)||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+          <td>${nomeConsultora(v.lancado_por_id)}</td>
+          <td>${nomeConsultora(v.consultora_id)}</td>
+          <td><input type="checkbox" ${v.conferido_lider?'checked':''} onchange="toggleConferidoLider('${v.id}',this.checked)"></td>
+        </tr>`).join('')}
+    </table>`:''}
+  `;
+}
+
+async function toggleConferidoLider(vendaId,valor){
+  try{
+    await fetch(`${SB_URL}/rest/v1/vendas?id=eq.${vendaId}`,{method:'PATCH',headers:H,body:JSON.stringify({conferido_lider:valor})});
+    toast(valor?'Marcado como conferido!':'Desmarcado.');
+  }catch(e){console.error(e);toast('Erro ao atualizar',true);}
+}
+
+async function carregarAgenda(){
+  const wrap=document.getElementById('agendaWrap');
+  wrap.innerHTML='<div class="ag-empty">Carregando agenda...</div>';
+  const campsAtivas=minhasCampanhas.filter(c=>c.status==='ativa');
+  if(!campsAtivas.length){wrap.innerHTML='<div class="ag-empty">Nenhuma campanha ativa ainda.</div>';return;}
+
+  try{
+    const idsStr=campsAtivas.map(c=>c.id).join(',');
+    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:'';
+    const todosCards=await sbGet('campanha_cards',`campanha_id=in.(${idsStr})&status=neq.convertido&status=neq.perdido${filtroConsultora}&order=proxima_acao_data.asc.nullslast`);
+    agendaCampanhaPorCard={};
+    todosCards.forEach(c=>{agendaCampanhaPorCard[c.id]=campsAtivas.find(camp=>camp.id===c.campanha_id);});
+    ultimosCardsAgenda=todosCards;
+    renderAgendaShell();
+  }catch(e){console.error(e);wrap.innerHTML='<div class="ag-empty">Erro ao carregar a agenda. Veja o console.</div>';}
+}
+
+// Casca fixa (toggle de visão + carteira ativa) + conteúdo trocável (lista OU calendário)
+// Catálogo completo de funis — inclui os já construídos e os planejados (roadmap visível).
+const CATALOGO_FUNIS=[
+  {p:'leads',label:'Leads Novos',cor:'#F28C0F',ativo:true},
+  {p:'rematricula',label:'Rematrícula',cor:'#B57BEE',ativo:true},
+  {p:'renovacao',label:'Ciclo de Renovação',cor:'#4A9FE0',ativo:true},
+  {p:'planonovo',label:'Feedback Plano Novo + Indicação',cor:'#3DBA7A',ativo:false},
+  {p:'outros',label:'Outros funis a desenvolver',cor:'#9A9488',ativo:false}
+];
+function renderAgendaShell(){
+  const wrap=document.getElementById('agendaWrap');
+  const cards=ultimosCardsAgenda;
+  const carteira=CATALOGO_FUNIS.map(f=>({
+    ...f,qtd:f.ativo?cards.filter(c=>c.perfil===f.p&&(c.status==='ativo'||c.status==='espera')).length:null
+  }));
+  wrap.innerHTML=`
+    <div class="ag-carteira">
+      ${carteira.map(c=>c.ativo?`
+        <div class="ag-cart-item"><span class="ag-cart-dot" style="background:${c.cor}"></span><span class="n">${c.qtd}</span><span class="l">ativos em ${c.label}</span></div>
+      `:`
+        <div class="ag-cart-item ag-cart-inativo"><span class="ag-cart-dot" style="background:${c.cor};opacity:.4"></span><span class="l">${c.label} <span class="ag-cart-badge">em breve</span></span></div>
+      `).join('')}
+    </div>
+    <div class="ag-view-toggle">
+      <button class="ag-vt-btn ${agendaView==='lista'?'active':''}" onclick="mudarVisaoAgenda('lista')">📋 Lista</button>
+      <button class="ag-vt-btn ${agendaView==='semana'?'active':''}" onclick="mudarVisaoAgenda('semana')">🗓️ Semana</button>
+    </div>
+    <div id="agendaConteudo"></div>
+  `;
+  if(agendaView==='lista')renderAgenda(cards);
+  else renderAgendaCalendario(cards);
+}
+function mudarVisaoAgenda(v){agendaView=v;renderAgendaShell();}
+
+function renderAgendaCalendario(cards){
+  const el=document.getElementById('agendaConteudo');
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const diaSemanaHoje=(hoje.getDay()+6)%7; // 0=segunda
+  const inicioSemana=new Date(hoje);inicioSemana.setDate(hoje.getDate()-diaSemanaHoje+agendaWeekOffset*7);
+
+  const dias=[];
+  for(let i=0;i<7;i++){const d=new Date(inicioSemana);d.setDate(inicioSemana.getDate()+i);dias.push(d);}
+
+  // Eventos: retornos de cadência (proxima_acao_data) + agendamentos com data (data_agendamento)
+  function eventosDoDia(d){
+    const iso=d.toISOString().slice(0,10);
+    const retornos=cards.filter(c=>c.status==='espera'&&c.proxima_acao_data===iso).map(c=>({c,tipo:'Retorno'}));
+    const agendados=cards.filter(c=>c.status==='ativo'&&c.data_agendamento===iso).map(c=>({c,tipo:(ETAPAS[c.perfil]||[]).find(e=>e.k===c.etapa_atual)?.l||'Agendamento'}));
+    return[...retornos,...agendados];
+  }
+
+  const labelSemana=`${inicioSemana.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} — ${dias[6].toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}`;
+
+  el.innerHTML=`
+    <div class="ag-cal-nav">
+      <button onclick="agendaWeekOffset--;renderAgendaCalendario(ultimosCardsAgenda)">‹</button>
+      <span class="lbl">${labelSemana}</span>
+      <button onclick="agendaWeekOffset++;renderAgendaCalendario(ultimosCardsAgenda)">›</button>
+      ${agendaWeekOffset!==0?'<button onclick="agendaWeekOffset=0;renderAgendaCalendario(ultimosCardsAgenda)" style="width:auto;padding:0 12px;font-size:12px">Hoje</button>':''}
+    </div>
+    <div class="ag-cal-grid">
+      ${dias.map(d=>{
+        const isToday=d.getTime()===hoje.getTime();
+        const evs=eventosDoDia(d);
+        return`<div class="ag-cal-day ${isToday?'is-today':''}">
+          <h5>${d.toLocaleDateString('pt-BR',{weekday:'short'})} ${d.getDate()}</h5>
+          ${evs.map(ev=>`<div class="ag-cal-event ce-${ev.c.perfil}" onclick="abrirCardPelaAgenda('${ev.c.id}')" title="${ev.c.nome} — ${ev.tipo}">${ev.c.nome.split(' ')[0]} · ${ev.tipo}</div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderAgenda(cards){
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const em7dias=new Date(hoje);em7dias.setDate(em7dias.getDate()+7);
+
+  const comData=cards.filter(c=>c.status==='espera'&&c.proxima_acao_data);
+  const atrasados=comData.filter(c=>new Date(c.proxima_acao_data+'T00:00:00')<hoje);
+  const deHoje=comData.filter(c=>{const d=new Date(c.proxima_acao_data+'T00:00:00');return d.getTime()===hoje.getTime();});
+  const semana=comData.filter(c=>{const d=new Date(c.proxima_acao_data+'T00:00:00');return d>hoje&&d<=em7dias;});
+  const agExperiencia=cards.filter(c=>c.status==='ativo'&&ETAPAS_AG_EXPERIENCIA.includes(c.etapa_atual));
+  const agVisita=cards.filter(c=>c.status==='ativo'&&ETAPAS_AG_VISITA.includes(c.etapa_atual));
+  const emCadenciaAtiva=cards.filter(c=>c.status==='ativo'&&!ETAPAS_AGENDADAS.includes(c.etapa_atual));
+
+  const wrap=document.getElementById('agendaConteudo');
+  wrap.innerHTML=`
+    <div class="ag-quickstrip">
+      <div class="ag-qs-item qs-exp"><div class="n">${agExperiencia.length}</div><div class="l">🎯 Agendamento Experiência</div></div>
+      <div class="ag-qs-item qs-visita"><div class="n">${agVisita.length}</div><div class="l">🤝 Agendamento Visita/Matrícula</div></div>
+      <div class="ag-qs-item qs-atraso"><div class="n">${atrasados.length}</div><div class="l">🔴 Retornos Atrasados</div></div>
+      <div class="ag-qs-item qs-hoje"><div class="n">${deHoje.length}</div><div class="l">🟠 Retornos Hoje</div></div>
+    </div>
+
+    <div class="ag-section">
+      <h3>🎯 Agendamento Experiência <span class="cnt">${agExperiencia.length}</span></h3>
+      <p style="font-size:12px;color:var(--texto2);margin-bottom:10px">Controle = registrar/agendar o início (1º dia) da experiência, independente de quantos dias ela dure.</p>
+      ${agExperiencia.length?agExperiencia.map(c=>renderAgItem(c)).join(''):'<div class="ag-empty">Nenhuma experiência aguardando início.</div>'}
+    </div>
+    <div class="ag-section">
+      <h3>🤝 Agendamento Visita/Matrícula <span class="cnt">${agVisita.length}</span></h3>
+      <p style="font-size:12px;color:var(--texto2);margin-bottom:10px">Conhecer a academia, café, feedback com a consultora, renovação, upgrade de plano.</p>
+      ${agVisita.length?agVisita.map(c=>renderAgItem(c)).join(''):'<div class="ag-empty">Nenhuma visita/matrícula agendada.</div>'}
+    </div>
+
+    <div class="ag-section">
+      <h3>🔴 Atrasados <span class="cnt">${atrasados.length}</span></h3>
+      ${atrasados.length?atrasados.map(c=>renderAgItem(c,'overdue')).join(''):'<div class="ag-empty">Nada atrasado — tudo em dia.</div>'}
+    </div>
+    <div class="ag-section">
+      <h3>🟠 Hoje <span class="cnt">${deHoje.length}</span></h3>
+      ${deHoje.length?deHoje.map(c=>renderAgItem(c,'today')).join(''):'<div class="ag-empty">Nenhum retorno previsto pra hoje.</div>'}
+    </div>
+    <div class="ag-section">
+      <h3>🗓️ Essa Semana <span class="cnt">${semana.length}</span></h3>
+      ${renderAgendaPorDia(semana)}
+    </div>
+    <div class="ag-section">
+      <h3>🔄 Em Cadência Ativa / Acompanhamento <span class="cnt">${emCadenciaAtiva.length}</span></h3>
+      <p style="font-size:12px;color:var(--texto2);margin-bottom:10px">Inclui consultorias/avaliações da equipe técnica (não contam na sua produtividade, mas o card continua com você até matricular).</p>
+      ${emCadenciaAtiva.length?emCadenciaAtiva.map(c=>renderAgItem(c)).join(''):'<div class="ag-empty">Nada em acompanhamento no momento.</div>'}
+    </div>
+  `;
+}
+function renderAgendaPorDia(cards){
+  if(!cards.length)return'<div class="ag-empty">Nada previsto pros próximos 7 dias.</div>';
+  const porDia={};
+  cards.forEach(c=>{(porDia[c.proxima_acao_data]=porDia[c.proxima_acao_data]||[]).push(c);});
+  return Object.keys(porDia).sort().map(dia=>{
+    const dataFmt=new Date(dia+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'});
+    return`<div class="ag-day-group"><h4>${dataFmt}</h4>${porDia[dia].map(c=>renderAgItem(c)).join('')}</div>`;
+  }).join('');
+}
+function renderAgItem(c,urgClass){
+  const camp=agendaCampanhaPorCard[c.id];
+  const etapaLbl=(ETAPAS[c.perfil]||[]).find(e=>e.k===c.etapa_atual)?.l||c.etapa_atual;
+  return`
+    <div class="ag-item ${urgClass||''}" onclick="abrirCardPelaAgenda('${c.id}')">
+      <div>
+        <div class="agn">${c.nome} <span class="ptag ${PTAG_CLASS[c.perfil]}" style="margin-left:6px">${PERFIL_LABEL[c.perfil]}</span></div>
+        <div class="agm">${camp?camp.nome:''} · ${etapaLbl} · ${nomeConsultora(c.consultora_id)} · Cadência ${c.cadencia_atual}/${c.cadencia_total}</div>
+      </div>
+      ${c.proxima_acao_data?`<div class="agd">${new Date(c.proxima_acao_data+'T00:00:00').toLocaleDateString('pt-BR')}</div>`:''}
+    </div>`;
+}
+async function abrirCardPelaAgenda(cardId){
+  const camp=agendaCampanhaPorCard[cardId];
+  if(!camp){toast('Campanha não encontrada',true);return;}
+  await abrirKanban(camp);
+  await abrirCardModal(cardId);
+}
+
+// ── Adicionar card manualmente (sem passar pelo upload) ──
+// Usado pra leads/alunos que chegam fora da planilha original: indicação, walk-in,
+// ou enquanto não há integração automática com o sistema de gestão da academia.
+const CADENCIA_TOTAL_PADRAO_MANUAL={leads:9,rematricula:4,renovacao:4};
+// ── Gerenciar Treinadores(as) — equipe técnica que recebe as experiências/consultorias ──
+function abrirGerenciarTreinadores(){
+  renderListaTreinadores();
+  document.getElementById('novoTreinadorNome').value='';
+  openM('m-treinadores');
+}
+function renderListaTreinadores(){
+  const el=document.getElementById('listaTreinadores');
+  el.innerHTML=treinadores.length?treinadores.map(t=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--borda)">
+      <span style="font-size:13.5px">${t.nome}</span>
+      <button class="btn-gh" style="padding:3px 10px;font-size:11px;border-color:var(--vermelho);color:var(--vermelho)" onclick="removerTreinador('${t.id}')">Remover</button>
+    </div>`).join(''):'<div style="color:var(--texto2);font-size:13px">Nenhum(a) treinador(a) cadastrado ainda.</div>';
+}
+async function adicionarTreinador(){
+  const nome=document.getElementById('novoTreinadorNome').value.trim();
+  if(!nome){toast('Informe o nome',true);return;}
+  try{
+    await sbPost('treinadores',{id:uid(),academia_id:sessao.academia_id,nome,ativo:true,created_at:Date.now()});
+    toast(`${nome} adicionado(a)!`);
+    document.getElementById('novoTreinadorNome').value='';
+    treinadores=await sbGet('treinadores',`academia_id=eq.${sessao.academia_id}&ativo=eq.true&select=id,nome`);
+    renderListaTreinadores();
+  }catch(e){console.error(e);toast('Erro ao adicionar',true);}
+}
+async function removerTreinador(id){
+  if(!confirm('Remover este(a) treinador(a) da lista?'))return;
+  try{
+    await fetch(`${SB_URL}/rest/v1/treinadores?id=eq.${id}`,{method:'PATCH',headers:H,body:JSON.stringify({ativo:false})});
+    treinadores=treinadores.filter(t=>t.id!==id);
+    renderListaTreinadores();
+    toast('Removido(a).');
+  }catch(e){console.error(e);toast('Erro ao remover',true);}
+}
+function nomeTreinador(id){const t=treinadores.find(x=>x.id===id);return t?t.nome:'—';}
+
+function abrirNovoCardManual(){
+  document.getElementById('nc-nome').value='';
+  document.getElementById('nc-telefone').value='';
+  document.getElementById('nc-codigo').value='';
+  document.getElementById('nc-idade').value='';
+  document.getElementById('nc-plano').value='';
+  document.getElementById('nc-ticket').value='';
+  const selCons=document.getElementById('nc-consultora');
+  selCons.innerHTML=consultoras.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')||'<option value="">Nenhuma cadastrada</option>';
+  const etapas=ETAPAS[kbPerfilAtivo]||[];
+  const selEtapa=document.getElementById('nc-etapa');
+  selEtapa.innerHTML=etapas.filter(e=>!e.end).map(e=>`<option value="${e.k}">${e.l}</option>`).join('');
+  openM('m-novo-card');
+}
+async function salvarNovoCardManual(){
+  const nome=document.getElementById('nc-nome').value.trim();
+  if(!nome){toast('Nome é obrigatório',true);return;}
+  const etapaInicial=document.getElementById('nc-etapa').value;
+  const etapas=ETAPAS[kbPerfilAtivo]||[];
+  const idxEtapa=etapas.findIndex(e=>e.k===etapaInicial);
+  try{
+    await sbPost('campanha_cards',{
+      campanha_id:kbCampanha.id,onda_id:null,perfil:kbPerfilAtivo,
+      nome,codigo_matricula:document.getElementById('nc-codigo').value.trim(),
+      telefone:document.getElementById('nc-telefone').value.replace(/\D/g,''),
+      idade:parseInt(document.getElementById('nc-idade').value)||null,
+      plano_atual:document.getElementById('nc-plano').value.trim(),
+      ticket_medio:parseFloat(document.getElementById('nc-ticket').value)||0,
+      etapa_atual:etapaInicial,etapa_maxima:etapaInicial,
+      consultora_id:document.getElementById('nc-consultora').value||null,
+      cadencia_atual:idxEtapa>0?1:0, // se já entra numa etapa além de "lista", assume que já teve 1ª tentativa
+      cadencia_total:CADENCIA_TOTAL_PADRAO_MANUAL[kbPerfilAtivo]||5,
+      status:'ativo',created_at:Date.now(),updated_at:Date.now()
+    });
+    toast(`${nome} adicionado(a) ao Kanban!`);
+    closeM('m-novo-card');
+    await carregarCardsKanban();
+    renderKanbanBoard();
+    renderKbSummary();
+  }catch(e){console.error(e);toast('Erro ao adicionar card',true);}
+}
+
+async function abrirKanban(camp){
+  kbCampanha=camp;
+  document.getElementById('viewLista').style.display='none';
+  document.getElementById('viewKanban').style.display='block';
+  document.getElementById('kbCampNome').textContent=camp.nome;
+  const tabsEl=document.getElementById('kbPerfilTabs');
+  tabsEl.innerHTML=(camp.perfis||[]).map(p=>`<button class="kb-ptab" id="kbtab-${p}" onclick="trocarPerfilKanban('${p}')">${PERFIL_LABEL[p]}</button>`).join('');
+  kbPerfilAtivo=(camp.perfis||[])[0];
+  await carregarCardsKanban();
+  trocarPerfilKanban(kbPerfilAtivo);
+}
+function fecharKanban(){
+  document.getElementById('viewKanban').style.display='none';
+  document.getElementById('viewLista').style.display='block';
+  carregarCampanhas();
+}
+let vendasCampanha=[];
+async function carregarCardsKanban(){
+  try{
+    // Consultor(a) só vê os próprios cards; gestor(a)/admin veem tudo (visão completa)
+    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:'';
+    kbCards=await sbGet('campanha_cards',`campanha_id=eq.${kbCampanha.id}${filtroConsultora}&order=nome.asc`);
+  }catch(e){console.error(e);toast('Erro ao carregar cards',true);kbCards=[];}
+  try{
+    vendasCampanha=await sbGet('vendas',`campanha_id=eq.${kbCampanha.id}&select=id,card_id,perfil_venda,valor`);
+  }catch(e){console.error(e);vendasCampanha=[];}
+}
+function trocarPerfilKanban(perfil){
+  kbPerfilAtivo=perfil;
+  document.querySelectorAll('.kb-ptab').forEach(b=>b.classList.remove('active'));
+  const tabEl=document.getElementById('kbtab-'+perfil);
+  if(tabEl)tabEl.classList.add('active');
+  renderKanbanBoard();
+  renderKbSummary();
+}
+function nomeConsultora(id){const c=consultoras.find(x=>x.id===id);return c?c.nome:'—';}
+
+// Painel resumido — contagem ACUMULADA por etapa (quem chegou em "Experiência Agendada"
+// necessariamente já passou por "Iniciou Atendimento", então conta nos dois).
+// Visão sempre com TODAS as consultoras juntas (visão de gestor) — sem filtro individual.
+function renderKbSummary(){
+  const etapas=(ETAPAS[kbPerfilAtivo]||[]).filter(e=>!e.end);
+  const cardsDoPerfil=kbCards.filter(c=>c.perfil===kbPerfilAtivo);
+  const total=cardsDoPerfil.length;
+  const convertidos=cardsDoPerfil.filter(c=>c.status==='convertido');
+  const emEspera=cardsDoPerfil.filter(c=>c.status==='espera').length;
+  const perdidos=cardsDoPerfil.filter(c=>c.status==='perdido').length;
+
+  const acumulado=etapas.map(et=>{
+    const idxEtapa=etapas.findIndex(e=>e.k===et.k);
+    const qtd=cardsDoPerfil.filter(c=>{
+      const idxCard=etapas.findIndex(e=>e.k===(c.etapa_maxima||c.etapa_atual));
+      return idxCard>=idxEtapa;
+    }).length;
+    return{label:et.l,qtd};
+  });
+
+  const invest=kbCampanha.investimento_trafego||0;
+  const leadsGerados=kbCampanha.perfis?.includes('leads')?kbCards.filter(c=>c.perfil==='leads').length:0;
+  const cpl=leadsGerados>0?(invest/leadsGerados):0;
+  const idsConvertidosDoPerfil=new Set(convertidos.map(c=>c.id));
+  const receitaConvertidos=vendasCampanha.filter(v=>idsConvertidosDoPerfil.has(v.card_id)).reduce((s,v)=>s+(parseFloat(v.valor)||0),0);
+  const roas=invest>0?(receitaConvertidos/invest):0;
+
+  const inicio=kbCampanha.created_at?new Date(kbCampanha.created_at).toLocaleDateString('pt-BR'):'—';
+  const fim=kbCampanha.status==='encerrada'?(kbCampanha.updated_at?new Date(kbCampanha.updated_at).toLocaleDateString('pt-BR'):'—'):'Em andamento';
+
+  document.getElementById('kbSummary').innerHTML=`
+    <div class="kb-sum-row">
+      <div class="kb-sum-item"><div class="n">${total}</div><div class="l">Total na Lista</div></div>
+      ${acumulado.map(a=>`<div class="kb-sum-item"><div class="n">${a.qtd}</div><div class="l">${a.label}</div></div>`).join('')}
+      <div class="kb-sum-item"><div class="n" style="color:var(--verde)">${convertidos.length}</div><div class="l">Convertido</div></div>
+      <div class="kb-sum-item"><div class="n" style="color:var(--texto2)">${emEspera}</div><div class="l">Cadência Futura</div></div>
+      <div class="kb-sum-item"><div class="n" style="color:var(--vermelho)">${perdidos}</div><div class="l">Perdas</div></div>
+    </div>
+    <div class="kb-sum-fin">
+      <div>Investimento tráfego: <b>R$${invest.toLocaleString('pt-BR')}</b></div>
+      <div>CPL: <b>${leadsGerados>0?'R$'+cpl.toFixed(2).replace('.',','):'—'}</b></div>
+      <div>ROAS: <b>${invest>0?roas.toFixed(2).replace('.',',')+'x':'—'}</b></div>
+      <div>Total Vendido: <b style="color:var(--verde)">R$${receitaConvertidos.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b></div>
+      <div>Início/Ativação: <b>${inicio}</b></div>
+      <div>Finalização: <b>${fim}</b></div>
+      <div>Visão: <b>${sessao.role==='consultor'?'Meus cards ('+ (sessao.nome||'') +')':'Todas as consultoras (gestor)'}</b></div>
+    </div>
+  `;
+}
+
+function renderKanbanBoard(){
+  const etapas=ETAPAS[kbPerfilAtivo]||[];
+  const termo=(document.getElementById('kbSearch')?.value||'').trim().toLowerCase();
+  let cardsDoPerfil=kbCards.filter(c=>c.perfil===kbPerfilAtivo);
+  if(termo){
+    cardsDoPerfil=cardsDoPerfil.filter(c=>
+      (c.nome||'').toLowerCase().includes(termo) ||
+      (c.codigo_matricula||'').toLowerCase().includes(termo)
+    );
+  }
+  const board=document.getElementById('kbBoard');
+  board.innerHTML=etapas.map(et=>{
+    const cardsEtapa=cardsDoPerfil.filter(c=>c.etapa_atual===et.k);
+    return `
+    <div class="kb-col ${et.end?'col-end':''} ${et.wait?'col-wait':''}" data-etapa="${et.k}"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="onDropCard(event,'${et.k}')">
+      <h4>${et.l} <span class="cnt">${cardsEtapa.length}</span></h4>
+      <div class="kb-col-inner">${cardsEtapa.map(c=>renderKbCard(c)).join('')}</div>
+    </div>`;
+  }).join('');
+  ativarArrasteBoard();
+}
+function renderKbCard(c){
+  let prox;
+  if(ETAPAS_COMPROMISSO.includes(c.etapa_atual)){
+    prox=`Compromisso: ${c.data_agendamento?new Date(c.data_agendamento+'T00:00:00').toLocaleDateString('pt-BR'):'sem data'}${c.hora_agendamento?' às '+c.hora_agendamento:''}`;
+  }else if(c.status==='espera'){
+    prox=`Retorno: ${c.proxima_acao_data||'—'}`;
+  }else{
+    prox=c.cadencia_atual>0?`Tentativa ${c.cadencia_atual} de ${c.cadencia_total}`:'Aguardando 1º contato';
+  }
+  const badgeCadencia=ETAPAS_COMPROMISSO.includes(c.etapa_atual)?'📅':`${c.cadencia_atual}/${c.cadencia_total}`;
+  const perfilBadge=c.perfil_qualificacao?`<span class="kperfil kperfil-${c.perfil_qualificacao}">${c.perfil_qualificacao}%</span>`:'';
+  return `
+    <div class="kb-card ${PTAG_CLASS[c.perfil]}-b" draggable="true" data-id="${c.id}"
+         ondragstart="onDragStartCard(event,'${c.id}')" ondragend="onDragEndCard(event)"
+         onclick="abrirCardModal('${c.id}')">
+      <h5>${c.nome}${perfilBadge}</h5>
+      <div class="kmeta">${nomeConsultora(c.consultora_id)}</div>
+      <span class="kbadge">${badgeCadencia}</span>
+      <div class="knext">→ ${prox}</div>
+    </div>`;
+}
+
+// ── Drag-and-drop de cards entre colunas ──
+let dragCardId=null;
+function onDragStartCard(ev,cardId){
+  dragCardId=cardId;
+  ev.target.classList.add('dragging');
+  ev.dataTransfer.effectAllowed='move';
+}
+function onDragEndCard(ev){
+  ev.target.classList.remove('dragging');
+  document.querySelectorAll('.kb-col.drag-over').forEach(c=>c.classList.remove('drag-over'));
+}
+// Modal reutilizável de "Data + Hora do compromisso" — baseado em Promise, pra
+// poder usar com await em qualquer fluxo (drag-and-drop, registro, movimentação manual).
+let _resolveAgendamentoModal=null;
+function pedirDataHoraAgendamento(titulo,subtitulo){
+  document.getElementById('ac-titulo').textContent=titulo;
+  document.getElementById('ac-subtitulo').textContent=subtitulo||'';
+  document.getElementById('ac-data').value=new Date().toISOString().slice(0,10);
+  document.getElementById('ac-hora').value='09:00';
+  openM('m-agendar-compromisso');
+  return new Promise(resolve=>{_resolveAgendamentoModal=resolve;});
+}
+function confirmarAgendamentoModal(){
+  const data=document.getElementById('ac-data').value;
+  const hora=document.getElementById('ac-hora').value;
+  if(!data){toast('Informe a data',true);return;}
+  closeM('m-agendar-compromisso');
+  if(_resolveAgendamentoModal)_resolveAgendamentoModal({data,hora});
+  _resolveAgendamentoModal=null;
+}
+function cancelarAgendamentoModal(){
+  closeM('m-agendar-compromisso');
+  if(_resolveAgendamentoModal)_resolveAgendamentoModal(null);
+  _resolveAgendamentoModal=null;
+}
+
+// Modal de venda — Promise-based, igual o de data/hora. Abre antes de qualquer
+// card virar "Convertido", em qualquer fluxo (drag-and-drop ou movimentação manual).
+let _resolveVendaModal=null;
+const PERFIL_VENDA_PADRAO={leads:'novo',rematricula:'rematricula',renovacao:'renovacao'};
+function pedirDadosVenda(card){
+  document.getElementById('v-nome').value=card.nome;
+  document.getElementById('v-matricula').value=card.codigo_matricula||'';
+  document.getElementById('v-perfil').value=PERFIL_VENDA_PADRAO[card.perfil]||'novo';
+  document.getElementById('v-tipo').value='agendado';
+  document.getElementById('v-valor').value=card.ticket_medio||'';
+  document.getElementById('v-saldo').value='';
+  document.getElementById('v-pgto').value='cartao_credito';
+  const optsConsultoras=consultoras.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  const selLancado=document.getElementById('v-lancado-por');
+  selLancado.innerHTML=optsConsultoras;
+  if(sessao.role==='consultor'&&sessao.consultora_id)selLancado.value=sessao.consultora_id;
+  const selAtribuido=document.getElementById('v-atribuido-a');
+  selAtribuido.innerHTML=optsConsultoras;
+  selAtribuido.value=card.consultora_id||'';
+  openM('m-venda');
+  return new Promise(resolve=>{_resolveVendaModal=resolve;});
+}
+function confirmarVendaModal(){
+  const valor=parseFloat(document.getElementById('v-valor').value);
+  if(!valor||valor<=0){toast('Informe o valor da venda',true);return;}
+  const atribuidoA=document.getElementById('v-atribuido-a').value;
+  if(!atribuidoA){toast('Selecione a quem a venda é atribuída',true);return;}
+  const dados={
+    nome_cliente:document.getElementById('v-nome').value.trim(),
+    codigo_matricula:document.getElementById('v-matricula').value.trim(),
+    perfil_venda:document.getElementById('v-perfil').value,
+    tipo_venda:document.getElementById('v-tipo').value,
+    valor,
+    saldo_devedor:parseFloat(document.getElementById('v-saldo').value)||0,
+    forma_pagamento:document.getElementById('v-pgto').value,
+    lancado_por_id:document.getElementById('v-lancado-por').value||null,
+    atribuido_a_id:atribuidoA
+  };
+  closeM('m-venda');
+  if(_resolveVendaModal)_resolveVendaModal(dados);
+  _resolveVendaModal=null;
+}
+function cancelarVendaModal(){
+  closeM('m-venda');
+  if(_resolveVendaModal)_resolveVendaModal(null);
+  _resolveVendaModal=null;
+}
+async function registrarLinhaVenda(card,dados){
+  await sbPost('vendas',{
+    campanha_id:card.campanha_id,card_id:card.id,academia_id:sessao.academia_id,
+    consultora_id:dados.atribuido_a_id,lancado_por_id:dados.lancado_por_id,
+    data:new Date().toISOString().slice(0,10),
+    nome_cliente:dados.nome_cliente,codigo_matricula:dados.codigo_matricula,
+    perfil_venda:dados.perfil_venda,valor:dados.valor,forma_pagamento:dados.forma_pagamento,
+    saldo_devedor:dados.saldo_devedor,tipo_venda:dados.tipo_venda,conferido_lider:false,
+    created_at:Date.now()
+  });
+}
+
+async function onDropCard(ev,novaEtapa){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag-over');
+  if(!dragCardId)return;
+  let data=null,hora=null;
+  if(ETAPAS_QUE_PEDEM_DATA.includes(novaEtapa)){
+    const escolha=await pedirDataHoraAgendamento('Agendar Compromisso','Pra quando fica marcado esse compromisso?');
+    if(!escolha){dragCardId=null;return;} // cancelou
+    data=escolha.data;hora=escolha.hora;
+  }
+  if(novaEtapa==='convertido'){
+    const card=kbCards.find(c=>c.id===dragCardId);
+    const dadosVenda=await pedirDadosVenda(card);
+    if(!dadosVenda){dragCardId=null;return;} // cancelou
+    await registrarLinhaVenda(card,dadosVenda);
+  }
+  await moverCardParaEtapa(dragCardId,novaEtapa,data,hora);
+  dragCardId=null;
+}
+
+// ── Arrastar o board inteiro na horizontal (clicando no fundo, não em um card) ──
+function ativarArrasteBoard(){
+  const board=document.getElementById('kbBoard');
+  let isDown=false,startX,scrollLeft;
+  board.onmousedown=e=>{
+    if(e.target.closest('.kb-card'))return; // não interfere no drag de card
+    isDown=true;board.classList.add('dragging-board');
+    startX=e.pageX-board.offsetLeft;scrollLeft=board.scrollLeft;
+  };
+  board.onmouseleave=()=>{isDown=false;board.classList.remove('dragging-board');};
+  board.onmouseup=()=>{isDown=false;board.classList.remove('dragging-board');};
+  board.onmousemove=e=>{
+    if(!isDown)return;
+    e.preventDefault();
+    const x=e.pageX-board.offsetLeft;
+    board.scrollLeft=scrollLeft-(x-startX);
+  };
+}
+
+// ── Modal do Card — MODO ATENDIMENTO (Fase 3) ──
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+// Repertório de scripts por tentativa — baseado nos blocos B.11 (leads/10x15),
+// B.13/B.14 (rematrícula) e B.17 (renovação) já validados na Central de Scripts.
+const SCRIPT_CADENCIA={
+  leads:[
+    {tipo:'Texto + Áudio · Primeiro Contato',texto:'Oi, {NOME}! Que alegria receber sua mensagem 🙌 Parabéns pela decisão — dar esse passo já mostra que você está levando sua saúde a sério. Aqui a gente trabalha diferente das academias convencionais: montamos um projeto personalizado pra cada aluno. Pra eu te ajudar melhor: qual sua idade, e você já está treinando atualmente?'},
+    {tipo:'Direcionar p/ Ligação',texto:'Oi, {NOME}! Separei um presente de boas-vindas especial pra você e quero te explicar rapidinho como funciona nossa metodologia. Entendo a correria e quero valorizar seu tempo — consigo ligar rapidinho agora, ou prefere que eu ligue em outro horário? São só 2 a 3 minutinhos, garanto que vai valer a pena.'},
+    {tipo:'Ligação',texto:'Oi, {NOME}! Aqui é a equipe. Consigo falar 2 a 3 minutinhos com você agora? Quero entender rapidinho o que te motivou a procurar a gente nesse momento.'},
+    {tipo:'Texto + Áudio',texto:'Oi, {NOME}! Passando pra te lembrar que seu presente de boas-vindas continua reservado. Consigo ligar rapidinho agora, ou prefere outro horário? Vou te mostrar como funciona.'},
+    {tipo:'Vídeo + Texto',texto:'Separei um vídeo rapidinho pra você conhecer um pouco mais de como funciona por aqui, {NOME} — acho que você vai se identificar com o que a gente construiu. [vídeo]'},
+    {tipo:'Ligação',texto:'Oi, {NOME}! Queria só confirmar uma coisa com você: esse objetivo que você me contou ainda é prioridade pra esse momento, ou mudou alguma coisa aí?'},
+    {tipo:'Texto',texto:'Oi, {NOME}! Algumas conversas acontecem exatamente no momento certo — por isso resolvi passar aqui de novo. Consigo ligar rapidinho agora, ou prefere outro horário?'},
+    {tipo:'Vídeo + Texto',texto:'Separei mais um vídeo que acho que você vai gostar de ver, {NOME} — muita gente que treina com a gente hoje começou exatamente como você. [vídeo]'},
+    {tipo:'Texto (reflexão)',texto:'Só uma reflexão rápida, {NOME}: quantas vezes você já disse pra si mesmo(a) que ia começar "semana que vem"? Consigo te ligar amanhã, ou prefere outro dia? São só 2 minutinhos pra gente conversar sobre isso.'}
+  ],
+  rematricula:[
+    {tipo:'Atenção (headline)',texto:'Nossa conversa ficou pela metade, {NOME}, e resolvi aparecer novamente. Como você está?'},
+    {tipo:'Texto',texto:'Seu presente de boas-vindas continua reservado, {NOME} — separei um tempinho essa semana caso você queira retomar essa conversa.'},
+    {tipo:'Vídeo (prova social)',texto:'Muita gente que treina com a gente hoje começou de um jeito parecido com o seu, {NOME} — com uma pausa no meio do caminho. [vídeo]'},
+    {tipo:'CTA',texto:'Consigo te ligar amanhã rapidinho, {NOME}, ou prefere outro horário? São só 2 a 3 minutinhos, só pra retomarmos essa conversa com calma.'}
+  ],
+  renovacao:[
+    {tipo:'Texto (D-15)',texto:'Estava olhando sua jornada por aqui, {NOME}, e acho que vale a pena a gente conversar sobre os próximos passos.'},
+    {tipo:'Texto (D-10)',texto:'Tenho algumas ideias que acho que fazem bastante sentido pro momento que você está vivendo agora, {NOME} — quero te mostrar antes de mais nada.'},
+    {tipo:'Texto (D-5)',texto:'Vou reservar uns minutinhos pra alinharmos como vai ser a continuidade do seu projeto, {NOME} — consigo te encontrar essa semana.'},
+    {tipo:'CTA presencial (D-2)',texto:'Vamos tomar um café antes do seu próximo treino, {NOME}? Acho que essa conversa merece acontecer pessoalmente.'}
+  ]
+};
+
+// ── MODO COMPROMISSO — etapas onde o card já tem um agendamento confirmado.
+// Aqui a cadência de prospecção para de contar; o script vira Confirmação ou
+// Reconexão (se a pessoa faltou), nunca mais um script de "primeiro contato frio".
+const ETAPAS_COMPROMISSO=['exp_agendada','agendada_matricula','consultoria_agendada','feedback_matricula'];
+const ETAPAS_SEM_SCRIPT=['exp_iniciada']; // já em andamento, sem necessidade de script
+const COMPROMISSO_POR_ETAPA={
+  exp_agendada:'iniciar sua experiência',
+  agendada_matricula:'conhecer de perto o projeto que desenhamos pra você',
+  consultoria_agendada:'sua consultoria personalizada',
+  feedback_matricula:'conversarmos sobre os próximos passos da sua jornada'
+};
+const HEADLINES_CONFIRMACAO=[
+  'Chegou o dia de avançar e construir novos resultados!',
+  'Hoje você acessa sua nova versão.',
+  'O seu momento chegou — hoje é o dia!'
+];
+const HEADLINES_RECONEXAO=[
+  'Sentimos sua falta hoje!',
+  'Ei, {NOME}, vi que não conseguiu vir — tudo bem?'
+];
+function montarScriptCompromisso(card,modo){
+  const nome=card.nome;
+  const compromisso=COMPROMISSO_POR_ETAPA[card.etapa_atual]||'nosso compromisso combinado';
+  if(modo==='reconexao'){
+    const h=HEADLINES_RECONEXAO[Math.floor(Math.random()*HEADLINES_RECONEXAO.length)].replaceAll('{NOME}',nome);
+    return[
+      h,
+      'Imagino que algo tenha surgido de última hora. Quero muito que você não perca essa oportunidade.',
+      'Seu projeto continua disponível pra você — não quero que você fique sem viver isso.',
+      'Consigo remarcar pra amanhã ou depois — qual funciona melhor pra você?'
+    ].join('\n\n');
+  }
+  const h=HEADLINES_CONFIRMACAO[Math.floor(Math.random()*HEADLINES_CONFIRMACAO.length)];
+  return[
+    h,
+    `${nome}, conforme combinamos, estamos te esperando hoje para ${compromisso}. Foi a melhor decisão que você tomou, e pode ficar orgulhoso(a) disso.`,
+    'Vamos começar hoje essa jornada juntos — inclusive, vou te mostrar/entregar uma coisa que vai garantir mais segurança e resultados ainda mais rápidos pra você.',
+    'Te espero aqui, e tenho certeza que vai ser incrível. Qualquer dúvida antes do nosso encontro, é só me chamar. Até mais tarde!'
+  ].join('\n\n');
+}
+const ACOES_COMPROMISSO=[
+  {k:'confirmado',l:'Confirmou presença'},
+  {k:'compareceu',l:'Compareceu'}, // label específico é montado em getLabelCompareceu()
+  {k:'nao_compareceu',l:'Não compareceu'},
+  {k:'remarcado',l:'Remarcado para nova data'}
+];
+const LABEL_COMPARECEU_POR_ETAPA={
+  exp_agendada:'✅ Compareceu / Iniciou a experiência',
+  consultoria_agendada:'✅ Compareceu à consultoria',
+  agendada_matricula:'✅ Compareceu',
+  feedback_matricula:'✅ Compareceu'
+};
+// Se marcar "Compareceu", pra qual etapa o card avança sozinho (se houver uma etapa
+// intermediária real). Etapas que dariam em "Convertido" ficam paradas aqui, porque
+// converter exige dado de venda (valor, forma de pagamento) que ainda não construímos.
+const PROXIMA_ETAPA_APOS_COMPARECER={
+  exp_agendada:'exp_iniciada',
+  consultoria_agendada:'feedback_matricula'
+};
+
+const ACOES_CONTATO=[
+  {k:'ligacao',l:'Tentativa Ligação'},
+  {k:'contato_efetivo',l:'Contato Efetivo'},
+  {k:'mensagem',l:'Envio Mensagem'},
+  {k:'ag_experiencia',l:'Agendamento Experiência'},
+  {k:'ag_visita',l:'Agendamento Visita/Matrícula/Feedback'}
+];
+
+let cardAberto=null;
+let acaoConfirmadaNesteCard=false; // controla a trava
+let formTocado=false; // true assim que a consultora mexe em algo do formulário de registro (não conta só abrir/consultar)
+let interacaoHojeAtual=null; // registro de hoje já existente pra esse card (se houver) — permite atualizar em vez de duplicar
+let modoScriptCompromisso='confirmacao'; // 'confirmacao' ou 'reconexao' — só usado em Modo Compromisso
+
+async function abrirCardModal(cardId){
+  cardAberto=kbCards.find(c=>c.id===cardId);
+  if(!cardAberto)return;
+  acaoConfirmadaNesteCard=(cardAberto.status!=='ativo'); // só trava quando o card está ativo
+  formTocado=false;
+  document.getElementById('cardModalNome').textContent=cardAberto.nome;
+  document.getElementById('cardModalBody').innerHTML='<div class="ag-empty">Carregando...</div>';
+  openM('m-card');
+  interacaoHojeAtual=null;
+  if(cardAberto.status==='ativo'){
+    try{
+      const hoje=new Date().toISOString().slice(0,10);
+      const existentes=await sbGet('campanha_interacoes',`card_id=eq.${cardAberto.id}&data=eq.${hoje}&order=created_at.desc`);
+      interacaoHojeAtual=existentes[0]||null;
+      // se a última interação registrada foi "não compareceu", já abre direto na Reconexão
+      const ultimaGeral=await sbGet('campanha_interacoes',`card_id=eq.${cardAberto.id}&order=created_at.desc&limit=1`);
+      modoScriptCompromisso=(ultimaGeral[0]&&(ultimaGeral[0].resultado||'').includes('nao_compareceu'))?'reconexao':'confirmacao';
+    }catch(e){console.error(e);}
+  }
+  renderCardModalBody();
+}
+function trocarModoScriptCompromisso(modo){modoScriptCompromisso=modo;renderCardModalBody();}
+
+function renderCardModalBody(){
+  const c=cardAberto;
+  const etapas=ETAPAS[c.perfil]||[];
+  const scripts=SCRIPT_CADENCIA[c.perfil]||[];
+  const proximoIndice=c.cadencia_atual; // 0-indexed: próxima tentativa a ser feita
+  const scriptAtual=scripts[proximoIndice];
+  const cadenciaEsgotada=c.cadencia_atual>=c.cadencia_total;
+  const sugestaoData=new Date();sugestaoData.setDate(sugestaoData.getDate()+2);
+  const sugestaoISO=c.proxima_acao_data||sugestaoData.toISOString().slice(0,10);
+  const acoesPrevias=interacaoHojeAtual&&interacaoHojeAtual.resultado?interacaoHojeAtual.resultado.split(','):[];
+  const acoesDisponiveis=c.perfil==='renovacao'?ACOES_CONTATO.filter(a=>a.k!=='ag_experiencia'):ACOES_CONTATO;
+  const emModoCompromisso=ETAPAS_COMPROMISSO.includes(c.etapa_atual);
+  const semScript=ETAPAS_SEM_SCRIPT.includes(c.etapa_atual);
+
+  const blocoPerfil=`
+    <div class="at-perfil-box">
+      <span class="at-perfil-lbl">Classificação do lead:</span>
+      <button class="at-perfil-btn ${c.perfil_qualificacao==='5'?'ativo p5':''}" onclick="salvarPerfilQualificacao('5')">Perfil 5%</button>
+      <button class="at-perfil-btn ${c.perfil_qualificacao==='95'?'ativo p95':''}" onclick="salvarPerfilQualificacao('95')">Perfil 95%</button>
+      <button class="at-perfil-btn ${!c.perfil_qualificacao?'ativo':''}" onclick="salvarPerfilQualificacao(null)">Ainda não qualificado</button>
+    </div>
+  `;
+
+  const blocoQualificacao=`
+    <div class="at-qual-box">
+      <div class="at-qual-tipo">📋 Qualificação — informações pra rapport e conexão</div>
+      <textarea class="fi" id="qualificacaoTexto" rows="3" placeholder="Ex: 54 anos; sem exercícios regulares há mais de 5 anos; dores na região lombar; trabalha sentado o dia todo; diabetes tipo 2...">${c.qualificacao||''}</textarea>
+      ${c.qualificacao_por?`<div class="at-qual-meta">Qualificado por: <b>${c.qualificacao_por}</b>${c.qualificacao_em?' em '+new Date(c.qualificacao_em).toLocaleDateString('pt-BR'):''}</div>`:''}
+      <button class="btn-gh" style="width:100%;margin-top:8px;font-size:13px" onclick="salvarQualificacao()">💾 Salvar Qualificação</button>
+    </div>
+  `;
+
+  let blocoAtendimento='';
+  if(c.status==='ativo'&&emModoCompromisso){
+    const dataFmt=c.data_agendamento?new Date(c.data_agendamento+'T00:00:00').toLocaleDateString('pt-BR')+(c.hora_agendamento?' às '+c.hora_agendamento:''):'sem data definida';
+    const scriptTexto=montarScriptCompromisso(c,modoScriptCompromisso);
+    blocoAtendimento=`
+      <div class="at-proxima"><b>📅 Compromisso agendado:</b> ${dataFmt} — cadência de prospecção pausada${c.treinador_id?`<br><b>👤 Treinador(a):</b> ${nomeTreinador(c.treinador_id)}`:''}</div>
+      <div class="at-script-tabs">
+        <button class="at-tab-btn ${modoScriptCompromisso==='confirmacao'?'active':''}" onclick="trocarModoScriptCompromisso('confirmacao')">✅ Confirmação</button>
+        <button class="at-tab-btn ${modoScriptCompromisso==='reconexao'?'active':''}" onclick="trocarModoScriptCompromisso('reconexao')">↩️ Reconexão (faltou)</button>
+      </div>
+      <div class="at-script-box">
+        <div class="at-script-tipo">${modoScriptCompromisso==='confirmacao'?'Script de Confirmação':'Script de Reconexão (pós-ausência)'}</div>
+        <button class="at-copy-btn" onclick="copiarScriptAtendimento()">Copiar</button>
+        <div class="at-script-texto" id="scriptAtendimentoTexto">${scriptTexto}</div>
+      </div>
+      ${interacaoHojeAtual?'<div style="font-size:12px;color:var(--verde);margin-bottom:10px">✓ Já tem registro de hoje pra esse card — marque o que mudou e salve de novo.</div>':''}
+      <label class="fl" style="display:block;margin-bottom:8px">O que aconteceu?</label>
+      <div class="at-checks">
+        ${ACOES_COMPROMISSO.map(a=>`
+          <label class="at-check-item">
+            <input type="checkbox" class="chkAcaoCompromisso" value="${a.k}" ${acoesPrevias.includes(a.k)?'checked':''} onchange="formTocado=true;toggleTreinadorWrap()">
+            <span>${a.k==='compareceu'?(LABEL_COMPARECEU_POR_ETAPA[c.etapa_atual]||'✅ Compareceu'):a.l}</span>
+          </label>`).join('')}
+      </div>
+      <div id="treinadorWrap" style="display:none;margin-bottom:14px">
+        <label class="fl" style="display:block;margin-bottom:6px">Quem da equipe técnica recebeu essa pessoa? *</label>
+        <select class="fsel" id="treinadorSelect" onchange="formTocado=true">
+          <option value="">— selecione —</option>
+          ${treinadores.map(t=>`<option value="${t.id}" ${c.treinador_id===t.id?'selected':''}>${t.nome}</option>`).join('')}
+        </select>
+        ${!treinadores.length?'<p style="font-size:11.5px;color:var(--vermelho);margin-top:6px">Nenhum(a) treinador(a) cadastrado — clique em "👥 Treinadores(as)" no topo do Kanban pra adicionar.</p>':''}
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label class="fl">Nota (opcional)</label><input class="fi" id="notaContato" placeholder="Alguma observação relevante..." value="${interacaoHojeAtual?.nota||''}" oninput="formTocado=true"></div>
+      <div class="form-row" style="margin-bottom:14px">
+        <div class="fg"><label class="fl">Se remarcou/faltou: nova data</label><input type="date" class="fi" id="proximaDataContato" value="${sugestaoISO}" onchange="formTocado=true"></div>
+        <div class="fg"><label class="fl">Nova hora</label><input type="time" class="fi" id="proximaHoraContato" value="${c.hora_agendamento||'09:00'}" onchange="formTocado=true"></div>
+      </div>
+      <button class="btn-primary" style="width:100%;margin-bottom:8px" onclick="registrarCompromissoCard()">✅ ${interacaoHojeAtual?'Atualizar registro de hoje':'Registrar e salvar'}</button>
+    `;
+  }else if(c.status==='ativo'&&semScript){
+    blocoAtendimento=`<div style="color:var(--texto2);font-size:13px;margin-bottom:14px">Experiência em andamento — acompanhe presencialmente. Quando concluir, mova o card pra etapa seguinte na seção "Ver dados completos" abaixo.</div>`;
+    acaoConfirmadaNesteCard=true; // consultar essa etapa não exige registro obrigatório
+  }else if(c.status==='ativo'&&!cadenciaEsgotada&&scriptAtual){
+    blocoAtendimento=`
+      <div class="at-proxima"><b>Tentativa ${proximoIndice+1} de ${c.cadencia_total}</b> · ${scriptAtual.tipo}</div>
+      <div class="at-script-box">
+        <div class="at-script-tipo">Script sugerido</div>
+        <button class="at-copy-btn" onclick="copiarScriptAtendimento()">Copiar</button>
+        <div class="at-script-texto" id="scriptAtendimentoTexto">${scriptAtual.texto.replaceAll('{NOME}',c.nome)}</div>
+      </div>
+      ${interacaoHojeAtual?'<div style="font-size:12px;color:var(--verde);margin-bottom:10px">✓ Já tem registro de hoje pra esse card — marque o que mudou e salve de novo.</div>':''}
+      <label class="fl" style="display:block;margin-bottom:8px">O que já aconteceu nesse contato? (marque quantos fizerem sentido)</label>
+      <div class="at-checks">
+        ${acoesDisponiveis.map(a=>`
+          <label class="at-check-item">
+            <input type="checkbox" class="chkAcao" value="${a.k}" ${acoesPrevias.includes(a.k)?'checked':''} onchange="formTocado=true;toggleDataHoraAgendamentoInline()">
+            <span>${a.l}</span>
+          </label>`).join('')}
+      </div>
+      <div id="agendamentoInlineWrap" style="display:none;margin-bottom:14px">
+        <div class="form-row">
+          <div class="fg"><label class="fl">Data do compromisso</label><input type="date" class="fi" id="agendamentoInlineData" value="${sugestaoISO}" onchange="formTocado=true"></div>
+          <div class="fg"><label class="fl">Hora</label><input type="time" class="fi" id="agendamentoInlineHora" value="${c.hora_agendamento||'09:00'}" onchange="formTocado=true"></div>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label class="fl">Nota (opcional)</label><input class="fi" id="notaContato" placeholder="Alguma observação relevante..." value="${interacaoHojeAtual?.nota||''}" oninput="formTocado=true"></div>
+      <div class="fg" style="margin-bottom:14px"><label class="fl">Próximo contato (obrigatório)</label><input type="date" class="fi" id="proximaDataContato" value="${sugestaoISO}" onchange="formTocado=true"></div>
+      <button class="btn-primary" style="width:100%;margin-bottom:8px" onclick="registrarContatoCard()">✅ ${interacaoHojeAtual?'Atualizar registro de hoje':'Registrar contato e avançar'}</button>
+    `;
+  }else if(c.status==='ativo'&&cadenciaEsgotada){
+    blocoAtendimento=`<div class="at-trava-msg show">A cadência de ${c.cadencia_total} tentativas terminou sem conversão. Mova para <b>Cadência Futura</b> abaixo (o sistema calcula a próxima data automaticamente) ou envie para Perdas.</div>`;
+  }else{
+    blocoAtendimento=`<div style="color:var(--texto2);font-size:13px;margin-bottom:14px">Este card já está com status "${c.status}" — sem ação pendente de cadência.</div>`;
+  }
+
+  document.getElementById('cardModalBody').innerHTML=`
+    ${blocoPerfil}
+    ${blocoQualificacao}
+    ${blocoAtendimento}
+    <div class="at-trava-msg" id="travaMsg">🔒 Confirme a próxima ação (registre o contato) ou envie para Perdas antes de fechar este card.</div>
+    <button class="at-collapse-btn" onclick="fecharSemRegistrar()" style="color:var(--texto2);margin-bottom:4px">✕ Fechar sem salvar (descarta o que foi preenchido, se houver)</button><br>
+    <button class="at-collapse-btn" onclick="toggleDadosCard()" id="btnToggleDados">▸ Ver dados completos e mover manualmente</button>
+    <div id="dadosCardWrap" style="display:none;margin-top:12px">
+      <div style="font-size:13px;color:var(--texto2);margin-bottom:14px;line-height:1.8">
+        <b style="color:var(--texto)">Código:</b> ${c.codigo_matricula||'—'}<br>
+        <b style="color:var(--texto)">Telefone:</b> ${c.telefone||'—'}<br>
+        <b style="color:var(--texto)">Idade:</b> ${c.idade||'—'}<br>
+        <b style="color:var(--texto)">Plano atual:</b> ${c.plano_atual||'—'}<br>
+        <b style="color:var(--texto)">Vencimento:</b> ${c.plano_termino||'—'}<br>
+        <b style="color:var(--texto)">Ticket médio:</b> R$${(c.ticket_medio||0).toLocaleString('pt-BR')}<br>
+        <b style="color:var(--texto)">Consultora:</b> ${nomeConsultora(c.consultora_id)}
+        ${c.tag_extra?`<br><b style="color:var(--texto)">Tag:</b> ${c.tag_extra}`:''}
+      </div>
+      <label style="display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;">Mover para etapa (manual)</label>
+      <select class="fsel" id="moverEtapaSel" style="margin-bottom:10px" onchange="toggleDataAgendamentoInput()">
+        ${etapas.map(et=>`<option value="${et.k}" ${et.k===c.etapa_atual?'selected':''}>${et.l}</option>`).join('')}
+      </select>
+      <div id="dataAgendamentoWrap" style="display:none;margin-bottom:14px">
+        <div class="form-row">
+          <div class="fg"><label style="display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;">Data do agendamento</label><input type="date" class="fi" id="dataAgendamentoInput" value="${c.data_agendamento||''}"></div>
+          <div class="fg"><label style="display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;">Hora</label><input type="time" class="fi" id="horaAgendamentoInput" value="${c.hora_agendamento||'09:00'}"></div>
+        </div>
+      </div>
+      <button class="btn-gh" style="width:100%;margin-bottom:10px" onclick="salvarMovimentacao()">Salvar movimentação manual</button>
+    </div>
+    <button class="btn-gh" style="width:100%;border-color:var(--vermelho);color:var(--vermelho);margin-top:6px" onclick="abrirModalPerda()">🚫 Enviar para Perdas</button>
+    <div style="display:${acaoConfirmadaNesteCard?'block':'none'};margin-top:14px">
+      <button class="btn-primary" style="width:100%;margin-bottom:8px" id="btnProximoCard" onclick="irProximoCardAtendimento()">➡️ Próximo Card (mais urgente)</button>
+      <button class="btn-gh" style="width:100%" onclick="closeM('m-card')">✅ Fechar e escolher no Kanban/Agenda</button>
+    </div>
+  `;
+  toggleDataAgendamentoInput();
+  toggleDataHoraAgendamentoInline();
+  toggleTreinadorWrap();
+}
+
+function toggleTreinadorWrap(){
+  const wrap=document.getElementById('treinadorWrap');
+  if(!wrap)return;
+  const marcouCompareceu=document.querySelector('.chkAcaoCompromisso[value="compareceu"]:checked');
+  wrap.style.display=marcouCompareceu?'block':'none';
+}
+function toggleDataHoraAgendamentoInline(){
+  const wrap=document.getElementById('agendamentoInlineWrap');
+  if(!wrap)return;
+  const marcouAgendamento=document.querySelector('.chkAcao[value="ag_experiencia"]:checked')||document.querySelector('.chkAcao[value="ag_visita"]:checked');
+  wrap.style.display=marcouAgendamento?'block':'none';
+}
+function toggleDadosCard(){
+  const w=document.getElementById('dadosCardWrap');
+  const aberto=w.style.display!=='none';
+  w.style.display=aberto?'none':'block';
+  document.getElementById('btnToggleDados').textContent=(aberto?'▸':'▾')+' Ver dados completos e mover manualmente';
+}
+async function salvarQualificacao(){
+  const texto=document.getElementById('qualificacaoTexto').value.trim();
+  try{
+    await sbPatch('campanha_cards',cardAberto.id,{qualificacao:texto,qualificacao_por:sessao.nome||sessao.email,qualificacao_em:Date.now(),updated_at:Date.now()});
+    toast('Qualificação salva!');
+    await carregarCardsKanban();
+    cardAberto=kbCards.find(x=>x.id===cardAberto.id)||cardAberto;
+    renderCardModalBody();
+  }catch(e){console.error(e);toast('Erro ao salvar qualificação',true);}
+}
+function copiarScriptAtendimento(){
+  const txt=document.getElementById('scriptAtendimentoTexto').innerText;
+  navigator.clipboard.writeText(txt).then(()=>toast('Script copiado!'));
+}
+
+async function registrarContatoCard(){
+  const marcados=[...document.querySelectorAll('.chkAcao:checked')].map(el=>el.value);
+  if(!marcados.length){toast('Marque pelo menos uma ação realizada',true);return;}
+  const nota=document.getElementById('notaContato').value.trim();
+  const proximaData=document.getElementById('proximaDataContato').value;
+  if(!proximaData){toast('Informe a próxima data de contato',true);return;}
+  const c=cardAberto;
+  const resultadoCSV=marcados.join(',');
+  const ehNovoRegistroHoje=!interacaoHojeAtual;
+  try{
+    if(interacaoHojeAtual){
+      await fetch(`${SB_URL}/rest/v1/campanha_interacoes?id=eq.${interacaoHojeAtual.id}`,{method:'PATCH',headers:H,body:JSON.stringify({resultado:resultadoCSV,nota})});
+    }else{
+      await sbPost('campanha_interacoes',{card_id:c.id,data:new Date().toISOString().slice(0,10),canal:(SCRIPT_CADENCIA[c.perfil]||[])[c.cadencia_atual]?.tipo||'',tentativa_numero:c.cadencia_atual+1,resultado:resultadoCSV,nota,consultora_id:c.consultora_id,created_at:Date.now()});
+    }
+    const patch={proxima_acao_data:proximaData,updated_at:Date.now()};
+    if(ehNovoRegistroHoje){
+      patch.cadencia_atual=c.cadencia_atual+1;
+      if(c.etapa_atual==='lista'){
+        patch.etapa_atual='tentativa1';
+        const idxNova=(ETAPAS[c.perfil]||[]).findIndex(e=>e.k==='tentativa1');
+        const idxAtualMax=(ETAPAS[c.perfil]||[]).findIndex(e=>e.k===(c.etapa_maxima||'lista'));
+        if(idxNova>idxAtualMax)patch.etapa_maxima='tentativa1';
+      }
+    }
+    // Marcar um Agendamento já move o card pra etapa certa, usando a data/hora específicas do compromisso
+    const dataAgendInline=document.getElementById('agendamentoInlineData')?.value;
+    const horaAgendInline=document.getElementById('agendamentoInlineHora')?.value;
+    if(marcados.includes('ag_experiencia')&&c.perfil!=='renovacao'&&c.etapa_atual!=='exp_agendada'){
+      patch.etapa_atual='exp_agendada';
+      patch.data_agendamento=dataAgendInline||proximaData;
+      patch.hora_agendamento=horaAgendInline;
+    }else if(marcados.includes('ag_visita')){
+      const etapaVisita=c.perfil==='renovacao'?'feedback_matricula':'agendada_matricula';
+      if(c.etapa_atual!==etapaVisita){
+        patch.etapa_atual=etapaVisita;
+        patch.data_agendamento=dataAgendInline||proximaData;
+        patch.hora_agendamento=horaAgendInline;
+      }
+    }
+    if(patch.etapa_atual&&patch.etapa_atual!==c.etapa_atual){
+      const idxNova2=(ETAPAS[c.perfil]||[]).findIndex(e=>e.k===patch.etapa_atual);
+      const idxMax2=(ETAPAS[c.perfil]||[]).findIndex(e=>e.k===(patch.etapa_maxima||c.etapa_maxima||'lista'));
+      if(idxNova2>idxMax2)patch.etapa_maxima=patch.etapa_atual;
+    }
+    await sbPatch('campanha_cards',c.id,patch);
+    toast(ehNovoRegistroHoje?`Contato registrado — tentativa ${c.cadencia_atual+1}/${c.cadencia_total}`:'Registro de hoje atualizado!');
+    acaoConfirmadaNesteCard=true;
+    await carregarCardsKanban();
+    renderKanbanBoard();
+    renderKbSummary();
+    cardAberto=kbCards.find(x=>x.id===c.id)||cardAberto;
+    const hoje=new Date().toISOString().slice(0,10);
+    const existentes=await sbGet('campanha_interacoes',`card_id=eq.${cardAberto.id}&data=eq.${hoje}&order=created_at.desc`);
+    interacaoHojeAtual=existentes[0]||null;
+    renderCardModalBody();
+  }catch(e){console.error(e);toast('Erro ao registrar contato',true);}
+}
+
+// Registro em Modo Compromisso — não conta cadência de prospecção. Se marcar
+// "não compareceu" ou "remarcado", exige nova data e mantém a etapa (aguardando
+// o novo encontro); se "confirmado", só loga, sem mudar mais nada.
+async function registrarCompromissoCard(){
+  const marcados=[...document.querySelectorAll('.chkAcaoCompromisso:checked')].map(el=>el.value);
+  if(!marcados.length){toast('Marque pelo menos uma opção',true);return;}
+  const nota=document.getElementById('notaContato').value.trim();
+  const c=cardAberto;
+  const precisaNovaData=marcados.includes('nao_compareceu')||marcados.includes('remarcado');
+  let novaData=null,novaHora=null;
+  if(precisaNovaData){
+    novaData=document.getElementById('proximaDataContato').value;
+    novaHora=document.getElementById('proximaHoraContato').value;
+    if(!novaData){toast('Informe a nova data do compromisso',true);return;}
+  }
+  let treinadorId=null;
+  if(marcados.includes('compareceu')){
+    treinadorId=document.getElementById('treinadorSelect').value;
+    if(!treinadorId){toast('Selecione quem da equipe técnica recebeu essa pessoa',true);return;}
+  }
+  const resultadoCSV=marcados.join(',');
+  const ehNovoRegistroHoje=!interacaoHojeAtual;
+  try{
+    if(interacaoHojeAtual){
+      await fetch(`${SB_URL}/rest/v1/campanha_interacoes?id=eq.${interacaoHojeAtual.id}`,{method:'PATCH',headers:H,body:JSON.stringify({resultado:resultadoCSV,nota,treinador_id:treinadorId})});
+    }else{
+      await sbPost('campanha_interacoes',{card_id:c.id,data:new Date().toISOString().slice(0,10),canal:'compromisso',tentativa_numero:null,resultado:resultadoCSV,nota,consultora_id:c.consultora_id,treinador_id:treinadorId,created_at:Date.now()});
+    }
+    const patch={updated_at:Date.now()};
+    if(precisaNovaData){patch.data_agendamento=novaData;patch.hora_agendamento=novaHora;}
+    if(treinadorId)patch.treinador_id=treinadorId;
+    if(marcados.includes('compareceu')&&PROXIMA_ETAPA_APOS_COMPARECER[c.etapa_atual]){
+      patch.etapa_atual=PROXIMA_ETAPA_APOS_COMPARECER[c.etapa_atual];
+      const etapasPerfil=ETAPAS[c.perfil]||[];
+      const idxNova=etapasPerfil.findIndex(e=>e.k===patch.etapa_atual);
+      const idxMax=etapasPerfil.findIndex(e=>e.k===(c.etapa_maxima||'lista'));
+      if(idxNova>idxMax)patch.etapa_maxima=patch.etapa_atual;
+    }
+    await sbPatch('campanha_cards',c.id,patch);
+    toast(marcados.includes('compareceu')?'Presença registrada!':(precisaNovaData?'Novo compromisso registrado!':'Confirmação registrada!'));
+    acaoConfirmadaNesteCard=true;
+    modoScriptCompromisso=marcados.includes('nao_compareceu')?'reconexao':'confirmacao';
+    await carregarCardsKanban();
+    renderKanbanBoard();
+    renderKbSummary();
+    cardAberto=kbCards.find(x=>x.id===c.id)||cardAberto;
+    const hoje=new Date().toISOString().slice(0,10);
+    const existentes=await sbGet('campanha_interacoes',`card_id=eq.${cardAberto.id}&data=eq.${hoje}&order=created_at.desc`);
+    interacaoHojeAtual=existentes[0]||null;
+    renderCardModalBody();
+  }catch(e){console.error(e);toast('Erro ao registrar',true);}
+}
+
+// Tag de Perfil 5%/95% — Caminho A (seletor manual). Salva na hora, sem precisar
+// de botão "salvar" separado.
+async function salvarPerfilQualificacao(valor){
+  try{
+    await sbPatch('campanha_cards',cardAberto.id,{perfil_qualificacao:valor,updated_at:Date.now()});
+    cardAberto.perfil_qualificacao=valor;
+    toast(valor?`Classificado como Perfil ${valor}%`:'Classificação removida');
+    await carregarCardsKanban();
+    cardAberto=kbCards.find(x=>x.id===cardAberto.id)||cardAberto;
+    renderCardModalBody();
+    renderKanbanBoard();
+  }catch(e){console.error(e);toast('Erro ao salvar classificação',true);}
+}
+// a ação. Só abrir e consultar o card (sem tocar em nada) sempre fecha livre.
+function tentarFecharCardModal(){
+  if(formTocado&&!acaoConfirmadaNesteCard){
+    const msg=document.getElementById('travaMsg');
+    if(msg)msg.classList.add('show');
+    return;
+  }
+  closeM('m-card');
+}
+
+// Descartar o que foi preenchido e fechar — só pede confirmação se algo foi de fato
+// tocado no formulário; se a consultora só estava consultando, fecha direto.
+function fecharSemRegistrar(){
+  if(formTocado&&!acaoConfirmadaNesteCard){
+    if(!confirm('Descartar o que foi marcado/escrito e fechar sem salvar?'))return;
+  }
+  acaoConfirmadaNesteCard=true;
+  closeM('m-card');
+}
+
+// "Próximo Card" — ATALHO OPCIONAL, nunca obrigatório. A consultora pode sempre fechar (X)
+// e escolher livremente o próximo card no Kanban ou na Agenda. Quando usa este atalho,
+// o critério é URGÊNCIA: primeiro quem está atrasado/vence hoje (mais atrasado primeiro),
+// depois quem tem retorno futuro mais próximo, por último quem nunca foi tocado (por nome).
+async function irProximoCardAtendimento(){
+  const hoje=new Date().toISOString().slice(0,10);
+  const pendentes=kbCards.filter(c=>c.perfil===kbPerfilAtivo&&c.status==='ativo'&&c.id!==cardAberto.id);
+  if(!pendentes.length){toast('Não há mais cards pendentes neste funil. 🎉');closeM('m-card');renderKanbanBoard();return;}
+  pendentes.sort((a,b)=>{
+    const da=a.proxima_acao_data,db_=b.proxima_acao_data;
+    if(da&&db_)return da<db_?-1:da>db_?1:0; // mais atrasado/mais próximo primeiro
+    if(da&&!db_)return -1; // quem tem data definida vem antes de quem nunca foi tocado
+    if(!da&&db_)return 1;
+    return a.nome.localeCompare(b.nome);
+  });
+  closeM('m-card');
+  await abrirCardModal(pendentes[0].id);
+}
+
+const ETAPAS_QUE_PEDEM_DATA=['exp_agendada','agendada_matricula','consultoria_agendada','feedback_matricula'];
+function toggleDataAgendamentoInput(){
+  const sel=document.getElementById('moverEtapaSel');
+  if(!sel)return;
+  const wrap=document.getElementById('dataAgendamentoWrap');
+  wrap.style.display=ETAPAS_QUE_PEDEM_DATA.includes(sel.value)?'block':'none';
+}
+async function salvarMovimentacao(){
+  const novaEtapa=document.getElementById('moverEtapaSel').value;
+  const finalizar=()=>{acaoConfirmadaNesteCard=true;renderCardModalBody();};
+  if(novaEtapa==='convertido'){
+    const dadosVenda=await pedirDadosVenda(cardAberto);
+    if(!dadosVenda)return; // cancelou
+    await registrarLinhaVenda(cardAberto,dadosVenda);
+    await moverCardParaEtapa(cardAberto.id,novaEtapa);
+    finalizar();
+    return;
+  }
+  if(ETAPAS_QUE_PEDEM_DATA.includes(novaEtapa)){
+    const data=document.getElementById('dataAgendamentoInput').value;
+    const hora=document.getElementById('horaAgendamentoInput').value;
+    if(!data){toast('Informe a data do agendamento',true);return;}
+    moverCardParaEtapa(cardAberto.id,novaEtapa,data,hora).then(finalizar);
+  }else{
+    moverCardParaEtapa(cardAberto.id,novaEtapa).then(finalizar);
+  }
+}
+
+// Função única de movimentação — usada tanto pelo drag-and-drop quanto pelo seletor manual do modal
+async function moverCardParaEtapa(cardId,novaEtapa,dataAgendamento,horaAgendamento){
+  const card=kbCards.find(c=>c.id===cardId);
+  if(!card)return;
+  const etapasPerfil=ETAPAS[card.perfil]||[];
+  const etapaInfo=etapasPerfil.find(e=>e.k===novaEtapa);
+  if(!etapaInfo||etapaInfo.k===card.etapa_atual)return;
+  const patch={etapa_atual:novaEtapa,updated_at:Date.now()};
+  if(dataAgendamento)patch.data_agendamento=dataAgendamento;
+  if(horaAgendamento)patch.hora_agendamento=horaAgendamento;
+
+  // Mantém etapa_maxima (a etapa "real" mais avançada já alcançada), usada no painel resumido acumulado.
+  // Convertido/Cadência Futura são ramificações, não avançam a etapa_maxima por si — ela já reflete
+  // a última etapa real (ex: "Agendada Matrícula") alcançada antes de ramificar.
+  if(!etapaInfo.end){
+    const idxAtual=etapasPerfil.findIndex(e=>e.k===(card.etapa_maxima||'lista'));
+    const idxNova=etapasPerfil.findIndex(e=>e.k===novaEtapa);
+    if(idxNova>idxAtual)patch.etapa_maxima=novaEtapa;
+  }
+
+  if(etapaInfo.k==='convertido'){
+    patch.status='convertido';
+  }else if(etapaInfo.k==='cadencia_futura'){
+    patch.status='espera';
+    const dias=30+Math.floor(Math.random()*16); // 30–45 dias
+    const d=new Date();d.setDate(d.getDate()+dias);
+    patch.proxima_acao_data=d.toISOString().slice(0,10);
+  }else{
+    patch.status='ativo';
+    if(card.etapa_atual==='lista'&&novaEtapa!=='lista')patch.cadencia_atual=1;
+  }
+  try{
+    await sbPatch('campanha_cards',cardId,patch);
+    toast('Card atualizado!');
+    await carregarCardsKanban();
+    renderKanbanBoard();
+    renderKbSummary();
+  }catch(e){console.error(e);toast('Erro ao mover card',true);}
+}
+
+const MOTIVOS_PERDA=[
+  {k:'cancelamento',l:'Cancelamento de plano'},
+  {k:'numero_errado',l:'Número errado/inválido'},
+  {k:'interrupcao',l:'Interrupção do serviço'},
+  {k:'nao_contatar',l:'Pediu para não ser mais contatado'},
+  {k:'outro',l:'Outro'}
+];
+function abrirModalPerda(){
+  document.getElementById('motivosList').innerHTML=MOTIVOS_PERDA.map(m=>`<button class="motivo-btn" onclick="confirmarPerda('${m.k}')">${m.l}</button>`).join('');
+  closeM('m-card');
+  openM('m-perda');
+}
+async function confirmarPerda(motivoKey){
+  const motivoLbl=MOTIVOS_PERDA.find(m=>m.k===motivoKey).l;
+  let nota='';
+  if(motivoKey==='outro'){nota=prompt('Descreva o motivo:')||'';}
+  try{
+    await sbPost('campanha_perdas',{campanha_id:kbCampanha.id,card_id:cardAberto.id,nome:cardAberto.nome,telefone:cardAberto.telefone,motivo:motivoKey,nota,consultora_id:cardAberto.consultora_id,academia_id:sessao.academia_id,created_at:Date.now()});
+    await sbPatch('campanha_cards',cardAberto.id,{status:'perdido',updated_at:Date.now()});
+    toast(`Enviado para Perdas: ${motivoLbl}`);
+    acaoConfirmadaNesteCard=true;
+    closeM('m-perda');
+    await carregarCardsKanban();
+    renderKanbanBoard();
+  }catch(e){console.error(e);toast('Erro ao registrar perda',true);}
+}
+
+// Retoma uma campanha existente — se ainda estiver em "planejamento",
+// descobre quais perfis já têm cards e continua o upload de onde parou.
+async function abrirCampanhaExistente(campId){
+  try{
+    const camps=await sbGet('campanhas',`id=eq.${campId}&select=*`);
+    if(!camps.length){toast('Campanha não encontrada',true);return;}
+    const camp=camps[0];
+    if(camp.status!=='planejamento'){
+      abrirKanban(camp);
+      return;
+    }
+    const cardsExistentes=await sbGet('campanha_cards',`campanha_id=eq.${campId}&select=perfil`);
+    const perfisComCards=new Set(cardsExistentes.map(c=>c.perfil));
+    const perfisRestantes=(camp.perfis||[]).filter(p=>!perfisComCards.has(p));
+
+    wiz={campanhaId:camp.id,perfisFila:perfisRestantes,perfilAtual:null,csvHeaders:[],csvRows:[],cardsProntos:[],bloqueados:0,alertas:[]};
+
+    if(!perfisRestantes.length){
+      // todos os perfis já têm cards, só faltou ativar
+      await sbPatch('campanhas',camp.id,{status:'ativa',updated_at:Date.now()});
+      toast('Campanha já tinha todas as listas — ativada agora!');
+      await carregarCampanhas();
+      return;
+    }
+
+    switchITab('nova');
+    prepararProximoUpload();
+    irParaStep(2);
+    toast(`Continuando "${camp.nome}" — falta subir: ${perfisRestantes.map(p=>PERFIL_LABEL[p]).join(', ')}`);
+  }catch(e){console.error(e);toast('Erro ao abrir campanha',true);}
+}
+
+// ══════════════════════════════════════════
+// WIZARD — ESTADO
+// ══════════════════════════════════════════
+let wiz={campanhaId:null,perfisFila:[],perfilAtual:null,csvHeaders:[],csvRows:[],cardsProntos:[],bloqueados:0,alertas:[]};
+
+function resetWizard(){
+  wiz={campanhaId:null,perfisFila:[],perfilAtual:null,csvHeaders:[],csvRows:[],cardsProntos:[],bloqueados:0,alertas:[]};
+  document.getElementById('w-nome').value='';
+  document.getElementById('w-mes').value='';
+  document.getElementById('w-invest').value='';
+  ['w-perfil-leads','w-perfil-rematricula','w-perfil-renovacao','w-renov-anterior','w-renov-seguinte'].forEach(id=>document.getElementById(id).checked=false);
+  document.getElementById('renov-sub').classList.remove('show');
+  irParaStep(1);
+}
+function toggleRenovSub(){
+  document.getElementById('renov-sub').classList.toggle('show',document.getElementById('w-perfil-renovacao').checked);
+}
+function irParaStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('wstep-'+i).style.display=i===n?'block':'none';
+    const dot=document.getElementById('dot-'+i);
+    dot.classList.remove('active','done');
+    if(i<n)dot.classList.add('done');else if(i===n)dot.classList.add('active');
+  });
+}
+function voltarStep(n){irParaStep(n);}
+
+// ── STEP 1 → salvar campanha base ──
+async function salvarCampanhaBase(){
+  const nome=document.getElementById('w-nome').value.trim();
+  const mes=document.getElementById('w-mes').value;
+  const invest=parseFloat(document.getElementById('w-invest').value)||0;
+  const perfis=[];
+  if(document.getElementById('w-perfil-leads').checked)perfis.push('leads');
+  if(document.getElementById('w-perfil-rematricula').checked)perfis.push('rematricula');
+  if(document.getElementById('w-perfil-renovacao').checked)perfis.push('renovacao');
+  if(!nome||!mes){toast('Preencha nome e mês de referência',true);return;}
+  if(!perfis.length){toast('Selecione ao menos 1 perfil',true);return;}
+  const configRenov={mes_atual:true,mes_anterior:document.getElementById('w-renov-anterior').checked,mes_seguinte:document.getElementById('w-renov-seguinte').checked};
+  try{
+    const res=await sbPost('campanhas',{academia_id:sessao.academia_id,nome,mes_referencia:mes,status:'planejamento',perfis,config_renovacao:configRenov,investimento_trafego:invest,created_at:Date.now(),updated_at:Date.now()});
+    wiz.campanhaId=res[0].id;
+    wiz.perfisFila=[...perfis];
+    prepararProximoUpload();
+    irParaStep(2);
+  }catch(e){console.error(e);toast('Erro ao salvar campanha',true);}
+}
+
+// ── STEP 2 → upload + mapeamento ──
+function prepararProximoUpload(){
+  wiz.perfilAtual=wiz.perfisFila[0];
+  const sel=document.getElementById('w-perfil-upload');
+  sel.innerHTML=wiz.perfisFila.map(p=>`<option value="${p}">${PERFIL_LABEL[p]}</option>`).join('');
+  sel.value=wiz.perfilAtual;
+  document.getElementById('perfilProgresso').textContent=`fazendo upload de "${PERFIL_LABEL[wiz.perfilAtual]}"`;
+  document.getElementById('uploadArea').style.display='block';
+  document.getElementById('mapArea').style.display='none';
+  document.getElementById('crossCheckArea').style.display='none';
+  document.getElementById('fileInput').value='';
+}
+const selPerfilUpload=document.getElementById('w-perfil-upload');
+if(selPerfilUpload)selPerfilUpload.addEventListener('change',()=>{wiz.perfilAtual=selPerfilUpload.value;});
+
+function baixarModeloCSV(){
+  const cabecalho='nome,codigo,telefone,idade,plano,inicio,termino,ticket';
+  const exemplo='João da Silva,MAT12345,11999998888,32,Mensal,01/01/2026,01/02/2026,150,00';
+  const conteudo=cabecalho+'\n'+exemplo;
+  const blob=new Blob(['\uFEFF'+conteudo],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='modelo-lista-campanha.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function handleDrop(ev){
+  ev.preventDefault();
+  const f=ev.dataTransfer.files[0];
+  if(f)handleFile(f);
+}
+function handleFile(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    const delim=text.split('\n')[0].includes(';')?';':',';
+    const lines=text.split(/\r?\n/).filter(l=>l.trim());
+    wiz.csvHeaders=lines[0].split(delim).map(h=>h.trim());
+    wiz.csvRows=lines.slice(1).map(l=>l.split(delim).map(c=>c.trim()));
+    renderMapeamento();
+  };
+  reader.readAsText(file,'UTF-8');
+}
+const CAMPOS_ESPERADOS=[
+  {k:'nome',lbl:'Nome',guess:['nome','aluno','cliente','lead']},
+  {k:'codigo',lbl:'Código de matrícula/visita',guess:['codigo','matricula','id']},
+  {k:'telefone',lbl:'Telefone',guess:['telefone','celular','whatsapp','fone']},
+  {k:'idade',lbl:'Idade',guess:['idade']},
+  {k:'plano',lbl:'Plano atual',guess:['plano']},
+  {k:'inicio',lbl:'Início do plano',guess:['inicio','início']},
+  {k:'termino',lbl:'Término do plano',guess:['termino','término','vencimento']},
+  {k:'ticket',lbl:'Ticket médio mensal',guess:['ticket','valor','mensalidade']}
+];
+function renderMapeamento(){
+  const el=document.getElementById('mapFields');
+  el.innerHTML=`<table class="map-table"><tr><th>Campo do sistema</th><th>Coluna da sua planilha</th></tr>${
+    CAMPOS_ESPERADOS.map(c=>{
+      const guess=wiz.csvHeaders.findIndex(h=>c.guess.some(g=>h.toLowerCase().includes(g)));
+      const opts=wiz.csvHeaders.map((h,i)=>`<option value="${i}" ${i===guess?'selected':''}>${h}</option>`).join('');
+      return `<tr><td>${c.lbl}</td><td><select class="fsel map-select" id="map-${c.k}" onchange="atualizarPreviaMapeamento()"><option value="-1">— não usar —</option>${opts}</select></td></tr>`;
+    }).join('')
+  }</table><p style="font-size:12px;color:var(--texto2);margin-top:10px">${wiz.csvRows.length} linhas encontradas no arquivo.</p>
+  <h4 style="font-size:13.5px;margin:16px 0 8px">⚠️ Confira antes de continuar — 3 primeiras linhas como ficariam:</h4>
+  <div id="previaMapeamento"></div>`;
+  document.getElementById('mapArea').style.display='block';
+  atualizarPreviaMapeamento();
+}
+
+function atualizarPreviaMapeamento(){
+  const idx={};
+  CAMPOS_ESPERADOS.forEach(c=>{const el=document.getElementById('map-'+c.k);idx[c.k]=el?parseInt(el.value):-1;});
+  const amostra=wiz.csvRows.slice(0,3).map(row=>montarCard(row,idx));
+  const el=document.getElementById('previaMapeamento');
+  if(!el)return;
+  el.innerHTML=`<table class="map-table">
+    <tr>${CAMPOS_ESPERADOS.map(c=>`<th>${c.lbl}</th>`).join('')}</tr>
+    ${amostra.map(c=>`<tr>
+      <td>${c.nome||'<span style="color:var(--vermelho)">vazio</span>'}</td>
+      <td>${c.codigo_matricula||'—'}</td>
+      <td>${c.telefone||'—'}</td>
+      <td>${c.idade||'—'}</td>
+      <td>${c.plano_atual||'—'}</td>
+      <td>${c.plano_inicio||'—'}</td>
+      <td>${c.plano_termino||'—'}</td>
+      <td>${c.ticket_medio?'R$'+c.ticket_medio.toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+// Monta um card a partir de uma linha crua + o mapeamento de colunas escolhido — usada
+// tanto na prévia (3 linhas) quanto no processamento final (todas as linhas).
+function montarCard(row,idx){
+  return{
+    nome:idx.nome>=0?(row[idx.nome]||'').trim():'',
+    codigo_matricula:idx.codigo>=0?(row[idx.codigo]||'').trim():'',
+    telefone:idx.telefone>=0?(row[idx.telefone]||'').replace(/\D/g,''):'',
+    idade:idx.idade>=0?parseInt(row[idx.idade])||null:null,
+    plano_atual:idx.plano>=0?(row[idx.plano]||'').trim():'',
+    plano_inicio:idx.inicio>=0?normalizarData(row[idx.inicio]):null,
+    plano_termino:idx.termino>=0?normalizarData(row[idx.termino]):null,
+    ticket_medio:idx.ticket>=0?normalizarValorMonetario(row[idx.ticket]):0
+  };
+}
+
+// Lê valores monetários em qualquer formato comum: "269,00" · "1.234,56" (BR) ·
+// "269.00" (US) · "R$ 269,00" · "269". Detecta se o ponto é separador de milhar
+// ou decimal olhando a posição do último separador.
+function normalizarValorMonetario(str){
+  if(!str)return 0;
+  let s=String(str).trim().replace(/[R$\s]/g,'');
+  if(!s)return 0;
+  const temVirgula=s.includes(','),temPonto=s.includes('.');
+  if(temVirgula&&temPonto){
+    // o que vier por último é o decimal; o outro é separador de milhar (remove)
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')){s=s.replace(/\./g,'').replace(',','.');}
+    else{s=s.replace(/,/g,'');}
+  }else if(temVirgula){
+    s=s.replace(',','.');
+  }
+  // se só tem ponto, assume que já é decimal (formato "269.00" ou "269")
+  const n=parseFloat(s);
+  return isNaN(n)?0:n;
+}
+
+async function processarMapeamento(){
+  const idx={};
+  CAMPOS_ESPERADOS.forEach(c=>{idx[c.k]=parseInt(document.getElementById('map-'+c.k).value);});
+  if(idx.nome===-1){toast('É obrigatório mapear o campo Nome',true);return;}
+  const cards=wiz.csvRows.map(row=>montarCard(row,idx)).filter(c=>c.nome);
+
+  document.getElementById('mapArea').style.display='none';
+  await rodarCrossCheckPerdas(cards);
+}
+
+// Converte datas em formato brasileiro (DD/MM/AAAA ou DD-MM-AAAA) para ISO (AAAA-MM-DD),
+// que é o formato que o Postgres/Supabase espera. Se já vier em ISO, mantém. Se não
+// reconhecer o formato, retorna null (evita erro 500 travando o salvamento inteiro).
+function normalizarData(str){
+  if(!str)return null;
+  str=str.trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(str))return str; // já está em ISO
+  const m=str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(m){
+    const dia=m[1].padStart(2,'0'),mes=m[2].padStart(2,'0'),ano=m[3];
+    if(parseInt(mes)>12){console.warn('Data com mês inválido, ignorada:',str);return null;}
+    return `${ano}-${mes}-${dia}`;
+  }
+  console.warn('Formato de data não reconhecido, ignorado:',str);
+  return null;
+}
+
+// ── Cruzamento automático com Perdas ──
+async function rodarCrossCheckPerdas(cards){
+  const telefones=cards.map(c=>c.telefone).filter(Boolean);
+  let bloquear=new Set(),alertar=new Map();
+  if(telefones.length&&sessao.academia_id){
+    try{
+      const lista=telefones.slice(0,300).join(','); // limite de segurança por URL
+      const perdas=await sbGet('campanha_perdas',`academia_id=eq.${sessao.academia_id}&telefone=in.(${lista})`);
+      perdas.forEach(p=>{
+        if(p.motivo==='nao_contatar')bloquear.add(p.telefone);
+        else if(!bloquear.has(p.telefone))alertar.set(p.telefone,p.motivo);
+      });
+    }catch(e){console.error(e);}
+  }
+  const cardsLiberados=cards.filter(c=>!bloquear.has(c.telefone));
+  wiz.cardsProntos=cardsLiberados;
+  wiz.bloqueados=bloquear.size;
+  wiz.alertas=cardsLiberados.filter(c=>alertar.has(c.telefone)).map(c=>({nome:c.nome,motivo:alertar.get(c.telefone)}));
+
+  const el=document.getElementById('crossCheckArea');
+  el.style.display='block';
+  el.innerHTML=`
+    ${wiz.bloqueados>0?`<div class="alert-box">🚫 <b>${wiz.bloqueados}</b> pessoa(s) removida(s) automaticamente por já terem pedido não-contato.</div>`:''}
+    ${wiz.alertas.length>0?`<div class="warn-box">⚠️ <b>${wiz.alertas.length}</b> pessoa(s) já tiveram um card de Perdas antes (motivo diferente) — foram mantidas na lista, revise se quiser remover alguma manualmente depois.</div>`:''}
+    <p style="font-size:14px;margin-bottom:14px"><b>${wiz.cardsProntos.length}</b> pessoas prontas para entrar na campanha (perfil: ${PERFIL_LABEL[wiz.perfilAtual]}).</p>
+    <button class="btn-primary" onclick="irParaStep(3);renderOndaConfig();">Continuar para divisão em ciclos →</button>
+  `;
+}
+
+// ── STEP 3 → divisão em ondas ──
+function renderOndaConfig(){
+  const el=document.getElementById('ondaConfigArea');
+  el.innerHTML=`
+    <div class="form-row">
+      <div class="fg"><label>Capacidade semanal por consultora</label><input class="fi" type="number" id="w-capacidade" value="85" min="1"></div>
+      <div class="fg"><label>Total nesta lista</label><input class="fi" value="${wiz.cardsProntos.length}" disabled></div>
+    </div>
+    <label style="display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin:10px 0 6px;">Consultoras responsáveis por este perfil</label>
+    <div id="consChecks">${consultoras.map(c=>`<label class="chk-row"><input type="checkbox" class="cons-chk" value="${c.id}" data-nome="${c.nome}" checked> ${c.nome}</label>`).join('')||'<p style="color:var(--texto2);font-size:13px">Nenhuma consultora cadastrada nesta academia.</p>'}</div>
+    <button class="btn-gh" style="margin-top:14px" onclick="calcularOndas()">Calcular divisão sugerida</button>
+    <div id="ondasPreview" style="margin-top:18px"></div>
+  `;
+}
+
+let ondasCalc=[];
+function calcularOndas(){
+  const capacidade=parseInt(document.getElementById('w-capacidade').value)||85;
+  const consSel=[...document.querySelectorAll('.cons-chk:checked')].map(el=>({id:el.value,nome:el.dataset.nome}));
+  if(!consSel.length){toast('Selecione ao menos 1 consultora',true);return;}
+  const total=wiz.cardsProntos.length;
+  const capacidadeSemanal=consSel.length*capacidade;
+  const numOndas=Math.max(1,Math.ceil(total/capacidadeSemanal));
+  ondasCalc=[];
+  let restante=total;
+  for(let i=0;i<numOndas;i++){
+    const qtdOnda=Math.min(capacidadeSemanal,restante);
+    restante-=qtdOnda;
+    const porConsultora=Math.floor(qtdOnda/consSel.length);
+    let sobra=qtdOnda-porConsultora*consSel.length;
+    const dist=consSel.map(c=>{
+      const extra=sobra>0?1:0;if(sobra>0)sobra--;
+      return{consultora_id:c.id,nome:c.nome,qtd:porConsultora+extra};
+    });
+    ondasCalc.push({numero:i+1,dist});
+  }
+  renderOndasPreview();
+}
+function renderOndasPreview(){
+  const el=document.getElementById('ondasPreview');
+  el.innerHTML=ondasCalc.map((o,oi)=>`
+    <div class="onda-box">
+      <h4>Ciclo ${o.numero} <span style="color:var(--texto2);font-weight:400;font-size:12.5px">(dias ${(o.numero-1)*7+1}–${o.numero*7})</span></h4>
+      ${o.dist.map((d,di)=>`<div class="cons-row"><span>${d.nome}</span><input type="number" min="0" value="${d.qtd}" onchange="ondasCalc[${oi}].dist[${di}].qtd=parseInt(this.value)||0;atualizarTotalCheck()"></div>`).join('')}
+    </div>`).join('')+`
+    <div id="totalCheck" style="font-size:13px;color:var(--texto2);margin:10px 0 16px"></div>
+    <button class="btn-primary" onclick="confirmarOndasECards()">✅ Confirmar e Salvar</button>
+  `;
+  atualizarTotalCheck();
+}
+function atualizarTotalCheck(){
+  const somaTotal=ondasCalc.reduce((s,o)=>s+o.dist.reduce((s2,d)=>s2+d.qtd,0),0);
+  const el=document.getElementById('totalCheck');
+  const bate=somaTotal===wiz.cardsProntos.length;
+  el.innerHTML=`Total distribuído: <b style="color:${bate?'var(--verde)':'var(--vermelho)'}">${somaTotal} / ${wiz.cardsProntos.length}</b>`;
+}
+
+const CADENCIA_TOTAL_PADRAO={leads:9,rematricula:4,renovacao:4};
+async function confirmarOndasECards(){
+  const btn=event.target;btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    // cria as ondas
+    const ondasSalvas=[];
+    for(const o of ondasCalc){
+      const r=await sbPost('campanha_ondas',{campanha_id:wiz.campanhaId,numero_onda:o.numero,status:'planejada'});
+      ondasSalvas.push({...o,onda_id:r[0].id});
+    }
+    // distribui os cards sequencialmente conforme a quantidade definida por onda/consultora
+    let ponteiro=0;
+    const cardsParaInserir=[];
+    for(const o of ondasSalvas){
+      for(const d of o.dist){
+        for(let i=0;i<d.qtd&&ponteiro<wiz.cardsProntos.length;i++){
+          const c=wiz.cardsProntos[ponteiro++];
+          cardsParaInserir.push({
+            campanha_id:wiz.campanhaId,onda_id:o.onda_id,perfil:wiz.perfilAtual,
+            nome:c.nome,codigo_matricula:c.codigo_matricula,telefone:c.telefone,idade:c.idade,
+            plano_atual:c.plano_atual,plano_inicio:c.plano_inicio||null,plano_termino:c.plano_termino||null,
+            ticket_medio:c.ticket_medio,etapa_atual:'lista',consultora_id:d.consultora_id,
+            cadencia_atual:0,cadencia_total:CADENCIA_TOTAL_PADRAO[wiz.perfilAtual]||5,
+            status:'ativo',created_at:Date.now(),updated_at:Date.now()
+          });
+        }
+      }
+    }
+    // insere em lotes de 200 pra não estourar o payload
+    for(let i=0;i<cardsParaInserir.length;i+=200){
+      await sbPost('campanha_cards',cardsParaInserir.slice(i,i+200));
+    }
+    toast(`${cardsParaInserir.length} cards criados para "${PERFIL_LABEL[wiz.perfilAtual]}"!`);
+
+    // próximo perfil da fila, ou finaliza
+    wiz.perfisFila=wiz.perfisFila.filter(p=>p!==wiz.perfilAtual);
+    if(wiz.perfisFila.length){
+      wiz.csvHeaders=[];wiz.csvRows=[];wiz.cardsProntos=[];
+      prepararProximoUpload();
+      irParaStep(2);
+    }else{
+      await sbPatch('campanhas',wiz.campanhaId,{status:'ativa',updated_at:Date.now()});
+      toast('Campanha ativada! 🎉');
+      await carregarCampanhas();
+      switchITab('lista');
+    }
+  }catch(e){console.error(e);toast('Erro ao salvar. Veja o console.',true);}
+  btn.disabled=false;btn.textContent='✅ Confirmar e Salvar';
+}
+
+// Ativa o funil sem nenhum card — pra academias que ainda não têm lista pronta
+// e vão adicionar oportunidades manualmente pelo Kanban (ver "+ Adicionar Card").
+async function pularUploadPerfil(){
+  if(!confirm(`Ativar "${PERFIL_LABEL[wiz.perfilAtual]}" sem nenhuma lista por enquanto? Você poderá adicionar cards manualmente depois, pelo Kanban.`))return;
+  toast(`"${PERFIL_LABEL[wiz.perfilAtual]}" ativado sem lista.`);
+  wiz.perfisFila=wiz.perfisFila.filter(p=>p!==wiz.perfilAtual);
+  if(wiz.perfisFila.length){
+    wiz.csvHeaders=[];wiz.csvRows=[];wiz.cardsProntos=[];
+    prepararProximoUpload();
+    irParaStep(2);
+  }else{
+    await sbPatch('campanhas',wiz.campanhaId,{status:'ativa',updated_at:Date.now()});
+    toast('Campanha ativada! 🎉');
+    await carregarCampanhas();
+    switchITab('lista');
+  }
+}
+
+</script>
+</body>
+</html>
