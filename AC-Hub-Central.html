@@ -265,27 +265,20 @@ const SUPABASE_URL  = 'https://oevngnabqlxsensaohdv.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-/* ══ USUÁRIOS — admin fixo + demais salvos no localStorage ══ */
-const ADMIN_FIXO = { id:'admin', nome:'Administrador', email:'admin@acquacel.com.br', senha:'acquacel2026', tipo:'admin' };
+/* ══ USUÁRIOS — login único, unificado com o sistema Comercial/Técnico (tabela gestores) ══ */
+const ADMIN_FIXO = { id:'gest_acquacel_admin', nome:'Acquacel Admin', email:'admin@acquacel.com.br', senha:'acquacel2026', tipo:'admin' };
 
 const PERFIS_DISPONIVEIS = [
-  { valor:'admin',          label:'Admin'               },
-  { valor:'gestor',         label:'Gestão'              },
-  { valor:'lider_tecnico',  label:'Liderança Técnica'   },
-  { valor:'consultor',      label:'Liderança Comercial' },
-  { valor:'treinador',      label:'Treinador(a)'        },
-  { valor:'consultor_ext',  label:'Consultor(a)'        },
+  { valor:'gestor',    label:'Gestor(a)'     },
+  { valor:'consultor', label:'Consultor(a)'  },
+  { valor:'treinador', label:'Treinador(a)'  },
 ];
 
-/* Mapear perfis do painel (label) para tipo interno */
+/* Os 4 papéis de gestores já batem 1:1 com as chaves de PERFIS do Hub — não precisa
+   traduzir nada. Mantida só como blindagem contra valor inesperado vindo do banco. */
 function normalizarTipo(tipo) {
-  const mapa = {
-    'admin':'admin', 'gestor':'gestor', 'lider_tecnico':'lider_tecnico',
-    'consultor':'consultor', 'treinador':'treinador', 'consultor_ext':'consultor',
-    'gestão':'gestor', 'liderança técnica':'lider_tecnico',
-    'liderança comercial':'consultor', 'treinador(a)':'treinador', 'consultor(a)':'consultor_ext'
-  };
-  return mapa[tipo?.toLowerCase()] || tipo || 'treinador';
+  const validos = ['admin','gestor','consultor','treinador'];
+  return validos.includes(tipo) ? tipo : 'treinador';
 }
 
 /* Cache local de usuários — preenchido ao carregar */
@@ -297,7 +290,10 @@ async function carregarUsuariosDoSupabase() {
   try {
     const { data, error } = await sb.from('hub_usuarios').select('*').order('nome');
     if (error) throw error;
-    _usuariosCache = [ADMIN_FIXO, ...(data || [])];
+    // ADMIN_FIXO só entra como fallback de emergência se, por algum motivo, a
+    // linha do admin não vier do banco (ela já existe lá, criada no bootstrap).
+    const temAdminNoBanco = (data||[]).some(u => u.tipo === 'admin');
+    _usuariosCache = temAdminNoBanco ? (data || []) : [ADMIN_FIXO, ...(data || [])];
   } catch(e) {
     console.warn('Supabase offline, usando cache local:', e.message);
     try {
@@ -307,12 +303,14 @@ async function carregarUsuariosDoSupabase() {
   }
 }
 
+const ACADEMIA_ID_ACQUACEL = 'acquacel_matriz'; // id fixo criado no bootstrap SQL
+
 async function salvarUsuarioSupabase(usuario) {
   const { id, nome, email, senha, tipo } = usuario;
   const isNew = id.startsWith('u_');
   try {
     if (isNew) {
-      const { data, error } = await sb.from('hub_usuarios').insert({ nome, email, senha, tipo }).select().single();
+      const { data, error } = await sb.from('hub_usuarios').insert({ nome, email, senha, tipo, academia_id: ACADEMIA_ID_ACQUACEL, ativo: true }).select().single();
       if (error) throw error;
       return data;
     } else {
@@ -352,7 +350,7 @@ const USUARIOS = [ADMIN_FIXO];
 const PERFIS = {
   treinador:      { label:'Treinador(a)',       cor:'var(--azul)',    bg:'var(--azul-dim)',    tabela:'treinadores' },
   lider_tecnico:  { label:'Líder Técnico',      cor:'var(--roxo)',    bg:'var(--roxo-dim)',    tabela:'treinadores' },
-  gestor:         { label:'Gestor(a)',           cor:'var(--verde)',   bg:'var(--verde-dim)',   tabela:'gestores'    },
+  gestor:         { label:'Gestor(a)',           cor:'var(--verde)',   bg:'var(--verde-dim)',   tabela:'hub_usuarios'    },
   consultor:      { label:'Consultor(a)',        cor:'var(--amarelo)', bg:'var(--amar-dim)',    tabela:'consultores' },
   admin:          { label:'Administrador(a)',    cor:'var(--ciano)',   bg:'var(--ciano-dim)',   tabela:'admin'       },
 };
@@ -424,9 +422,9 @@ function fazerLogin() {
   err.classList.remove('show');
   if (!email || !senha) { err.textContent = 'Preencha e-mail e senha.'; err.classList.add('show'); return; }
 
-  /* Busca em todos os usuários: admin fixo + criados pelo painel */
+  /* Busca em todos os usuários: admin fixo (fallback) + os cadastrados em gestores */
   const todosUsuarios = getUsuarios();
-  const user = todosUsuarios.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha);
+  const user = todosUsuarios.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha && u.ativo !== false);
 
   if (!user) {
     /* Debug: mostrar quais emails existem no console */
@@ -437,8 +435,8 @@ function fazerLogin() {
   }
 
   usuarioAtual = user;
-  perfilAtual  = user.tipo;
-  localStorage.setItem('acqu_session', JSON.stringify({ id: user.id, tipo: user.tipo, nome: user.nome }));
+  perfilAtual  = normalizarTipo(user.tipo);
+  localStorage.setItem('acqu_session', JSON.stringify({ id: user.id, tipo: perfilAtual, nome: user.nome }));
   abrirHub();
 }
 
@@ -539,9 +537,12 @@ function renderModuloCard(m) {
 }
 
 function abrirModulo(arquivo, nome) {
-  /* Abre o módulo em nova aba — como estão na mesma pasta, funciona localmente */
+  /* Login único: manda a identidade de quem já está logado no Hub, via ?uid= —
+     os módulos duplicados (Desafio ROI, Campanhas, Experiências) já sabem
+     reconhecer esse parâmetro e logar a pessoa direto, sem pedir senha de novo. */
   try {
-    window.open(arquivo, '_blank');
+    const url = usuarioAtual ? `${arquivo}?uid=${encodeURIComponent(usuarioAtual.id)}` : arquivo;
+    window.open(url, '_blank');
   } catch(e) {
     showToast(`Arquivo "${arquivo}" não encontrado na pasta.`);
   }
@@ -660,7 +661,7 @@ function renderAtividade() {
    EXTRA ADMIN
 ══════════════════════════════ */
 function renderAdminExtra() {
-  const lista = getUsuarios().filter(u => u.id !== 'admin');
+  const lista = getUsuarios().filter(u => u.tipo !== 'admin');
   const rows = lista.length === 0
     ? `<tr><td colspan="4" style="text-align:center;color:var(--texto3);padding:2rem">Nenhum usuário cadastrado ainda.</td></tr>`
     : lista.map(u => `
@@ -721,7 +722,7 @@ function renderAdminExtra() {
 
         <label class="form-label">Perfil de acesso</label>
         <select class="form-input" id="u-tipo" style="appearance:auto">
-          ${PERFIS_DISPONIVEIS.filter(p=>p.valor!=='admin').map(p=>`<option value="${p.valor}">${p.label}</option>`).join('')}
+          ${PERFIS_DISPONIVEIS.map(p=>`<option value="${p.valor}">${p.label}</option>`).join('')}
         </select>
 
         <input type="hidden" id="u-id">
@@ -873,7 +874,7 @@ function verificarSessao() {
       const user = getUsuarios().find(u => u.id === sess.id);
       if (user) {
         usuarioAtual = user;
-        perfilAtual  = user.tipo;
+        perfilAtual  = normalizarTipo(user.tipo);
         abrirHub();
         return;
       }
