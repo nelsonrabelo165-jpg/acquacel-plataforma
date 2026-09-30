@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeFit | Controle de Experiências</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --bg-elev:#141414;
+  --bg-card:#1a1a1a;
+  --bg-card-hover:#1f1f1f;
+  --border:#2a2a2a;
+  --border-soft:#222;
+  --orange:#0A4FAA;
+  --orange-dim:#c95500;
+  --orange-glow:rgba(10,79,170,.15);
+  --white:#f5f5f5;
+  --grey:#9a9a9a;
+  --grey-dim:#666;
+  --green:#3ecf6e;
+  --yellow:#e6b800;
+  --red:#e6473e;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--font-body);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.display{font-family:var(--font-display);font-weight:700;letter-spacing:.01em;}
+::-webkit-scrollbar{height:8px;width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--orange-dim);}
+
+/* ===== LOGIN ===== */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 0%, #1a1005 0%, #0a0a0a 60%);
+  padding:20px;
+}
+.login-box{
+  width:100%;max-width:380px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:36px 32px;
+}
+.login-logo{
+  font-family:var(--font-display);
+  font-size:14px;letter-spacing:.25em;color:var(--orange);
+  text-transform:uppercase;margin-bottom:4px;
+}
+.login-title{
+  font-size:28px;line-height:1.1;margin-bottom:6px;
+}
+.login-sub{color:var(--grey);font-size:14px;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.field label{
+  display:block;font-size:12px;color:var(--grey);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:600;
+}
+input,select,textarea{
+  width:100%;background:var(--bg-elev);border:1px solid var(--border);
+  color:var(--white);padding:11px 13px;border-radius:8px;
+  font-family:var(--font-body);font-size:14.5px;outline:none;
+  transition:border-color .15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--orange);}
+textarea{resize:vertical;min-height:64px;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--orange);color:#0a0a0a;border:none;
+  padding:11px 20px;border-radius:8px;font-weight:700;font-size:14.5px;
+  cursor:pointer;transition:background .15s, transform .1s;font-family:var(--font-body);
+}
+.btn:hover{background:#ff7d1a;}
+.btn:active{transform:scale(.98);}
+.btn-block{width:100%;}
+.btn-ghost{
+  background:transparent;border:1px solid var(--border);color:var(--white);
+}
+.btn-ghost:hover{border-color:var(--orange);background:var(--orange-glow);}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:6px;}
+.login-error{
+  color:var(--red);font-size:13px;margin-top:12px;display:none;
+}
+
+/* ===== APP SHELL ===== */
+#appShell{display:none;min-height:100vh;}
+header.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(10,10,10,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:8px;background:var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:800;color:#0a0a0a;font-size:16px;
+}
+.brand-text .t1{font-size:11px;letter-spacing:.2em;color:var(--grey);text-transform:uppercase;}
+.brand-text .t2{font-size:17px;font-family:var(--font-display);font-weight:700;line-height:1.1;}
+.topbar-actions{display:flex;gap:10px;align-items:center;}
+.tab-switch{display:flex;background:var(--bg-elev);border:1px solid var(--border);border-radius:9px;padding:3px;}
+.tab-switch button{
+  background:none;border:none;color:var(--grey);padding:8px 16px;border-radius:6px;
+  font-family:var(--font-body);font-weight:600;font-size:13.5px;cursor:pointer;transition:all .15s;
+}
+.tab-switch button.active{background:var(--orange);color:#0a0a0a;}
+
+main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
+
+/* ===== KANBAN ===== */
+.board-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.board-title{font-size:26px;}
+.board-sub{color:var(--grey);font-size:13.5px;margin-top:2px;}
+.kanban{
+  display:grid;grid-auto-flow:column;grid-auto-columns:280px;
+  gap:14px;overflow-x:auto;padding-bottom:16px;
+}
+.col{
+  background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:12px;
+  display:flex;flex-direction:column;min-height:200px;max-height:calc(100vh - 220px);
+}
+.col-head{
+  padding:13px 14px 11px;border-bottom:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.col-head .name{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:.02em;}
+.col-head .count{
+  background:var(--bg-card);color:var(--grey);font-size:12px;font-weight:700;
+  padding:2px 9px;border-radius:20px;
+}
+.col-body{padding:10px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:9px;}
+.col[data-status="nao_convertida"] .col-head{border-bottom-color:var(--red);}
+.col[data-status="nao_convertida"] .name{color:var(--red);}
+.col[data-status="convertida"] .name{color:var(--green);}
+
+.card{
+  background:var(--bg-card);border:1px solid var(--border-soft);border-radius:10px;
+  padding:12px 13px;cursor:pointer;transition:all .15s;position:relative;
+}
+.card:hover{background:var(--bg-card-hover);border-color:var(--orange-dim);transform:translateY(-1px);}
+.card .name{font-weight:700;font-size:14.5px;margin-bottom:6px;}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.tag{
+  font-size:10.5px;font-weight:700;padding:2.5px 7px;border-radius:5px;
+  text-transform:uppercase;letter-spacing:.03em;
+}
+.tag-95{background:rgba(10,79,170,.18);color:var(--orange);}
+.tag-5{background:rgba(158,158,158,.15);color:var(--grey);}
+.tag-noqual{background:rgba(230,184,0,.18);color:var(--yellow);}
+.tag-prog{background:var(--bg-elev);color:var(--grey);border:1px solid var(--border);}
+.card-meta{font-size:12px;color:var(--grey);display:flex;justify-content:space-between;align-items:center;}
+.card-alert-badge{
+  position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;
+  font-size:10px;font-weight:800;padding:2px 6px;border-radius:20px;
+}
+.progress-bar{height:4px;background:var(--bg-elev);border-radius:3px;overflow:hidden;margin-top:8px;}
+.progress-fill{height:100%;background:var(--orange);border-radius:3px;}
+.empty-col{color:var(--grey-dim);font-size:12.5px;text-align:center;padding:20px 8px;}
+
+.fab{
+  position:fixed;bottom:26px;right:26px;z-index:30;
+  width:56px;height:56px;border-radius:50%;background:var(--orange);
+  display:flex;align-items:center;justify-content:center;font-size:28px;color:#0a0a0a;
+  box-shadow:0 6px 20px rgba(10,79,170,.35);border:none;cursor:pointer;font-weight:700;
+}
+.fab:hover{background:#ff7d1a;transform:scale(1.05);}
+
+/* ===== MODAL ===== */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(3px);
+  z-index:100;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:16px;
+  width:100%;max-width:640px;max-height:none;
+}
+.modal.modal-wide{max-width:820px;}
+.modal-head{
+  padding:20px 24px;border-bottom:1px solid var(--border-soft);
+  display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--bg-elev);border-radius:16px 16px 0 0;z-index:2;
+}
+.modal-head h2{font-size:22px;}
+.modal-head .sub{color:var(--grey);font-size:13px;margin-top:3px;}
+.modal-close{
+  background:var(--bg-card);border:1px solid var(--border);color:var(--grey);
+  width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;
+}
+.modal-close:hover{color:var(--white);border-color:var(--orange);}
+.modal-body{padding:22px 24px;}
+.modal-foot{
+  padding:16px 24px;border-top:1px solid var(--border-soft);
+  display:flex;justify-content:flex-end;gap:10px;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.grid2{grid-template-columns:1fr;}}
+
+/* ===== CARD DETAIL SECTIONS ===== */
+.section-block{
+  border:1px solid var(--border-soft);border-radius:12px;padding:16px 18px;margin-bottom:14px;background:var(--bg-card);
+}
+.section-block h3{
+  font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:12px;
+}
+.section-block h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);}
+.badge-locked{
+  font-size:10.5px;color:var(--grey);border:1px solid var(--border);padding:2px 7px;border-radius:5px;
+  text-transform:uppercase;letter-spacing:.03em;margin-left:auto;font-weight:700;
+}
+.check-row{
+  display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft);font-size:14px;
+}
+.check-row:last-child{border-bottom:none;}
+.check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--orange);flex-shrink:0;cursor:pointer;}
+.check-row.done label{color:var(--grey);text-decoration:line-through;}
+.check-row label{cursor:pointer;flex:1;}
+.check-row.critical{background:rgba(10,79,170,.06);margin:0 -8px;padding:8px;border-radius:8px;border-bottom:none;}
+
+.task-item{
+  border:1px solid var(--border-soft);border-radius:10px;padding:12px 14px;margin-bottom:10px;
+}
+.task-item.done{opacity:.55;}
+.task-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
+.task-head .t-name{font-weight:700;font-size:14px;}
+.task-head .t-role{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;padding:2px 7px;border-radius:5px;}
+.role-vendas{background:rgba(10,79,170,.15);color:var(--orange);}
+.role-tecnico{background:rgba(62,207,110,.15);color:var(--green);}
+.task-script{
+  background:var(--bg-elev);border-left:2px solid var(--orange-dim);
+  padding:10px 12px;border-radius:0 8px 8px 0;font-size:13px;color:var(--grey);
+  font-style:italic;margin:8px 0;line-height:1.5;
+}
+.task-controls{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+.task-controls input,.task-controls textarea{flex:1;min-width:140px;}
+
+.presence-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.presence-row{
+  display:flex;align-items:center;gap:10px;background:var(--bg-elev);border:1px solid var(--border-soft);
+  padding:9px 12px;border-radius:8px;font-size:13.5px;
+}
+.presence-row .p-date{font-weight:700;min-width:78px;}
+.presence-row .p-temp{font-size:16px;}
+.presence-row .p-obs{color:var(--grey);flex:1;}
+.presence-row .p-trainer{color:var(--grey);font-size:12px;}
+
+.freq-bar-wrap{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.freq-bar-track{flex:1;height:8px;background:var(--bg-elev);border-radius:4px;overflow:hidden;}
+.freq-bar-fill{height:100%;background:var(--green);border-radius:4px;}
+.freq-label{font-size:13px;font-weight:700;white-space:nowrap;}
+
+.close-block{border-color:var(--border);}
+.status-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.status-pill{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-elev);
+  cursor:pointer;font-size:13px;font-weight:600;color:var(--grey);
+}
+.status-pill.selected{border-color:var(--orange);color:var(--orange);background:var(--orange-glow);}
+
+/* ===== DASHBOARD ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border-soft);border-radius:12px;padding:18px 20px;
+}
+.stat-card .label{font-size:12px;color:var(--grey);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:600;}
+.stat-card .value{font-family:var(--font-display);font-size:34px;font-weight:700;color:var(--orange);line-height:1;}
+.stat-card .value.green{color:var(--green);}
+.stat-card .sub{font-size:12px;color:var(--grey-dim);margin-top:6px;}
+
+.rank-table{width:100%;border-collapse:collapse;margin-top:10px;}
+.rank-table th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--grey);
+  padding:8px 12px;border-bottom:1px solid var(--border-soft);font-weight:600;
+}
+.rank-table td{padding:11px 12px;border-bottom:1px solid var(--border-soft);font-size:14px;}
+.rank-table tr:last-child td{border-bottom:none;}
+
+.section-title{font-size:19px;margin:28px 0 4px;}
+.section-sub{color:var(--grey);font-size:13px;margin-bottom:14px;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--bg-card);border:1px solid var(--orange);color:var(--white);
+  padding:12px 22px;border-radius:9px;font-size:14px;font-weight:600;z-index:200;
+  display:none;box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.hint{font-size:12px;color:var(--grey-dim);margin-top:4px;line-height:1.4;}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-grid-head{margin-bottom:6px;}
+.cal-label{text-align:center;font-size:11px;color:var(--grey);font-weight:700;text-transform:uppercase;}
+.cal-cell{
+  min-height:76px;border-radius:8px;background:var(--bg-elev);border:1px solid var(--border-soft);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;
+  font-size:13px;color:var(--grey);padding:6px 4px;gap:5px;
+}
+.cal-cell.empty{background:transparent;border:none;min-height:76px;}
+.cal-cell.has-tasks{cursor:pointer;border-color:var(--orange-dim);color:var(--white);}
+.cal-cell.has-tasks:hover{background:var(--bg-card-hover);}
+.cal-cell.is-today{border-color:var(--orange);border-width:2px;}
+.cal-cell.is-selected{background:var(--orange-glow);border-color:var(--orange);}
+.cal-daynum{font-weight:600;}
+.cal-chips-row{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;}
+.cal-chip{
+  font-size:10px;font-weight:800;border-radius:20px;padding:1px 6px;min-width:15px;text-align:center;
+  border:1px solid;line-height:1.5;
+}
+.cal-legenda{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;font-size:11.5px;color:var(--grey);}
+.cal-legenda-item{display:flex;align-items:center;gap:5px;}
+.cal-legenda-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.locked-value{
+  background:var(--bg-elev);border:1px dashed var(--border);padding:10px 13px;border-radius:8px;
+  font-size:14px;color:var(--grey);
+}
+@media(max-width:700px){
+  header.topbar{padding:12px 16px;}
+  main{padding:16px 14px 60px;}
+  .modal-body,.modal-head,.modal-foot{padding-left:16px;padding-right:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">GeFit</div>
+    <div class="login-title">Controle de<br>Experiências</div>
+    <div class="login-sub">Acesso da equipe — vendas e técnico</div>
+    <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" placeholder="seu@email.com">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••">
+    </div>
+    <button class="btn btn-block" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError">E-mail ou senha inválidos.</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="appShell">
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="brand-mark" style="text-decoration:none;" title="Voltar ao Desafio ROI 21 Dias">QG</a>
+      <div class="brand-text">
+        <div class="t1">GeFit · GeFit</div>
+        <div class="t2">Controle de Experiências</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a href="index.html" class="btn btn-ghost btn-sm" style="text-decoration:none;">← Desafio ROI</a>
+      <button class="btn btn-ghost btn-sm" onclick="abrirCampanhasExp()">📢 Campanhas</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirScriptsExp()">📚 Scripts</button>
+      <a href="mapa-ferramenta.html" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;">🗺️ Mapa</a>
+      <div class="tab-switch">
+        <button class="active" id="tabKanbanBtn" onclick="switchTab('kanban')">Kanban</button>
+        <button id="tabAgendaBtn" onclick="switchTab('agenda')">Agenda</button>
+        <button id="tabDashBtn" onclick="switchTab('dashboard')">Indicadores</button>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- KANBAN VIEW -->
+    <div id="viewKanban">
+      <div class="board-header">
+        <div>
+          <div class="board-title">Jornada de Experiências</div>
+          <div class="board-sub">Do cadastro à conversão — vendas e treinador conectados em cada etapa</div>
+        </div>
+        <button class="btn" onclick="openNewModal()">+ Nova Experiência</button>
+      </div>
+      <div class="kanban" id="kanbanBoard"></div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="viewDashboard" style="display:none;"></div>
+
+    <!-- AGENDA VIEW -->
+    <div id="viewAgenda" style="display:none;"></div>
+  </main>
+</div>
+
+<button class="fab" id="fabBtn" onclick="openNewModal()" style="display:none;">+</button>
+
+<!-- ===== MODAL: NOVA EXPERIÊNCIA ===== -->
+<div class="modal-overlay" id="newModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h2>Nova Experiência</h2>
+        <div class="sub">Cadastro e qualificação — Vendas</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('newModalOverlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid2">
+        <div class="field">
+          <label>Nome do Lead</label>
+          <input type="text" id="f_nome" placeholder="Nome completo">
+        </div>
+        <div class="field">
+          <label>Nº Cadastro</label>
+          <input type="text" id="f_numero_cadastro" placeholder="Nº do cadastro no sistema">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Contato (WhatsApp)</label>
+          <input type="text" id="f_contato" placeholder="(00) 00000-0000">
+        </div>
+        <div class="field">
+          <label>Data de Início</label>
+          <input type="date" id="f_data_inicio">
+        </div>
+      </div>
+      <div class="field">
+        <label>Consultor(a) Responsável</label>
+        <select id="f_consultor_id"><option value="">— Selecione —</option></select>
+      </div>
+      <div class="field">
+        <label>Perfil do Lead</label>
+        <div class="status-pills">
+          <div class="status-pill selected" data-perfil="95" onclick="selectPerfil('95')">95% · Precisa de orientação</div>
+          <div class="status-pill" data-perfil="5" onclick="selectPerfil('5')">5% · Autônomo / já treina</div>
+          <div class="status-pill" data-perfil="sem_qualificacao" onclick="selectPerfil('sem_qualificacao')">Sem Qualificação</div>
+        </div>
+        <div class="hint" id="perfilHint">Duração sugerida: 10–12 dias · acompanhamento ativo do treinador, sinais de confiança e vínculo são o principal fator de conversão.</div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Programa (pilar)</label>
+          <select id="f_programa">
+            <option value="emagrecimento_saude">Emagrecimento com Saúde</option>
+            <option value="imunidade_energia">Imunidade e Energia</option>
+            <option value="performance_esporte">Performance e Esporte</option>
+            <option value="cuidados_especiais">Cuidados Especiais</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Duração (dias)</label>
+          <input type="number" id="f_duracao" value="12" min="1" max="30">
+        </div>
+      </div>
+      <div class="field">
+        <label>Objetivo específico</label>
+        <textarea id="f_objetivo" placeholder="Ex: perder peso para o casamento, voltar a treinar após lesão, melhorar performance no futebol de fim de semana..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('newModalOverlay')">Cancelar</button>
+      <button class="btn" onclick="salvarNovaExperiencia()">Cadastrar Experiência</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: DETALHE DO CARD ===== -->
+<div class="modal-overlay" id="detailModalOverlay">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <div>
+        <h2 id="d_nome">—</h2>
+        <div class="sub" id="d_sub">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('detailModalOverlay')">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"><!-- injetado via JS --></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= CONFIG SUPABASE ================= */
+// ⚠️ Nelson: cole aqui a ANON KEY do projeto Supabase (Settings > API).
+// URL já configurada com o projeto GeFit existente.
+const SUPABASE_URL = "https://irwvagffrguiljaxrzmd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A";
+
+let supabaseClient = null;
+let DEMO_MODE = false;
+try{
+  if(SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== "COLE_SUA_ANON_KEY_AQUI"){
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else {
+    DEMO_MODE = true;
+  }
+}catch(e){ DEMO_MODE = true; }
+
+/* ================= ESTADO ================= */
+let currentUser = null;
+let experiencias = [];
+let currentCardId = null;
+let novaPerfil = "95";
+let equipeConsultoras = [];
+let equipeTreinadores = [];
+let editandoQualificacao = false;
+
+function toggleEdicaoQualificacao(){
+  editandoQualificacao = !editandoQualificacao;
+  renderDetail();
+}
+
+async function salvarEdicaoQualificacao(){
+  const exp = getExp();
+  exp.perfil = document.getElementById('edit_perfil').value;
+  exp.programa = document.getElementById('edit_programa').value || null;
+  exp.duracao_dias = parseInt(document.getElementById('edit_duracao').value) || exp.duracao_dias;
+  exp.objetivo_especifico = document.getElementById('edit_objetivo').value.trim();
+  await persist(exp);
+  editandoQualificacao = false;
+  renderDetail();
+  renderKanban();
+  showToast("Qualificação atualizada.");
+}
+
+const PROGRAMAS = {
+  emagrecimento_saude: "Emagrecimento com Saúde",
+  imunidade_energia: "Imunidade e Energia",
+  performance_esporte: "Performance e Esporte",
+  cuidados_especiais: "Cuidados Especiais"
+};
+
+const STATUS_COLS = [
+  {key:"agendada", label:"Experiência Agendada"},
+  {key:"iniciada", label:"Experiência Iniciada"},
+  {key:"convertida", label:"Experiência Convertida"},
+  {key:"nao_convertida", label:"Não Convertida"}
+];
+
+/* ================= LOGIN ================= */
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display='none';
+
+  if(!email || !pass){
+    errEl.textContent = "Preencha e-mail e senha.";
+    errEl.style.display='block';
+    return;
+  }
+
+  if(DEMO_MODE){
+    // Modo demonstração: sem Supabase configurado ainda.
+    currentUser = {email};
+    startApp();
+    return;
+  }
+
+  try{
+    const {data, error} = await supabaseClient
+      .from('gestores')
+      .select('*')
+      .eq('email', email)
+      .eq('senha_hash', pass) // mesmo padrão usado no Desafio ROI / Central de Scripts (comparação direta)
+      .eq('ativo', true)
+      .single();
+
+    if(error || !data){
+      errEl.textContent = "E-mail ou senha inválidos, ou acesso suspenso.";
+      errEl.style.display='block';
+      return;
+    }
+
+    const modulos = data.modulos_ativos || [];
+    if(!modulos.includes('experiencias')){
+      errEl.textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o GeFit.";
+      errEl.style.display='block';
+      return;
+    }
+
+    currentUser = data;
+    startApp();
+  }catch(e){
+    errEl.textContent = "Erro ao conectar. Tente novamente.";
+    errEl.style.display='block';
+  }
+}
+
+function logout(){
+  currentUser = null;
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('fabBtn').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+function abrirCampanhasExp(){
+  if(!currentUser){ showToast("Faça login primeiro."); return; }
+  window.location.href = `campanhas.html?uid=${encodeURIComponent(currentUser.id)}`;
+}
+function abrirScriptsExp(){
+  if(!currentUser){ showToast("Faça login primeiro."); return; }
+  window.location.href = `central-scripts-aqui.html?uid=${encodeURIComponent(currentUser.id)}`;
+}
+
+async function startApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  document.getElementById('fabBtn').style.display='flex';
+  await loadEquipe();
+  await loadExperiencias();
+  await loadAgendaTarefas();
+  renderKanban();
+  if(DEMO_MODE) showToast("Modo demonstração — configure a ANON_KEY do Supabase para salvar dados de verdade.");
+}
+
+async function loadEquipe(){
+  if(DEMO_MODE || !supabaseClient){
+    equipeConsultoras = [{id:'demo-c1',nome:'Camila'},{id:'demo-c2',nome:'Diego'}];
+    equipeTreinadores = [{id:'demo-t1',nome:'Rafael'},{id:'demo-t2',nome:'Bruna'}];
+    return;
+  }
+  try{
+    const academiaId = currentUser.academia_id;
+    if(!academiaId){ equipeConsultoras=[]; equipeTreinadores=[]; return; }
+    const [{data:cons}, {data:trei}] = await Promise.all([
+      supabaseClient.from('consultoras').select('id,nome').eq('academia_id', academiaId),
+      supabaseClient.from('treinadores').select('id,nome').eq('academia_id', academiaId).eq('ativo', true)
+    ]);
+    equipeConsultoras = cons || [];
+    equipeTreinadores = trei || [];
+  }catch(e){
+    console.error(e);
+    equipeConsultoras = []; equipeTreinadores = [];
+  }
+}
+
+// (Gestão de acesso individual — Equipe — foi centralizada no Desafio ROI 21 Dias,
+// pra não ter dois lugares diferentes criando login com regras diferentes.)
+
+// Login automático quando chega pelo painel principal (ROI 21 Dias / Campanhas),
+// via ?uid=<id do gestor> na URL — mesmo padrão de SSO usado nos outros módulos.
+async function tentarLoginAutomatico(){
+  const params = new URLSearchParams(window.location.search);
+  const uid = params.get('uid');
+  if(!uid || DEMO_MODE || !supabaseClient) return false;
+
+  try{
+    const {data, error} = await supabaseClient
+      .from('gestores')
+      .select('*')
+      .eq('id', uid)
+      .eq('ativo', true)
+      .single();
+
+    if(error || !data) return false;
+
+    const modulos = data.modulos_ativos || [];
+    if(!modulos.includes('experiencias')){
+      document.getElementById('loginError').textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o GeFit.";
+      document.getElementById('loginError').style.display='block';
+      return false;
+    }
+
+    currentUser = data;
+    await startApp();
+    const tabParam = params.get('tab');
+    const openExpParam = params.get('openExp');
+    if(openExpParam){
+      switchTab('kanban');
+      openDetail(openExpParam);
+    } else if(tabParam && ['kanban','agenda','dashboard'].includes(tabParam)){
+      switchTab(tabParam);
+    }
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+window.addEventListener('DOMContentLoaded', tentarLoginAutomatico);
+
+/* ================= DADOS ================= */
+function seedDemoData(){
+  experiencias = [
+    mkExp({nome_lead:"Marina Torres", contato:"(15) 99876-1122", perfil:"95", programa:"emagrecimento_saude",
+      objetivo_especifico:"Perder peso e ganhar disposição no dia a dia", consultor_responsavel:"Camila",
+      duracao_dias:12, status:"iniciada", data_inicio: daysAgo(3),
+      treinador_responsavel:"Rafael", data_dia1: daysAgo(3),
+      checklist_dia1:{app_baixado:true, mapeamento_sintomas:true, consultoria_agendada:true, apresentacao_programa:true},
+      mapeamento_sintomas_feito:true, presencas:[
+        {data:daysAgo(2), treinador:"Bruna", presente:true, temp:"esquentando", obs:"Animada, comentou que quer trazer a irmã"},
+        {data:daysAgo(1), treinador:"Rafael", presente:true, temp:"estável", obs:""}
+      ]}),
+    mkExp({nome_lead:"João Pedro Alves", contato:"(15) 99123-4455", perfil:"5", programa:"performance_esporte",
+      objetivo_especifico:"Melhorar performance no futebol de fim de semana", consultor_responsavel:"Diego",
+      duracao_dias:5, status:"agendada", data_inicio: today()}),
+    mkExp({nome_lead:"Letícia Fernandes", contato:"(15) 98877-3311", perfil:"95", programa:"cuidados_especiais",
+      objetivo_especifico:"Retomar atividade física após afastamento por dor lombar", consultor_responsavel:"Camila",
+      duracao_dias:12, status:"iniciada", data_inicio: daysAgo(6),
+      treinador_responsavel:"Bruna", data_dia1: daysAgo(6),
+      checklist_dia1:{app_baixado:true, mapeamento_sintomas:false, consultoria_agendada:false, apresentacao_programa:true},
+      presencas:[{data:daysAgo(5), treinador:"Bruna", presente:true, temp:"estável", obs:""}]}),
+    mkExp({nome_lead:"Fernanda Costa", contato:"(15) 99555-8890", perfil:"5", programa:"emagrecimento_saude",
+      objetivo_especifico:"Emagrecer para evento em 2 meses", consultor_responsavel:"Diego",
+      duracao_dias:5, status:"iniciada", data_inicio: daysAgo(5),
+      treinador_responsavel:"Rafael", data_dia1: daysAgo(5),
+      checklist_dia1:{app_baixado:true, mapeamento_sintomas:true, consultoria_agendada:true, apresentacao_programa:true},
+      mapeamento_sintomas_feito:true, consultoria_realizada:true, consultoria_treinador:"Rafael",
+      presencas:[
+        {data:daysAgo(4), treinador:"Rafael", presente:true, temp:"esquentando", obs:""},
+        {data:daysAgo(3), treinador:"Bruna", presente:true, temp:"esquentando", obs:""},
+        {data:daysAgo(2), treinador:"Rafael", presente:false, temp:"esfriando", obs:"Faltou, avisou que estava sem tempo"},
+        {data:daysAgo(1), treinador:"Rafael", presente:true, temp:"estável", obs:""}
+      ]}),
+    mkExp({nome_lead:"Roberto Lima", contato:"(15) 98111-2233", perfil:"95", programa:"imunidade_energia",
+      objetivo_especifico:"Mais energia no trabalho, cansaço constante", consultor_responsavel:"Camila",
+      duracao_dias:12, status:"convertida", data_inicio: daysAgo(15),
+      treinador_responsavel:"Bruna", data_dia1: daysAgo(15), data_conversao: daysAgo(2),
+      checklist_dia1:{app_baixado:true, mapeamento_sintomas:true, consultoria_agendada:true, apresentacao_programa:true},
+      mapeamento_sintomas_feito:true, consultoria_realizada:true, consultoria_treinador:"Bruna"})
+  ];
+}
+function mkExp(o){
+  return Object.assign({
+    id: 'demo-'+Math.random().toString(36).slice(2),
+    numero_cadastro: null,
+    campanha_card_id: null,
+    campanha_id: null,
+    consultor_id: null,
+    treinador_id: null,
+    consultoria_treinador_id: null,
+    checklist_dia1:{app_baixado:false, mapeamento_sintomas:false, consultoria_agendada:false, apresentacao_programa:false},
+    presencas:[], mapeamento_sintomas_feito:false, consultoria_realizada:false, consultoria_treinador:null,
+    treinador_responsavel:null, data_dia1:null,
+    tarefa_feedback_d1:{feita:false,data:null,obs:null},
+    tarefa_acompanhamento:{feita:false,data:null,obs:null},
+    tarefa_agendamento_final:{feita:false,data:null,obs:null},
+    tarefa_audio_cuidado:{feita:false,data:null,obs:null},
+    tarefa_audio_consultoria:{feita:false,data:null,obs:null},
+    tarefas_sexta:[], data_conversao:null, motivo_perda:null, status:'agendada'
+  }, o);
+}
+function daysAgo(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10);}
+function today(){return new Date().toISOString().slice(0,10);}
+
+async function loadExperiencias(){
+  if(DEMO_MODE || !supabaseClient){
+    seedDemoData();
+    return;
+  }
+  try{
+    let query = supabaseClient.from('experiencias').select('*').order('created_at',{ascending:false});
+    if(currentUser.academia_id){
+      query = query.eq('academia_id', currentUser.academia_id);
+    }else if(currentUser.role==='admin'){
+      // SEGURANÇA: só a conta master de verdade (role==='admin' E academia_id vazio
+      // de propósito) vê experiências de todas as academias — nunca só por causa de
+      // academia_id estar vazio, o que poderia acontecer por engano em qualquer conta.
+    }else{
+      experiencias = [];
+      showToast("Sua conta não está vinculada a nenhuma academia. Fale com o suporte GeFit.");
+      console.error('SEGURANÇA: usuário sem academia_id e sem role admin tentou carregar experiências — acesso bloqueado.', currentUser);
+      return;
+    }
+    const {data, error} = await query;
+    if(error) throw error;
+    experiencias = data || [];
+  }catch(e){
+    console.error(e);
+    showToast("Erro ao carregar dados do Supabase — usando dados locais.");
+    seedDemoData();
+  }
+}
+
+async function persist(exp){
+  if(DEMO_MODE || !supabaseClient){
+    return; // já está em memória
+  }
+  try{
+    exp.updated_at = new Date().toISOString();
+    const {error} = await supabaseClient.from('experiencias').upsert(exp);
+    if(error) throw error;
+  }catch(e){
+    console.error(e);
+    showToast("Erro ao salvar no Supabase.");
+  }
+}
+
+/* ================= TABS ================= */
+function switchTab(tab){
+  document.getElementById('viewKanban').style.display = tab==='kanban' ? 'block':'none';
+  document.getElementById('viewDashboard').style.display = tab==='dashboard' ? 'block':'none';
+  document.getElementById('viewAgenda').style.display = tab==='agenda' ? 'block':'none';
+  document.getElementById('tabKanbanBtn').classList.toggle('active', tab==='kanban');
+  document.getElementById('tabDashBtn').classList.toggle('active', tab==='dashboard');
+  document.getElementById('tabAgendaBtn').classList.toggle('active', tab==='agenda');
+  document.getElementById('fabBtn').style.display = tab==='kanban' ? 'flex':'none';
+  if(tab==='dashboard') renderDashboard();
+  if(tab==='agenda') renderAgendaTab();
+}
+
+/* ================= KANBAN RENDER ================= */
+function calcFrequencia(exp){
+  const totalDias = exp.presencas.length + (exp.data_dia1?1:0);
+  const presentes = exp.presencas.filter(p=>p.presente).length + (exp.data_dia1?1:0);
+  return {presentes, totalDias, pct: totalDias?Math.round(presentes/totalDias*100):0};
+}
+function isAlerta(exp){
+  if(exp.status!=='iniciada') return false;
+  const lastDate = exp.presencas.length ? exp.presencas[exp.presencas.length-1].data : exp.data_dia1;
+  if(!lastDate) return false;
+  const diff = Math.floor((new Date() - new Date(lastDate)) / 86400000);
+  const limite = exp.perfil==='5' ? 3 : 2; // 95% e sem_qualificacao usam o limite mais curto (mais seguro)
+  return diff >= limite;
+}
+
+function renderKanban(){
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = '';
+  STATUS_COLS.forEach(col=>{
+    let items = experiencias.filter(e=>e.status===col.key);
+
+    const colEl = document.createElement('div');
+    colEl.className='col';
+    colEl.dataset.status = col.key;
+    colEl.innerHTML = `
+      <div class="col-head">
+        <span class="name">${col.label}</span>
+        <span class="count">${items.length}</span>
+      </div>
+      <div class="col-body">
+        ${items.length ? items.map(cardHtml).join('') : '<div class="empty-col">Nenhuma experiência aqui</div>'}
+      </div>`;
+    board.appendChild(colEl);
+  });
+}
+
+function perfilTagClass(p){ return p==='95'?'tag-95':p==='5'?'tag-5':'tag-noqual'; }
+function perfilLabel(p){ return p==='95'?'95%':p==='5'?'5%':'Sem Qualif.'; }
+
+function cardHtml(exp){
+  const freq = calcFrequencia(exp);
+  const alerta = isAlerta(exp);
+  return `
+    <div class="card" onclick="openDetail('${exp.id}')">
+      ${alerta ? '<div class="card-alert-badge">SEM TOQUE</div>' : ''}
+      <div class="name">${escapeHtml(exp.nome_lead)}${exp.numero_cadastro?' <span style="color:var(--grey);font-weight:400;font-size:12px;">#'+escapeHtml(exp.numero_cadastro)+'</span>':''}</div>
+      <div class="card-tags">
+        <span class="tag ${perfilTagClass(exp.perfil)}">${perfilLabel(exp.perfil)}</span>
+        <span class="tag tag-prog">${PROGRAMAS[exp.programa]||''}</span>
+      </div>
+      <div class="card-meta">
+        <span>${exp.consultor_responsavel||'—'}</span>
+        <span>${freq.totalDias?freq.presentes+'/'+freq.totalDias+' dias':'sem registro'}</span>
+      </div>
+      ${freq.totalDias ? `<div class="progress-bar"><div class="progress-fill" style="width:${freq.pct}%"></div></div>` : ''}
+    </div>`;
+}
+function escapeHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+
+/* ================= NOVO CADASTRO ================= */
+function openNewModal(){
+  document.getElementById('f_nome').value='';
+  document.getElementById('f_numero_cadastro').value='';
+  document.getElementById('f_contato').value='';
+  document.getElementById('f_data_inicio').value= today();
+  const selCons = document.getElementById('f_consultor_id');
+  selCons.innerHTML = '<option value="">— Selecione —</option>' + equipeConsultoras.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('');
+  document.getElementById('f_objetivo').value='';
+  document.getElementById('f_programa').value='emagrecimento_saude';
+  selectPerfil('95');
+  document.getElementById('newModalOverlay').classList.add('open');
+}
+function selectPerfil(p){
+  novaPerfil = p;
+  document.querySelectorAll('.status-pill[data-perfil]').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.perfil===p);
+  });
+  if(p==='95'){
+    document.getElementById('f_duracao').value = 12;
+    document.getElementById('perfilHint').textContent = "Duração sugerida: 10–12 dias · acompanhamento ativo do treinador, sinais de confiança e vínculo são o principal fator de conversão.";
+  } else if(p==='5'){
+    document.getElementById('f_duracao').value = 4;
+    document.getElementById('perfilHint').textContent = "Duração sugerida: 3–5 dias · acompanhamento leve e pontual — evitar excesso de cobrança, foco em autonomia e diferenciais técnicos.";
+  } else {
+    document.getElementById('f_duracao').value = 12;
+    document.getElementById('perfilHint').textContent = "Sem qualificação prévia — tratamos como 95% por padrão (mais seguro) até o treinador conseguir qualificar no Dia 1. Ajuste o perfil assim que possível.";
+  }
+}
+async function salvarNovaExperiencia(){
+  const nome = document.getElementById('f_nome').value.trim();
+  if(!nome){ showToast("Informe o nome do lead."); return; }
+  const consultorId = document.getElementById('f_consultor_id').value || null;
+  const consultorObj = equipeConsultoras.find(c=>c.id===consultorId);
+  const exp = mkExp({
+    academia_id: currentUser ? currentUser.academia_id : null,
+    nome_lead:nome,
+    numero_cadastro:document.getElementById('f_numero_cadastro').value.trim(),
+    contato:document.getElementById('f_contato').value.trim(),
+    data_inicio:document.getElementById('f_data_inicio').value || today(),
+    consultor_id: consultorId,
+    consultor_responsavel: consultorObj ? consultorObj.nome : '—',
+    perfil:novaPerfil,
+    programa:document.getElementById('f_programa').value,
+    duracao_dias:parseInt(document.getElementById('f_duracao').value)||(novaPerfil==='5'?4:12),
+    objetivo_especifico:document.getElementById('f_objetivo').value.trim(),
+    status:'agendada'
+  });
+  experiencias.unshift(exp);
+  await persist(exp);
+  closeModal('newModalOverlay');
+  renderKanban();
+  showToast("Experiência cadastrada! Já conecta o lead ao programa "+PROGRAMAS[exp.programa]+".");
+}
+
+/* ================= DETALHE DO CARD ================= */
+function openDetail(id){
+  currentCardId = id;
+  editandoQualificacao = false;
+  renderDetail();
+  document.getElementById('detailModalOverlay').classList.add('open');
+}
+function getExp(){ return experiencias.find(e=>e.id===currentCardId); }
+
+function scriptFeedbackD1(exp){
+  return `"Oi ${exp.nome_lead.split(' ')[0]}! Sentimos sua falta na conversa de hoje 😊 Vi que você veio treinar — como foi a experiência com o professor? Quero muito saber suas impressões. Consigo te ligar rapidinho agora, ou prefere que eu ligue em outro horário — qual fica melhor pra você?"`;
+}
+function scriptSextaReconectar(exp){
+  return `"Oi ${exp.nome_lead.split(' ')[0]}! Passando pra saber como você está — percebi que essa semana ficou corrida pros treinos. Quero muito te ajudar a aproveitar os dias que ainda restam da sua experiência. Bora conversar rapidinho?"`;
+}
+function scriptSextaOportunidade(exp){
+  return `"Oi ${exp.nome_lead.split(' ')[0]}! Que semana incrível, você mandou muito bem nos treinos 👏 Quero muito agradecer sua confiança e bater um papo pessoalmente — tenho uma condição especial que preparei pensando em você, válida só hoje. Consigo te esperar aqui pra um café?"`;
+}
+function scriptAudioCuidado(exp){
+  return `Áudio: "Oi ${exp.nome_lead.split(' ')[0]}, tudo bem? Passando aqui pra saber como você está depois do treino de ontem — sentiu algum incômodo muscular ou articular? Qualquer coisa me chama. Ótimo treino esses dias, conta comigo!"`;
+}
+function scriptAudioConsultoria(exp){
+  return `Áudio: "Oi ${exp.nome_lead.split(' ')[0]}! Depois da nossa consultoria, ajustei seu treino no app — tivemos o cuidado de incluir/adaptar alguns exercícios por causa do que conversamos sobre [objetivo/observação]. Dá uma olhada lá e bora pro próximo treino!"`;
+}
+
+function renderDetail(){
+  const exp = getExp();
+  if(!exp) return;
+  document.getElementById('d_nome').textContent = exp.nome_lead;
+  document.getElementById('d_sub').textContent = `${PROGRAMAS[exp.programa]||'Programa não definido'} · Início ${fmtDate(exp.data_inicio)} · Consultor(a): ${exp.consultor_responsavel||'—'}`;
+
+  const freq = calcFrequencia(exp);
+  const alerta = isAlerta(exp);
+
+  document.getElementById('detailBody').innerHTML = `
+
+    <div class="section-block">
+      <h3><span class="dot"></span>Etapa da Experiência <span class="hint" style="margin-left:auto;font-size:11px;">clique para mover manualmente</span></h3>
+      <div class="status-pills">
+        ${STATUS_COLS.map(c=>`<div class="status-pill ${exp.status===c.key?'selected':''}" onclick="setStatusManual('${c.key}')">${c.label}</div>`).join('')}
+      </div>
+      ${exp.status==='nao_convertida' ? `
+        <div class="field" style="margin-top:10px;">
+          <label>Motivo</label>
+          <input type="text" id="motivo_perda_input" value="${escapeHtml(exp.motivo_perda)||''}" onchange="setMotivoPerda(this.value)" placeholder="Ex: preço, tempo, desistência...">
+        </div>` : ''}
+      ${exp.status==='convertida' ? `<div class="hint">Convertida em ${fmtDate(exp.data_conversao)}</div>` : ''}
+    </div>
+
+    ${alerta ? `<div class="section-block" style="border-color:var(--red);background:rgba(230,71,62,.08);">
+      <h3 style="color:var(--red);"><span class="dot" style="background:var(--red);"></span>Alerta de acompanhamento</h3>
+      <div style="font-size:13.5px;color:var(--grey);">Sem registro de toque há mais de ${exp.perfil==='5'?'3':'2'} dias. Essa experiência corre risco de esfriar no meio do caminho — priorize o contato hoje.</div>
+    </div>` : ''}
+
+    <div class="section-block">
+      <h3><span class="dot"></span>Qualificação
+        <span class="tag ${perfilTagClass(exp.perfil)}" style="margin-left:auto;">${perfilLabel(exp.perfil)}</span>
+        <button class="btn btn-sm btn-ghost" style="margin-left:8px;" onclick="toggleEdicaoQualificacao()">${editandoQualificacao?'✕':'✎'}</button>
+      </h3>
+      ${exp.campanha_card_id ? `<div class="hint" style="margin-bottom:8px;">🔗 Vinculado ao card de origem no Campanhas — fechamentos aqui são sincronizados lá automaticamente.</div>` : ''}
+      ${editandoQualificacao ? `
+        <div class="field">
+          <label>Perfil</label>
+          <select id="edit_perfil">
+            <option value="95" ${exp.perfil==='95'?'selected':''}>95% · Precisa de orientação</option>
+            <option value="5" ${exp.perfil==='5'?'selected':''}>5% · Autônomo / já treina</option>
+            <option value="sem_qualificacao" ${exp.perfil==='sem_qualificacao'?'selected':''}>Sem Qualificação</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Programa (pilar)</label>
+          <select id="edit_programa">
+            <option value="">— Não definido —</option>
+            ${Object.entries(PROGRAMAS).map(([k,l])=>`<option value="${k}" ${exp.programa===k?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Duração (dias)</label>
+          <input type="number" id="edit_duracao" value="${exp.duracao_dias}" min="1" max="30">
+        </div>
+        <div class="field">
+          <label>Objetivo específico</label>
+          <textarea id="edit_objetivo">${escapeHtml(exp.objetivo_especifico)||''}</textarea>
+        </div>
+        <button class="btn btn-sm" onclick="salvarEdicaoQualificacao()">Salvar</button>
+      ` : `
+        <div class="grid2" style="font-size:13.5px;color:var(--grey);">
+          <div><strong style="color:var(--white);">Programa:</strong> ${PROGRAMAS[exp.programa]||'Não definido'}</div>
+          <div><strong style="color:var(--white);">Duração:</strong> ${exp.duracao_dias} dias</div>
+        </div>
+        ${exp.numero_cadastro ? `<div style="margin-top:8px;font-size:13.5px;color:var(--grey);"><strong style="color:var(--white);">Nº Cadastro:</strong> ${escapeHtml(exp.numero_cadastro)}</div>` : ''}
+        <div style="margin-top:8px;font-size:13.5px;color:var(--grey);"><strong style="color:var(--white);">Objetivo:</strong> ${escapeHtml(exp.objetivo_especifico)||'—'}</div>
+      `}
+    </div>
+
+    <div class="section-block">
+      <h3><span class="dot"></span>Dia 1 — Treinador Responsável <span class="badge-locked">trava responsável</span></h3>
+      ${exp.treinador_responsavel ? `
+        <div class="locked-value">👤 <strong style="color:var(--white);">${exp.treinador_responsavel}</strong> · atendeu em ${fmtDate(exp.data_dia1)}</div>
+      ` : `
+        <div class="field">
+          <label>Registrar treinador do Dia 1</label>
+          <select id="input_treinador_dia1">
+            <option value="">— Selecione —</option>
+            ${equipeTreinadores.map(t=>`<option value="${t.id}">${escapeHtml(t.nome)}</option>`).join('')}
+          </select>
+        </div>
+        <button class="btn btn-sm" onclick="setTreinadorDia1()">Confirmar Dia 1</button>
+        <div class="hint">Esse campo trava após salvo — é o indicador de eficiência de conversão do treinador.</div>
+      `}
+      ${exp.treinador_responsavel ? checklistDia1Html(exp) : ''}
+    </div>
+
+    ${exp.treinador_responsavel ? `
+    <div class="section-block">
+      <h3><span class="dot" style="background:var(--red);"></span>Pontos críticos</h3>
+      <div class="check-row critical">
+        <input type="checkbox" ${exp.mapeamento_sintomas_feito?'checked':''} onchange="toggleField('mapeamento_sintomas_feito', this.checked)">
+        <label>Mapeamento de sintomas preenchido</label>
+      </div>
+      <div class="check-row critical">
+        <input type="checkbox" ${exp.consultoria_realizada?'checked':''} onchange="toggleConsultoria(this.checked)">
+        <label>Consultoria realizada por um treinador</label>
+      </div>
+      ${exp.consultoria_realizada ? `<div class="hint">Treinador: ${exp.consultoria_treinador||'—'}</div>` : `
+        <div class="field" style="margin-top:8px;">
+          <select id="input_consultoria_treinador">
+            <option value="">— Selecione o treinador —</option>
+            ${equipeTreinadores.map(t=>`<option value="${t.id}">${escapeHtml(t.nome)}</option>`).join('')}
+          </select>
+        </div>`}
+    </div>
+
+    <div class="section-block">
+      <h3><span class="dot"></span>Presença / Chamada (demais dias)</h3>
+      <div class="freq-bar-wrap">
+        <div class="freq-bar-track"><div class="freq-bar-fill" style="width:${freq.pct}%"></div></div>
+        <div class="freq-label">${freq.presentes}/${freq.totalDias||exp.duracao_dias} dias</div>
+      </div>
+      <div class="hint" style="margin-top:4px;">O Dia 1 (${fmtDate(exp.data_dia1)}) já conta como a primeira presença automaticamente — registre aqui só os dias seguintes.</div>
+      <div class="presence-list" style="margin-top:12px;">
+        ${exp.presencas.map(p=>`
+          <div class="presence-row">
+            <span class="p-date">${fmtDate(p.data)}</span>
+            <span class="p-temp">${tempEmoji(p.temp)}</span>
+            <span class="p-obs">${escapeHtml(p.obs)||'sem observação'}</span>
+            <span class="p-trainer">${p.treinador}</span>
+          </div>`).join('') || '<div class="hint">Nenhum registro ainda.</div>'}
+      </div>
+      <div class="grid2" style="margin-top:10px;">
+        <input type="date" id="pres_data" value="${proximoDiaLivre(exp)}">
+        <input type="text" id="pres_treinador" placeholder="Treinador que atendeu">
+      </div>
+      <div class="grid2" style="margin-top:8px;">
+        <select id="pres_presente">
+          <option value="true">Presente</option>
+          <option value="false">Faltou</option>
+        </select>
+        <select id="pres_temp">
+          <option value="esquentando">🔥 Esquentando</option>
+          <option value="estável" selected>➖ Estável</option>
+          <option value="esfriando">❄️ Esfriando</option>
+        </select>
+      </div>
+      <input type="text" id="pres_obs" placeholder="Observação (opcional)" style="margin-top:8px;">
+      <button class="btn btn-sm" style="margin-top:10px;" onclick="addPresenca()">+ Registrar dia</button>
+    </div>
+
+    <div class="section-block">
+      <h3><span class="dot" style="background:var(--orange);"></span>Tarefas — Vendas</h3>
+      ${renderFilaTarefas(exp, 'vendas')}
+    </div>
+
+    <div class="section-block">
+      <h3><span class="dot" style="background:var(--green);"></span>Tarefas — Time Técnico</h3>
+      ${renderFilaTarefas(exp, 'tecnico')}
+    </div>
+    ` : `<div class="hint" style="padding:8px 4px;">Registre o Dia 1 (treinador responsável) para liberar checklist, pontos críticos, presenças e tarefas.</div>`}
+  `;
+}
+
+function checklistDia1Html(exp){
+  const items = [
+    ['app_baixado','App de treino baixado'],
+    ['mapeamento_sintomas','Mapeamento de sintomas feito'],
+    ['consultoria_agendada','Consultoria agendada'],
+    ['apresentacao_programa','Apresentação do programa reforçada']
+  ];
+  return `<div style="margin-top:14px;">
+    ${items.map(([k,label])=>`
+      <div class="check-row ${exp.checklist_dia1[k]?'done':''}">
+        <input type="checkbox" ${exp.checklist_dia1[k]?'checked':''} onchange="toggleChecklist('${k}', this.checked)">
+        <label>${label}</label>
+      </div>`).join('')}
+  </div>`;
+}
+
+// ══ FILA DE TAREFAS — mostra só a "tarefa da vez" com detalhe completo,
+// o resto vira lista compacta. Ao concluir, a próxima assume o destaque
+// sozinha (é só reordenar por: não feita primeiro, depois por data mais próxima).
+function proximaDataTarefa(exp, tipo){
+  const candidatas = agendaTarefas.filter(t=>t.experiencia_id===exp.id && t.tipo===tipo && !t.feita);
+  if(!candidatas.length) return null;
+  candidatas.sort((a,b)=>(a.data_prevista||'').localeCompare(b.data_prevista||''));
+  return candidatas[0].data_prevista;
+}
+
+function renderFilaTarefas(exp, role){
+  const defs = role==='vendas' ? [
+    {tipo:'feedback_d1', field:'tarefa_feedback_d1', label:'a) Feedback do dia seguinte', script:scriptFeedbackD1(exp)},
+    {tipo:'acompanhamento', field:'tarefa_acompanhamento', label:'b) Acompanhamento / mapa de sintomas + consultoria', script:null},
+    {tipo:'sexta', especial:'sexta', label:'c) Dia da Oportunidade'},
+    {tipo:'agendamento_final', field:'tarefa_agendamento_final', label:'d) Agendamento final da experiência', script:null}
+  ] : [
+    {tipo:'audio_cuidado', field:'tarefa_audio_cuidado', label:'Áudio de cuidado (dia seguinte ao Dia 1)', script:scriptAudioCuidado(exp)},
+    {tipo:'audio_consultoria', field:'tarefa_audio_consultoria', label:'Áudio pós-consultoria (treino ajustado)', script:scriptAudioConsultoria(exp)}
+  ];
+
+  // Separa concluídas x pendentes. 'sexta' é tratada como pendente sempre que
+  // existir uma ocorrência semanal ainda não registrada.
+  const pendentes = [];
+  const concluidas = [];
+  defs.forEach(d=>{
+    if(d.especial==='sexta'){
+      const dataProxima = proximaDataTarefa(exp, 'sexta');
+      if(dataProxima) pendentes.push({...d, data: dataProxima});
+      // sexta concluída de vezes anteriores não vira item de lista — já fica no histórico do próprio bloco
+      return;
+    }
+    const t = exp[d.field];
+    if(t.feita){ concluidas.push(d); }
+    else { pendentes.push({...d, data: proximaDataTarefa(exp, d.tipo)}); }
+  });
+  pendentes.sort((a,b)=>(a.data||'9999').localeCompare(b.data||'9999'));
+
+  if(!pendentes.length){
+    return `<div class="hint" style="padding:6px 0;">Todas as tarefas dessa frente já foram concluídas. 🎉</div>` + renderConcluidasCompacto(concluidas);
+  }
+
+  const atual = pendentes[0];
+  const fila = pendentes.slice(1);
+
+  let html = '';
+  if(atual.especial==='sexta'){
+    html += sextaTaskBlock(exp);
+  } else {
+    html += taskItem(exp, atual.field, atual.label, role, atual.script, atual.tipo);
+  }
+
+  if(fila.length){
+    html += `<div style="margin-top:10px;">
+      <div class="hint" style="margin-bottom:6px;">Em seguida na fila:</div>
+      ${fila.map(f=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:var(--bg-elev);border:1px solid var(--border-soft);border-radius:8px;margin-bottom:6px;font-size:13px;color:var(--grey);">
+          <span>${f.label}</span>
+          <span>${f.data?fmtDate(f.data):''}</span>
+        </div>`).join('')}
+    </div>`;
+  }
+  html += renderConcluidasCompacto(concluidas);
+  return html;
+}
+
+function renderConcluidasCompacto(concluidas){
+  if(!concluidas.length) return '';
+  return `<div class="hint" style="margin-top:10px;">✓ Concluídas: ${concluidas.map(c=>c.label.replace(/^[a-d]\)\s*/,'')).join(' · ')}</div>`;
+}
+
+function taskItem(exp, field, label, role, script, tipo){
+  const t = exp[field];
+  return `
+    <div class="task-item ${t.feita?'done':''}">
+      <div class="task-head">
+        <span class="t-name">${label}</span>
+        <span class="t-role role-${role}">${role==='vendas'?'Vendas':'Técnico'}</span>
+      </div>
+      ${script ? `<div class="task-script">${script}</div>` : ''}
+      ${!t.feita ? `<textarea id="obs_${field}" placeholder="O que foi conversado / registrado (opcional)" style="margin:6px 0;min-height:50px;">${escapeHtml(t.obs)||''}</textarea>` : ''}
+      <div class="check-row" style="border:none;padding:4px 0;">
+        <input type="checkbox" ${t.feita?'checked':''} onchange="toggleTask('${field}', this.checked, '${tipo}')">
+        <label>Marcar como concluída</label>
+      </div>
+      ${t.feita ? `<div class="hint">Feita em ${fmtDate(t.data)}${t.obs?' · '+escapeHtml(t.obs):''}</div>` : ''}
+    </div>`;
+}
+
+function sextaTaskBlock(exp){
+  const freq = calcFrequencia(exp);
+  const conectada = freq.pct >= 60;
+  const roteiro = conectada ? scriptSextaOportunidade(exp) : scriptSextaReconectar(exp);
+  const label = conectada ? "c) Dia da Oportunidade — agendar cafezinho + oferta exclusiva" : "c) Dia da Oportunidade — reconexão";
+  return `
+    <div class="task-item">
+      <div class="task-head">
+        <span class="t-name">${label}</span>
+        <span class="t-role role-vendas">Vendas · toda sexta</span>
+      </div>
+      <div class="hint" style="margin-bottom:6px;">Sugerido automaticamente com base na frequência (${freq.pct}% de presença). Ajuste conforme sua percepção.</div>
+      <div class="task-script">${roteiro}</div>
+      <button class="btn btn-sm" onclick="logSextaTask('${conectada?'oportunidade':'reconexao'}')">Registrar toque de hoje</button>
+      ${exp.tarefas_sexta.length ? `<div class="hint" style="margin-top:8px;">Últimos registros: ${exp.tarefas_sexta.slice(-3).map(t=>fmtDate(t.data)+' ('+t.tipo+')').join(', ')}</div>` : ''}
+    </div>`;
+}
+
+function tempEmoji(t){
+  return t==='esquentando' ? '🔥' : t==='esfriando' ? '❄️' : '➖';
+}
+function fmtDate(d){
+  if(!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}`;
+}
+
+/* ================= AÇÕES DO CARD ================= */
+async function setTreinadorDia1(){
+  const id = document.getElementById('input_treinador_dia1').value;
+  if(!id){ showToast("Selecione o treinador."); return; }
+  const treinadorObj = equipeTreinadores.find(t=>t.id===id);
+  const exp = getExp();
+  exp.treinador_id = id;
+  exp.treinador_responsavel = treinadorObj ? treinadorObj.nome : '—';
+  exp.data_dia1 = today();
+  exp.status = 'iniciada';
+  await persist(exp);
+  await sincronizarCampanhas(exp, 'iniciada');
+  await gerarTarefasDaJornada(exp);
+  renderDetail(); renderKanban();
+  showToast("Dia 1 registrado — responsável travado.");
+}
+async function toggleChecklist(key, val){
+  const exp = getExp();
+  exp.checklist_dia1[key] = val;
+  await persist(exp);
+  renderDetail();
+}
+async function toggleField(field, val){
+  const exp = getExp();
+  exp[field] = val;
+  await persist(exp);
+  renderDetail();
+}
+async function toggleConsultoria(val){
+  const exp = getExp();
+  if(val){
+    const id = document.getElementById('input_consultoria_treinador')?.value;
+    const treinadorObj = equipeTreinadores.find(t=>t.id===id);
+    exp.consultoria_treinador_id = id || exp.treinador_id;
+    exp.consultoria_treinador = treinadorObj ? treinadorObj.nome : exp.treinador_responsavel;
+  }
+  exp.consultoria_realizada = val;
+  await persist(exp);
+  if(val) await gerarTarefaAudioConsultoria(exp);
+  renderDetail();
+}
+function proximoDiaLivre(exp){
+  let ultimo = exp.data_dia1 || today();
+  exp.presencas.forEach(p=>{ if(p.data > ultimo) ultimo = p.data; });
+  return addDays(ultimo, 1);
+}
+async function addPresenca(){
+  const exp = getExp();
+  const data = document.getElementById('pres_data').value || today();
+  if(data === exp.data_dia1 || exp.presencas.some(p=>p.data===data)){
+    showToast("Esse dia já tem registro (o Dia 1 conta automaticamente) — escolha outra data.");
+    return;
+  }
+  const treinador = document.getElementById('pres_treinador').value.trim() || '—';
+  const presente = document.getElementById('pres_presente').value === 'true';
+  const temp = document.getElementById('pres_temp').value;
+  const obs = document.getElementById('pres_obs').value.trim();
+  exp.presencas.push({data, treinador, presente, temp, obs});
+  await persist(exp);
+  renderDetail(); renderKanban();
+  showToast("Presença registrada.");
+}
+async function toggleTask(field, val, tipo){
+  const exp = getExp();
+  const obsInput = document.getElementById('obs_'+field);
+  const obs = obsInput ? obsInput.value.trim() : null;
+  exp[field] = {feita:val, data: val?today():null, obs: val?(obs||null):null};
+  await persist(exp);
+  if(val) await syncAgendaFromCard(exp.id, tipo, obs);
+  renderDetail();
+  if(val) showToast("Registrado! A Agenda foi atualizada automaticamente.");
+}
+async function logSextaTask(tipo){
+  const exp = getExp();
+  exp.tarefas_sexta.push({data:today(), tipo});
+  await persist(exp);
+  await syncAgendaFromCard(exp.id, 'sexta', tipo==='oportunidade'?'Ofereceu oportunidade exclusiva':'Fez reconexão');
+  renderDetail();
+  showToast("Toque de sexta-feira registrado — Agenda atualizada.");
+}
+
+// Encontra a tarefa correspondente (mesma experiência + mesmo tipo, ainda pendente,
+// a mais próxima) na Agenda compartilhada e marca como concluída — evita ter dois
+// lugares desencontrados (card x Agenda) registrando a mesma ação.
+async function syncAgendaFromCard(experienciaId, tipo, obs){
+  const candidatas = agendaTarefas.filter(t=>t.experiencia_id===experienciaId && t.tipo===tipo && !t.feita);
+  if(!candidatas.length) return;
+  candidatas.sort((a,b)=>(a.data_prevista||'').localeCompare(b.data_prevista||''));
+  const alvo = candidatas[0];
+  alvo.feita = true;
+  alvo.feita_em = new Date().toISOString();
+  if(obs) alvo.obs = obs;
+  if(!DEMO_MODE && supabaseClient){
+    try{ await supabaseClient.from('agenda_tarefas').update({feita:true, feita_em:alvo.feita_em}).eq('id', alvo.id); }
+    catch(e){ console.error(e); }
+  }
+}
+async function setStatusManual(status){
+  const exp = getExp();
+  exp.status = status;
+  if(status==='convertida' && !exp.data_conversao) exp.data_conversao = today();
+  await persist(exp);
+  await sincronizarCampanhas(exp, status);
+  renderDetail(); renderKanban();
+  showToast(status==='convertida' ? "🎉 Experiência convertida!" : "Etapa atualizada.");
+}
+
+// Fecha o ciclo com o Campanhas: quando a experiência converte ou não converte,
+// escreve de volta no card de origem lá — evita ter dois sistemas com informação divergente.
+async function sincronizarCampanhas(exp, status){
+  if(!exp.campanha_card_id || DEMO_MODE || !supabaseClient) return;
+  try{
+    if(status==='convertida'){
+      await supabaseClient.from('campanha_cards').update({etapa_atual:'convertido', status:'convertido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+    } else if(status==='nao_convertida'){
+      await supabaseClient.from('campanha_cards').update({status:'perdido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+    } else if(status==='iniciada'){
+      await supabaseClient.from('campanha_cards').update({etapa_atual:'exp_iniciada', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+    }
+  }catch(e){
+    console.error(e);
+    showToast("Etapa salva aqui, mas houve erro ao sincronizar com o Campanhas.");
+  }
+}
+async function setMotivoPerda(val){
+  const exp = getExp();
+  exp.motivo_perda = val;
+  await persist(exp);
+}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  const el = document.getElementById('viewDashboard');
+  const ativas = experiencias.filter(e=>!['convertida','nao_convertida'].includes(e.status));
+  const finalizadas = experiencias.filter(e=>['convertida','nao_convertida'].includes(e.status));
+  const convertidas = experiencias.filter(e=>e.status==='convertida');
+  const taxaConv = finalizadas.length ? Math.round(convertidas.length/finalizadas.length*100) : 0;
+
+  const comMapeamento = experiencias.filter(e=>e.mapeamento_sintomas_feito).length;
+  const comConsultoria = experiencias.filter(e=>e.consultoria_realizada).length;
+  const pctMapeamento = experiencias.length ? Math.round(comMapeamento/experiencias.length*100) : 0;
+  const pctConsultoria = experiencias.length ? Math.round(comConsultoria/experiencias.length*100) : 0;
+
+  const freqs = experiencias.map(calcFrequencia).filter(f=>f.totalDias>0);
+  const freqMedia = freqs.length ? Math.round(freqs.reduce((a,f)=>a+f.pct,0)/freqs.length) : 0;
+
+  // Freq média por perfil
+  const freq95 = experiencias.filter(e=>e.perfil==='95').map(calcFrequencia).filter(f=>f.totalDias>0);
+  const freq5 = experiencias.filter(e=>e.perfil==='5').map(calcFrequencia).filter(f=>f.totalDias>0);
+  const freqMedia95 = freq95.length ? Math.round(freq95.reduce((a,f)=>a+f.pct,0)/freq95.length) : 0;
+  const freqMedia5 = freq5.length ? Math.round(freq5.reduce((a,f)=>a+f.pct,0)/freq5.length) : 0;
+
+  // Conversão por treinador
+  const porTreinador = {};
+  finalizadas.forEach(e=>{
+    const t = e.treinador_responsavel || 'Não registrado';
+    if(!porTreinador[t]) porTreinador[t] = {total:0, conv:0};
+    porTreinador[t].total++;
+    if(e.status==='convertida') porTreinador[t].conv++;
+  });
+
+  // Conversão por perfil
+  const porPerfil = {'95':{total:0,conv:0}, '5':{total:0,conv:0}};
+  finalizadas.forEach(e=>{
+    porPerfil[e.perfil].total++;
+    if(e.status==='convertida') porPerfil[e.perfil].conv++;
+  });
+
+  el.innerHTML = `
+    <div class="board-header">
+      <div>
+        <div class="board-title">Indicadores da Experiência</div>
+        <div class="board-sub">Visão consolidada — presença, pontos críticos e conversão</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="label">Experiências ativas</div><div class="value">${ativas.length}</div></div>
+      <div class="stat-card"><div class="label">Taxa de conversão</div><div class="value green">${taxaConv}%</div><div class="sub">${convertidas.length} de ${finalizadas.length} finalizadas</div></div>
+      <div class="stat-card"><div class="label">Frequência média</div><div class="value">${freqMedia}%</div><div class="sub">dias treinados / dias totais</div></div>
+      <div class="stat-card"><div class="label">Mapeamento de sintomas</div><div class="value">${pctMapeamento}%</div><div class="sub">concluídos</div></div>
+      <div class="stat-card"><div class="label">Consultoria realizada</div><div class="value">${pctConsultoria}%</div><div class="sub">concluídas</div></div>
+    </div>
+
+    <div class="section-title">Frequência por perfil</div>
+    <div class="section-sub">Comparativo de assiduidade entre os dois públicos</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="label">Perfil 95%</div><div class="value">${freqMedia95}%</div><div class="sub">10–12 dias · acompanhamento ativo</div></div>
+      <div class="stat-card"><div class="label">Perfil 5%</div><div class="value">${freqMedia5}%</div><div class="sub">3–5 dias · autônomo</div></div>
+    </div>
+
+    <div class="section-title">Conversão por treinador responsável (Dia 1)</div>
+    <div class="section-sub">Indicador de eficiência — quem atendeu o primeiro dia da experiência</div>
+    <table class="rank-table">
+      <thead><tr><th>Treinador</th><th>Experiências</th><th>Convertidas</th><th>Taxa</th></tr></thead>
+      <tbody>
+        ${Object.entries(porTreinador).length ? Object.entries(porTreinador).map(([nome,d])=>`
+          <tr><td>${escapeHtml(nome)}</td><td>${d.total}</td><td>${d.conv}</td><td style="color:var(--orange);font-weight:700;">${d.total?Math.round(d.conv/d.total*100):0}%</td></tr>
+        `).join('') : '<tr><td colspan="4" style="color:var(--grey);">Nenhuma experiência finalizada ainda.</td></tr>'}
+      </tbody>
+    </table>
+
+    <div class="section-title">Conversão por perfil</div>
+    <table class="rank-table">
+      <thead><tr><th>Perfil</th><th>Experiências</th><th>Convertidas</th><th>Taxa</th></tr></thead>
+      <tbody>
+        <tr><td>95% — Precisa de orientação</td><td>${porPerfil['95'].total}</td><td>${porPerfil['95'].conv}</td><td style="color:var(--orange);font-weight:700;">${porPerfil['95'].total?Math.round(porPerfil['95'].conv/porPerfil['95'].total*100):0}%</td></tr>
+        <tr><td>5% — Autônomo</td><td>${porPerfil['5'].total}</td><td>${porPerfil['5'].conv}</td><td style="color:var(--orange);font-weight:700;">${porPerfil['5'].total?Math.round(porPerfil['5'].conv/porPerfil['5'].total*100):0}%</td></tr>
+      </tbody>
+    </table>
+  `;
+}
+
+/* ================= AGENDA COMPARTILHADA DA EQUIPE ================= */
+// Tarefas geradas automaticamente (Dia 1, sexta-feira, consultoria) e listadas
+// numa agenda única da academia. Todo mundo vê tudo; só o responsável (ou admin)
+// pode marcar como feita.
+let agendaTarefas = [];
+
+async function loadAgendaTarefas(){
+  if(DEMO_MODE || !supabaseClient){
+    agendaTarefas = experienciasParaAgendaDemo();
+    return;
+  }
+  try{
+    let query = supabaseClient.from('agenda_tarefas').select('*').order('data_prevista',{ascending:true});
+    if(currentUser.academia_id){
+      query = query.eq('academia_id', currentUser.academia_id);
+    }else if(currentUser.role!=='admin'){
+      // SEGURANÇA: sem academia_id e sem ser a conta master de verdade, não carrega nada.
+      agendaTarefas = [];
+      console.error('SEGURANÇA: usuário sem academia_id e sem role admin tentou carregar a agenda — acesso bloqueado.', currentUser);
+      return;
+    }
+    const {data, error} = await query;
+    if(error) throw error;
+    agendaTarefas = data || [];
+  }catch(e){
+    console.error(e);
+    agendaTarefas = [];
+  }
+}
+
+// Gera tarefas de demonstração a partir das experiências carregadas (modo demo, sem Supabase)
+function experienciasParaAgendaDemo(){
+  const out = [];
+  experiencias.forEach(exp=>{
+    if(!exp.data_dia1) return;
+    out.push({id:'ag-'+exp.id+'-fb', experiencia_id:exp.id, tipo:'feedback_d1', titulo:'Feedback do dia seguinte — '+exp.nome_lead, responsavel_nome:exp.consultor_responsavel, papel:'vendas', data_prevista:addDays(exp.data_dia1,1), feita:exp.tarefa_feedback_d1?.feita||false});
+    out.push({id:'ag-'+exp.id+'-ac', experiencia_id:exp.id, tipo:'audio_cuidado', titulo:'Áudio de cuidado — '+exp.nome_lead, responsavel_nome:exp.treinador_responsavel, papel:'tecnico', data_prevista:addDays(exp.data_dia1,1), feita:exp.tarefa_audio_cuidado?.feita||false});
+  });
+  return out;
+}
+
+function addDays(dateStr, n){
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+function proximasSextas(dataInicioStr, duracaoDias){
+  const inicio = new Date(dataInicioStr+'T00:00:00');
+  const fim = new Date(inicio); fim.setDate(fim.getDate()+duracaoDias);
+  const sextas = [];
+  let cursor = new Date(inicio);
+  while(cursor <= fim){
+    if(cursor.getDay()===5) sextas.push(cursor.toISOString().slice(0,10));
+    cursor.setDate(cursor.getDate()+1);
+  }
+  return sextas;
+}
+
+async function criarTarefaAgenda(exp, tipo, titulo, responsavelId, responsavelNome, papel, dataPrevista){
+  const tarefa = {
+    id: 'ag_'+Date.now()+'_'+Math.random().toString(36).slice(2),
+    academia_id: exp.academia_id||null,
+    experiencia_id: exp.id,
+    tipo, titulo, responsavel_id: responsavelId||null, responsavel_nome: responsavelNome||'—', papel,
+    data_prevista: dataPrevista, feita:false
+  };
+  agendaTarefas.push(tarefa);
+  if(!DEMO_MODE && supabaseClient){
+    try{ await supabaseClient.from('agenda_tarefas').insert(tarefa); }
+    catch(e){ console.error(e); }
+  }
+}
+
+// Gera o conjunto de tarefas da jornada assim que o Dia 1 é confirmado —
+// feedback D+1, agendamento final, e uma tarefa de sexta-feira pra cada sexta
+// dentro do período da experiência.
+async function gerarTarefasDaJornada(exp){
+  await criarTarefaAgenda(exp, 'feedback_d1', `Feedback do dia seguinte — ${exp.nome_lead}`, exp.consultor_id, exp.consultor_responsavel, 'vendas', addDays(exp.data_dia1,1));
+  await criarTarefaAgenda(exp, 'acompanhamento', `Acompanhamento — confirmar mapa de sintomas + consultoria — ${exp.nome_lead}`, exp.consultor_id, exp.consultor_responsavel, 'vendas', addDays(exp.data_dia1, Math.max(2,Math.floor(exp.duracao_dias/2))));
+  await criarTarefaAgenda(exp, 'audio_cuidado', `Áudio de cuidado — ${exp.nome_lead}`, exp.treinador_id, exp.treinador_responsavel, 'tecnico', addDays(exp.data_dia1,1));
+  await criarTarefaAgenda(exp, 'agendamento_final', `Agendamento final da experiência — ${exp.nome_lead}`, exp.consultor_id, exp.consultor_responsavel, 'vendas', addDays(exp.data_dia1, exp.duracao_dias));
+  const sextas = proximasSextas(exp.data_dia1, exp.duracao_dias);
+  for(const s of sextas){
+    await criarTarefaAgenda(exp, 'sexta', `Dia da Oportunidade — ${exp.nome_lead}`, exp.consultor_id, exp.consultor_responsavel, 'vendas', s);
+  }
+}
+
+// Sempre que marcamos "consultoria realizada", agenda o áudio pós-consultoria pro treinador
+async function gerarTarefaAudioConsultoria(exp){
+  const id = exp.consultoria_treinador_id || exp.treinador_id;
+  const nome = exp.consultoria_treinador || exp.treinador_responsavel;
+  await criarTarefaAgenda(exp, 'audio_consultoria', `Áudio pós-consultoria — ${exp.nome_lead}`, id, nome, 'tecnico', today());
+}
+
+function podeMarcarTarefa(tarefa){
+  if(!currentUser) return false;
+  if(['admin','gestor'].includes(currentUser.role)) return true; // dono/gestor da academia sempre pode
+  if(currentUser.role==='consultor' && tarefa.papel==='vendas') return currentUser.consultora_id && currentUser.consultora_id===tarefa.responsavel_id;
+  if(currentUser.role==='treinador' && tarefa.papel==='tecnico') return currentUser.treinador_id && currentUser.treinador_id===tarefa.responsavel_id;
+  return false;
+}
+
+let agendaFiltro = 'todos'; // 'todos' | 'meus'
+let agendaVisao = 'lista'; // 'lista' | 'calendario'
+let agendaMesAtual = new Date(); // usado na visão calendário
+let agendaDiaSelecionado = null;
+
+function setAgendaFiltro(f){ agendaFiltro = f; renderAgendaTab(); }
+function setAgendaVisao(v){ agendaVisao = v; agendaDiaSelecionado = null; renderAgendaTab(); }
+
+// Abre o card certo, no módulo certo — a conclusão da tarefa acontece LÁ (com registro
+// do que foi feito), nunca direto na Agenda. Isso evita ter dois lugares desencontrados.
+// Tarefa da jornada da Experiência → abre aqui mesmo, no Kanban do Experiências.
+// Tarefa vinda do Campanhas (cadência, agendamento) → manda pra lá, já no card certo.
+function abrirCardDaTarefa(experienciaId, tarefa){
+  if(!podeMarcarTarefa(tarefa)){ showToast("Só quem é responsável por essa tarefa pode registrá-la."); return; }
+  if(experienciaId && experienciaId!=='null' && experienciaId!=='undefined'){
+    switchTab('kanban');
+    openDetail(experienciaId);
+  } else if(tarefa.campanha_card_id){
+    window.location.href = `campanhas.html?uid=${encodeURIComponent(currentUser.id)}&openCard=${encodeURIComponent(tarefa.campanha_card_id)}`;
+  } else {
+    showToast("Não encontrei o card de origem dessa tarefa.");
+  }
+}
+
+function isMinhaTarefa(t){
+  if(!currentUser) return false;
+  if(currentUser.role==='consultor') return currentUser.consultora_id && currentUser.consultora_id===t.responsavel_id;
+  if(currentUser.role==='treinador') return currentUser.treinador_id && currentUser.treinador_id===t.responsavel_id;
+  return false; // admin/gestor não têm "meus" individuais — usam Todos
+}
+
+const CATEGORIA_LABEL_AGENDA={
+  cadencia:'🔵 Cadência de Contato', exp_agendada:'🎯 Experiência Agendada',
+  visita_matricula:'🤝 Agendamento Visita/Matrícula', jornada_experiencia:'🏃 Jornada da Experiência'
+};
+function categoriaDaTarefa(t){ return t.categoria || (t.experiencia_id?'jornada_experiencia':'cadencia'); }
+
+let agendaCategoriasSelecionadas = Object.keys(CATEGORIA_LABEL_AGENDA); // todas marcadas por padrão
+function toggleCategoriaAgenda(cat){
+  if(agendaCategoriasSelecionadas.includes(cat)){
+    if(agendaCategoriasSelecionadas.length===1){ showToast("Deixe pelo menos 1 categoria marcada."); return; }
+    agendaCategoriasSelecionadas = agendaCategoriasSelecionadas.filter(c=>c!==cat);
+  }else{
+    agendaCategoriasSelecionadas = [...agendaCategoriasSelecionadas, cat];
+  }
+  renderAgendaTab();
+}
+
+function tarefasFiltradas(){
+  let tarefas = [...agendaTarefas];
+  if(agendaFiltro==='meus') tarefas = tarefas.filter(isMinhaTarefa);
+  tarefas = tarefas.filter(t=>agendaCategoriasSelecionadas.includes(categoriaDaTarefa(t)));
+  return tarefas;
+}
+
+function renderAgendaTab(){
+  const el = document.getElementById('viewAgenda');
+  el.innerHTML = `
+    <div class="board-header">
+      <div>
+        <div class="board-title">Agenda da Equipe</div>
+        <div class="board-sub">Vendas e treinador, tarefas geradas automaticamente pela jornada — todos veem, cada um edita só o seu</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="tab-switch">
+          <button class="${agendaFiltro==='todos'?'active':''}" onclick="setAgendaFiltro('todos')">Todos</button>
+          <button class="${agendaFiltro==='meus'?'active':''}" onclick="setAgendaFiltro('meus')">Meus compromissos</button>
+        </div>
+        <div class="tab-switch">
+          <button class="${agendaVisao==='lista'?'active':''}" onclick="setAgendaVisao('lista')">☰ Lista</button>
+          <button class="${agendaVisao==='calendario'?'active':''}" onclick="setAgendaVisao('calendario')">📆 Calendário</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+      ${Object.entries(CATEGORIA_LABEL_AGENDA).map(([cat,lbl])=>`
+        <button class="status-pill ${agendaCategoriasSelecionadas.includes(cat)?'selected':''}" style="font-size:12.5px;" onclick="toggleCategoriaAgenda('${cat}')">${lbl}</button>
+      `).join('')}
+    </div>
+    <div id="agendaConteudo"></div>
+  `;
+  if(agendaVisao==='lista') renderAgendaLista();
+  else renderAgendaCalendario();
+}
+
+function agendaTaskCard(t){
+  const posso = podeMarcarTarefa(t);
+  const catLbl = CATEGORIA_LABEL_AGENDA[categoriaDaTarefa(t)]||'';
+  return `
+    <div class="task-item ${t.feita?'done':''}" style="cursor:${posso?'pointer':'default'};" ${posso?`onclick="abrirCardDaTarefa('${t.experiencia_id}', agendaTarefas.find(x=>x.id==='${t.id}'))"`:''}>
+      <div class="task-head">
+        <span class="t-name">${TIPO_LABEL[t.tipo]||catLbl||t.titulo}</span>
+        <span class="t-role role-${t.papel}">${t.papel==='vendas'?'Vendas':'Técnico'}</span>
+      </div>
+      <div class="hint" style="margin-bottom:2px;">${catLbl}</div>
+      <div class="hint" style="margin-bottom:6px;">${escapeHtml(t.titulo)} · responsável: <strong style="color:var(--white);">${escapeHtml(t.responsavel_nome)||'—'}</strong></div>
+      ${t.feita
+        ? `<div class="hint" style="color:var(--green);">✓ Concluída${t.obs?' · '+escapeHtml(t.obs):''}</div>`
+        : posso
+          ? `<button class="btn btn-sm" onclick="event.stopPropagation();abrirCardDaTarefa('${t.experiencia_id}', agendaTarefas.find(x=>x.id==='${t.id}'))">Abrir card e registrar →</button>`
+          : `<div class="hint">Só ${escapeHtml(t.responsavel_nome||'o responsável')} pode registrar esta tarefa</div>`
+      }
+    </div>`;
+}
+
+function renderAgendaLista(){
+  const tarefas = tarefasFiltradas();
+  tarefas.sort((a,b)=> (a.data_prevista||'').localeCompare(b.data_prevista||'') || (a.feita - b.feita));
+  const porDia = {};
+  tarefas.forEach(t=>{
+    const dia = t.data_prevista || 'sem-data';
+    if(!porDia[dia]) porDia[dia]=[];
+    porDia[dia].push(t);
+  });
+  const dias = Object.keys(porDia).sort();
+  document.getElementById('agendaConteudo').innerHTML = dias.length ? dias.map(dia=>`
+      <div class="section-block">
+        <h3><span class="dot"></span>${fmtDateLong(dia)}</h3>
+        ${porDia[dia].map(agendaTaskCard).join('')}
+      </div>
+    `).join('') : '<div class="hint" style="padding:20px;">Nenhuma tarefa agendada ainda — as tarefas aparecem aqui automaticamente quando o Dia 1 de uma experiência é registrado.</div>';
+}
+
+const CATEGORIA_COR = {
+  cadencia:'#4A9FE0', exp_agendada:'#F2C94C', visita_matricula:'#B57BEE', jornada_experiencia:'#3DBA7A'
+};
+function renderAgendaCalendario(){
+  const tarefas = tarefasFiltradas();
+  const ano = agendaMesAtual.getFullYear(), mes = agendaMesAtual.getMonth();
+  const primeiroDia = new Date(ano, mes, 1);
+  const ultimoDia = new Date(ano, mes+1, 0);
+  const offset = primeiroDia.getDay(); // 0=domingo
+  const nomesMes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  const porDia = {};
+  tarefas.forEach(t=>{
+    if(!t.data_prevista) return;
+    if(!porDia[t.data_prevista]) porDia[t.data_prevista]=[];
+    porDia[t.data_prevista].push(t);
+  });
+
+  let celulas = '';
+  for(let i=0;i<offset;i++) celulas += `<div class="cal-cell empty"></div>`;
+  for(let d=1; d<=ultimoDia.getDate(); d++){
+    const dateStr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const tds = porDia[dateStr] || [];
+    const isHoje = dateStr === today();
+    const isSelecionado = dateStr === agendaDiaSelecionado;
+
+    // Conta pendentes por categoria, pra mostrar um chip colorido por tipo de compromisso
+    const porCategoria = {};
+    tds.forEach(t=>{
+      if(t.feita) return;
+      const cat = categoriaDaTarefa(t);
+      porCategoria[cat] = (porCategoria[cat]||0)+1;
+    });
+    const chips = Object.entries(porCategoria).map(([cat,qtd])=>
+      `<span class="cal-chip" style="background:${CATEGORIA_COR[cat]||'#999'}22;color:${CATEGORIA_COR[cat]||'#999'};border-color:${CATEGORIA_COR[cat]||'#999'}55;">${qtd}</span>`
+    ).join('');
+
+    celulas += `
+      <div class="cal-cell ${tds.length?'has-tasks':''} ${isHoje?'is-today':''} ${isSelecionado?'is-selected':''}" onclick="${tds.length?`selecionarDiaAgenda('${dateStr}')`:''}">
+        <span class="cal-daynum">${d}</span>
+        ${chips ? `<div class="cal-chips-row">${chips}</div>` : (tds.length?'<span class="cal-chip" style="background:var(--green);color:#0a0a0a;border-color:var(--green);">✓</span>':'')}
+      </div>`;
+  }
+
+  const semanaLabels = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+  document.getElementById('agendaConteudo').innerHTML = `
+    <div class="section-block">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <button class="btn btn-sm btn-ghost" onclick="mudarMesAgenda(-1)">←</button>
+        <h3 style="margin:0;">${nomesMes[mes]} ${ano}</h3>
+        <button class="btn btn-sm btn-ghost" onclick="mudarMesAgenda(1)">→</button>
+      </div>
+      <div class="cal-legenda">
+        ${Object.entries(CATEGORIA_LABEL_AGENDA).map(([cat,lbl])=>`
+          <span class="cal-legenda-item"><span class="cal-legenda-dot" style="background:${CATEGORIA_COR[cat]};"></span>${lbl}</span>
+        `).join('')}
+      </div>
+      <div class="cal-grid cal-grid-head">
+        ${semanaLabels.map(l=>`<div class="cal-label">${l}</div>`).join('')}
+      </div>
+      <div class="cal-grid">${celulas}</div>
+    </div>
+    ${agendaDiaSelecionado ? `
+      <div class="section-block">
+        <h3><span class="dot"></span>${fmtDateLong(agendaDiaSelecionado)}</h3>
+        ${(porDia[agendaDiaSelecionado]||[]).map(agendaTaskCard).join('') || '<div class="hint">Nenhuma tarefa neste dia.</div>'}
+      </div>
+    ` : '<div class="hint" style="padding:8px 4px;">Clique num dia com tarefas pra ver os detalhes — as cores mostram quantos compromissos de cada tipo tem naquele dia.</div>'}
+  `;
+}
+
+function mudarMesAgenda(delta){
+  agendaMesAtual = new Date(agendaMesAtual.getFullYear(), agendaMesAtual.getMonth()+delta, 1);
+  agendaDiaSelecionado = null;
+  renderAgendaCalendario();
+}
+function selecionarDiaAgenda(dateStr){
+  agendaDiaSelecionado = dateStr;
+  renderAgendaCalendario();
+}
+
+const TIPO_LABEL = {
+  feedback_d1:'📞 Feedback do dia seguinte', audio_cuidado:'🎧 Áudio de cuidado',
+  agendamento_final:'📅 Agendamento final', sexta:'🎯 Dia da Oportunidade',
+  audio_consultoria:'🎧 Áudio pós-consultoria', acompanhamento:'📋 Acompanhamento / conferência'
+};
+
+function fmtDateLong(d){
+  if(d==='sem-data') return 'Sem data definida';
+  const [y,m,day] = d.split('-');
+  const dt = new Date(y,m-1,day);
+  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  return `${dias[dt.getDay()]}, ${day}/${m}`;
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display='block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>{t.style.display='none';}, 4200);
+}
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && document.activeElement.id==='loginPass') doLogin();
+});
+</script>
+</body>
+</html>

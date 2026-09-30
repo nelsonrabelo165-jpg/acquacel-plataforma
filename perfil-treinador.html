@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Perfil do(a) Treinador(a) — GeFit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --or:#0A4FAA; --bg:#0a0a0a; --s1:#141414; --s2:#1c1c1c; --s3:#252525;
+    --bd:rgba(255,255,255,0.07); --tx:#fff; --tm:rgba(255,255,255,0.68); --td:rgba(255,255,255,0.38);
+    --gr:#22c55e; --re:#ef4444; --am:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--tx)}
+  h1,h2,h3{font-family:'Barlow Condensed'}
+  header{background:var(--s1);padding:16px 32px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--bd)}
+  header a{color:var(--tm);text-decoration:none;font-size:13px}
+  .logo{font-family:'Barlow Condensed';font-weight:800;font-size:18px;color:var(--or)}
+  main{max-width:820px;margin:0 auto;padding:30px 20px 60px}
+  .card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:22px;margin-bottom:18px}
+  .card h3{font-size:16px;font-weight:600;margin-bottom:14px}
+  .sub{font-size:12px;color:var(--td);margin-top:-8px;margin-bottom:16px}
+  .fg{margin-bottom:14px}
+  .fl{font-size:11.5px;font-weight:600;color:var(--tm);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+  .fi{width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:7px;background:var(--s2);color:var(--tx);font-family:'Barlow';font-size:13.5px}
+  .row{display:grid;gap:12px}
+  .row2{grid-template-columns:1fr 1fr}
+  .row3{grid-template-columns:1fr 1fr 1fr}
+  .row6{grid-template-columns:repeat(3,1fr)}
+  .btn{background:var(--or);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-family:'Barlow Condensed';font-weight:700;font-size:13px;cursor:pointer}
+  .radio-group{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .radio-opt{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+  .item{padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px}
+  .item:last-child{border-bottom:none}
+  .item .meta{font-size:11px;color:var(--td);margin-top:3px}
+  .badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase}
+  .badge.pendente{background:rgba(245,158,11,.15);color:var(--am)}
+  .badge.em_andamento{background:rgba(10,79,170,.15);color:var(--or)}
+  .badge.concluido{background:rgba(34,197,94,.15);color:var(--gr)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;color:var(--td);font-size:10.5px;text-transform:uppercase;padding:0 8px 8px;border-bottom:1px solid var(--bd)}
+  td{padding:9px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+  .locked{text-align:center;color:var(--td);padding:60px 20px}
+</style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Voltar</a>
+    <div class="logo">GeFit</div>
+    <div style="font-size:13px;color:var(--tm)">Perfil do(a) Treinador(a)</div>
+  </header>
+
+  <main id="app">
+    <div class="locked">Carregando...</div>
+  </main>
+
+<script>
+  const SB_URL='https://irwvagffrguiljaxrzmd.supabase.co';
+  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A';
+  const H={apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
+  async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:{...H,'Prefer':''}});if(!r.ok)throw new Error(await r.text());return r.json()}
+  async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:H,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json()}
+  async function sbUpsert(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{...H,'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json()}
+  async function sbPatch(t,id,b){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:H,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json()}
+
+  const params=new URLSearchParams(location.search);
+  const uid=params.get('uid'), treinadorId=params.get('id');
+  let viewer=null, treinador=null, canEdit=false, canView=false;
+
+  function fmtData(d){return d?new Date(d+'T00:00:00').toLocaleDateString('pt-BR'):'—';}
+  function trimestreAtual(){const m=new Date().getMonth();const t=Math.floor(m/3)+1;return `${new Date().getFullYear()}-Q${t}`;}
+
+  const GRAU_LBL={estagio_aprendiz:'Estágio/Aprendiz',estagio_remunerado:'Estágio Remunerado',formado:'Formado',provisionado:'Provisionado'};
+  const NIVEL_LBL={estagio_treinador:'Estágio/Treinador(a)',treinador_efetivo:'Treinador(a) Efetivo',treinador_avaliador:'Treinador(a) Avaliador(a)',treinador_lider:'Treinador(a) Líder',coordenador_equipe:'Coordenador(a) de Equipe'};
+
+  async function init(){
+    const app=document.getElementById('app');
+    if(!uid||!treinadorId){app.innerHTML='<div class="locked">Link inválido — acesse pela aba Equipe do sistema.</div>';return;}
+    try{
+      const [viewers,treins]=await Promise.all([
+        sbGet('gestores',`id=eq.${uid}`),
+        sbGet('treinadores',`id=eq.${treinadorId}`)
+      ]);
+      viewer=viewers[0]; treinador=treins[0];
+    }catch(e){console.error(e);}
+    if(!viewer||!treinador){app.innerHTML='<div class="locked">Não foi possível carregar. Volte e tente de novo.</div>';return;}
+    canEdit=viewer.role==='gestor'||viewer.role==='admin';
+    canView=canEdit||(viewer.role==='treinador'&&viewer.treinador_id===treinadorId);
+    if(!canView){app.innerHTML='<div class="locked">🔒 Você não tem acesso a este perfil.</div>';return;}
+    render();
+  }
+
+  function radioGrau(valor){
+    return Object.entries(GRAU_LBL).map(([k,l])=>`
+      <label class="radio-opt"><input type="radio" name="grau" value="${k}" ${valor===k?'checked':''} onchange="onGrauChange()" ${canEdit?'':'disabled'}> ${l}</label>
+    `).join('');
+  }
+
+  function render(){
+    const app=document.getElementById('app');
+    const mostrarCref=treinador.grau_academico==='formado'||treinador.grau_academico==='provisionado';
+    const cargaTotal=['carga_musculacao','carga_aulas_coletivas','carga_piscina','carga_artes_marciais','carga_avaliacoes','carga_lideranca'].reduce((s,k)=>s+Number(treinador[k]||0),0);
+    app.innerHTML=`
+      <div class="card">
+        <h2 style="font-size:22px">${treinador.nome}</h2>
+        <div class="sub">Treinador(a) · desde ${fmtData((treinador.criado_em||'').slice(0,10))} · carga horária total: ${cargaTotal}h/semana</div>
+      </div>
+
+      <div class="card">
+        <h3>🎓 Qualificação</h3>
+        <div class="fl" style="margin-bottom:10px">Grau acadêmico</div>
+        <div class="radio-group" id="radio-grau">${radioGrau(treinador.grau_academico)}</div>
+        <div class="fg" id="cref-wrap" style="display:${mostrarCref?'block':'none'}">
+          <label class="fl">Nº do CREF</label>
+          <input class="fi" id="in-cref" value="${treinador.cref||''}" ${canEdit?'':'disabled'}>
+        </div>
+        <div class="fg">
+          <label class="fl">Nível conforme plano de carreira</label>
+          <select class="fi" id="in-nivel" ${canEdit?'':'disabled'}>
+            ${Object.entries(NIVEL_LBL).map(([k,l])=>`<option value="${k}" ${treinador.nivel_carreira===k?'selected':''}>${l}</option>`).join('')}
+          </select>
+        </div>
+        ${canEdit?'<button class="btn" onclick="salvarQualificacao()">Salvar qualificação</button>':''}
+      </div>
+
+      <div class="card">
+        <h3>⏱️ Carga horária por área (horas/semana)</h3>
+        <div class="row row6">
+          <div class="fg"><label class="fl">Musculação/Fitness</label><input class="fi" type="number" id="ch-musc" value="${treinador.carga_musculacao||0}" ${canEdit?'':'disabled'}></div>
+          <div class="fg"><label class="fl">Aulas Coletivas</label><input class="fi" type="number" id="ch-aulas" value="${treinador.carga_aulas_coletivas||0}" ${canEdit?'':'disabled'}></div>
+          <div class="fg"><label class="fl">Piscina (adulto/infantil)</label><input class="fi" type="number" id="ch-piscina" value="${treinador.carga_piscina||0}" ${canEdit?'':'disabled'}></div>
+          <div class="fg"><label class="fl">Artes Marciais</label><input class="fi" type="number" id="ch-artes" value="${treinador.carga_artes_marciais||0}" ${canEdit?'':'disabled'}></div>
+          <div class="fg"><label class="fl">Avaliações/Consultorias</label><input class="fi" type="number" id="ch-aval" value="${treinador.carga_avaliacoes||0}" ${canEdit?'':'disabled'}></div>
+          <div class="fg"><label class="fl">Liderança/Coordenação</label><input class="fi" type="number" id="ch-lid" value="${treinador.carga_lideranca||0}" ${canEdit?'':'disabled'}></div>
+        </div>
+        ${canEdit?'<button class="btn" onclick="salvarCargaHoraria()">Salvar carga horária</button>':''}
+      </div>
+
+      <div class="card">
+        <h3>📊 KPIs mensais</h3>
+        <div class="sub">Carteira, retenção e experiências puxados automático do sistema.</div>
+        <table><thead><tr><th>Mês</th><th>Carteira</th><th>Experiências atendidas</th><th>Convertidas</th><th>Observação</th></tr></thead><tbody id="kpis-tbody"></tbody></table>
+      </div>
+
+      <div class="card">
+        <h3>🗣️ Registros de 1:1</h3>
+        <div id="a1a-lista"></div>
+        ${canEdit?`
+        <div class="row row2" style="margin-top:14px">
+          <div class="fg"><label class="fl">Data</label><input class="fi" type="date" id="a1a-data"></div>
+        </div>
+        <div class="fg"><label class="fl">Anotação</label><input class="fi" id="a1a-desc" placeholder="O que foi conversado..."></div>
+        <button class="btn" onclick="add1a1()">Adicionar registro</button>`:''}
+      </div>
+
+      <div class="card">
+        <h3>📋 Planos de ação trimestrais</h3>
+        <div id="plano-lista"></div>
+        ${canEdit?`
+        <div class="row row3" style="margin-top:14px">
+          <div class="fg"><label class="fl">Trimestre</label><input class="fi" id="pa-trimestre" value="${trimestreAtual()}"></div>
+          <div class="fg"><label class="fl">Status</label>
+            <select class="fi" id="pa-status"><option value="pendente">Pendente</option><option value="em_andamento">Em andamento</option><option value="concluido">Concluído</option></select>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Descrição</label><input class="fi" id="pa-desc" placeholder="Demanda ou plano de melhoria..."></div>
+        <button class="btn" onclick="addPlanoAcao()">Adicionar plano de ação</button>`:''}
+      </div>
+    `;
+    carregarKpis(); carregarRegistros('1a1','a1a-lista'); carregarRegistros('plano_acao','plano-lista');
+  }
+
+  function onGrauChange(){
+    const sel=document.querySelector('input[name="grau"]:checked');
+    document.getElementById('cref-wrap').style.display=(sel&&(sel.value==='formado'||sel.value==='provisionado'))?'block':'none';
+  }
+
+  async function salvarQualificacao(){
+    const sel=document.querySelector('input[name="grau"]:checked');
+    await sbPatch('treinadores',treinadorId,{
+      grau_academico:sel?sel.value:null,
+      cref:document.getElementById('in-cref').value||null,
+      nivel_carreira:document.getElementById('in-nivel').value
+    });
+    alert('Qualificação salva!');
+  }
+  async function salvarCargaHoraria(){
+    await sbPatch('treinadores',treinadorId,{
+      carga_musculacao:parseFloat(document.getElementById('ch-musc').value)||0,
+      carga_aulas_coletivas:parseFloat(document.getElementById('ch-aulas').value)||0,
+      carga_piscina:parseFloat(document.getElementById('ch-piscina').value)||0,
+      carga_artes_marciais:parseFloat(document.getElementById('ch-artes').value)||0,
+      carga_avaliacoes:parseFloat(document.getElementById('ch-aval').value)||0,
+      carga_lideranca:parseFloat(document.getElementById('ch-lid').value)||0
+    });
+    alert('Carga horária salva!');
+  }
+
+  async function carregarKpis(){
+    const [alunos,exps,kpisSalvos]=await Promise.all([
+      sbGet('alunos',`treinador_id=eq.${treinadorId}`),
+      sbGet('experiencias',`treinador_id=eq.${treinadorId}`),
+      sbGet('treinador_kpis_mensais',`treinador_id=eq.${treinadorId}`)
+    ]);
+    const obsMap={}; kpisSalvos.forEach(k=>obsMap[k.mes_referencia.slice(0,7)]=k.observacao||'');
+    const carteiraAtual=alunos.filter(a=>a.status==='ativo').length;
+    const porMes={};
+    exps.forEach(e=>{
+      if(!e.data_agendada&&!e.criado_em)return;
+      const dataRef=e.data_agendada||e.criado_em;
+      const m=String(dataRef).slice(0,7);
+      if(!porMes[m])porMes[m]={atendidas:0,convertidas:0};
+      porMes[m].atendidas++;
+      if(e.status==='convertida')porMes[m].convertidas++;
+    });
+    const meses=Object.keys(porMes).sort().reverse().slice(0,6);
+    const tbody=document.getElementById('kpis-tbody');
+    if(!meses.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--td)">Carteira atual: ${carteiraAtual} aluno(s). Sem experiências registradas ainda.</td></tr>`;return;}
+    tbody.innerHTML=meses.map(m=>{
+      const d=porMes[m];
+      const editable=canEdit?`<input class="fi" style="font-size:12px;padding:5px 7px" value="${(obsMap[m]||'').replace(/"/g,'&quot;')}" onchange="salvarObsKpi('${m}',this.value)">`:(obsMap[m]||'—');
+      return `<tr><td>${m}</td><td>${carteiraAtual}</td><td>${d.atendidas}</td><td>${d.convertidas}</td><td>${editable}</td></tr>`;
+    }).join('');
+  }
+  async function salvarObsKpi(mes,valor){
+    await sbUpsert('treinador_kpis_mensais',{academia_id:treinador.academia_id,treinador_id:treinadorId,mes_referencia:mes+'-01',observacao:valor,updated_at:Date.now()});
+  }
+
+  async function carregarRegistros(tipo,elId){
+    const rows=await sbGet('treinador_registros',`treinador_id=eq.${treinadorId}&tipo=eq.${tipo}&order=data.desc`);
+    const el=document.getElementById(elId);
+    if(!rows.length){el.innerHTML='<div class="item" style="color:var(--td)">Nenhum registro ainda.</div>';return;}
+    el.innerHTML=rows.map(r=>`<div class="item">
+      ${tipo==='plano_acao'?`<b>${r.trimestre}</b> <span class="badge ${r.status}">${({pendente:'Pendente',em_andamento:'Em andamento',concluido:'Concluído'})[r.status]||r.status}</span>`:fmtData(r.data)}
+      <div class="meta">${r.descricao||''}</div>
+    </div>`).join('');
+  }
+  async function add1a1(){
+    const data=document.getElementById('a1a-data').value;
+    const desc=document.getElementById('a1a-desc').value.trim();
+    if(!data||!desc)return alert('Preencha data e anotação.');
+    await sbPost('treinador_registros',{academia_id:treinador.academia_id,treinador_id:treinadorId,tipo:'1a1',data,descricao:desc,criado_por:uid,criado_em:Date.now()});
+    document.getElementById('a1a-desc').value='';
+    carregarRegistros('1a1','a1a-lista');
+  }
+  async function addPlanoAcao(){
+    const desc=document.getElementById('pa-desc').value.trim();
+    if(!desc)return alert('Descreva o plano de ação.');
+    await sbPost('treinador_registros',{
+      academia_id:treinador.academia_id,treinador_id:treinadorId,tipo:'plano_acao',
+      data:new Date().toISOString().slice(0,10),trimestre:document.getElementById('pa-trimestre').value,
+      descricao:desc,status:document.getElementById('pa-status').value,criado_por:uid,criado_em:Date.now()
+    });
+    document.getElementById('pa-desc').value='';
+    carregarRegistros('plano_acao','plano-lista');
+  }
+
+  init();
+</script>
+</body>
+</html>

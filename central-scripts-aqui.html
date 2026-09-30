@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Scripts AQÚI · UC GeFit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#0E0E0E;
+  --fundo2:#161616;
+  --fundo3:#1E1E1E;
+  --laranja:#0A4FAA;
+  --texto:#E8E4DC;
+  --texto2:#9A9488;
+  --verde:#3DBA7A;
+  --vermelho:#E05252;
+  --borda: rgba(232,228,220,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--fundo);
+  color:var(--texto);
+  font-family:'Barlow',sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.hnav-btn,.tab-btn,.badge,.pill,.stat-num{
+  font-family:'Barlow Condensed',sans-serif;
+  letter-spacing:.01em;
+}
+a{color:inherit;}
+
+/* ===== HEADER ===== */
+header.top{
+  position:sticky;top:0;z-index:50;
+  background:rgba(14,14,14,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--borda);
+  display:flex;align-items:center;gap:20px;
+  padding:14px 24px;
+}
+.logo{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:22px;letter-spacing:.03em;
+  color:var(--laranja);
+  display:flex;align-items:center;gap:8px;
+}
+.logo span{color:var(--texto);font-weight:600;}
+.hnav{display:flex;gap:4px;margin-left:12px;flex-wrap:wrap;}
+.hnav-btn{
+  background:none;border:none;color:var(--texto2);
+  font-size:15px;font-weight:600;padding:8px 14px;border-radius:8px;
+  cursor:pointer;transition:.15s;
+}
+.hnav-btn:hover{color:var(--texto);background:var(--fundo3);}
+.hnav-btn.active{color:var(--laranja);background:rgba(10,79,170,.1);}
+.badge{
+  margin-left:auto;
+  background:var(--fundo3);border:1px solid var(--borda);
+  color:var(--texto2);font-size:13px;font-weight:600;
+  padding:6px 12px;border-radius:20px;white-space:nowrap;
+}
+
+/* ===== LAYOUT ===== */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 60px);}
+.sidebar{
+  border-right:1px solid var(--borda);
+  padding:22px 16px;position:sticky;top:60px;
+  height:calc(100vh - 60px);overflow-y:auto;
+}
+.sidebar h4{color:var(--texto2);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px;}
+.sidebar h4:first-child{margin-top:0;}
+.sidebar a{
+  display:block;color:var(--texto2);font-size:14.5px;font-weight:500;
+  padding:7px 10px;border-radius:7px;text-decoration:none;cursor:pointer;
+  transition:.15s;
+}
+.sidebar a:hover{color:var(--texto);background:var(--fundo2);}
+.progress-box{
+  margin-top:24px;padding:14px;background:var(--fundo2);border-radius:10px;border:1px solid var(--borda);
+}
+.progress-track{height:6px;background:var(--fundo3);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.progress-fill{height:100%;width:0%;background:var(--laranja);border-radius:4px;transition:.3s;}
+.progress-txt{font-size:12.5px;color:var(--texto2);font-weight:600;}
+
+main{padding:28px 34px 80px;max-width:980px;}
+.breadcrumb{color:var(--texto2);font-size:13.5px;font-weight:600;margin-bottom:18px;}
+.breadcrumb .sep{margin:0 6px;opacity:.5;}
+.breadcrumb .cur{color:var(--laranja);}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;border:1px solid var(--borda);border-radius:16px;
+  background:linear-gradient(160deg,var(--fundo2),var(--fundo3));
+  padding:30px 30px 24px;margin-bottom:24px;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--laranja),transparent);
+}
+.corner{position:absolute;width:14px;height:14px;border:2px solid var(--laranja);opacity:.5;}
+.corner.tl{top:14px;left:14px;border-right:none;border-bottom:none;}
+.corner.br{bottom:14px;right:14px;border-left:none;border-top:none;}
+.hero-tag{
+  display:inline-block;background:rgba(10,79,170,.12);color:var(--laranja);
+  font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;
+}
+.hero h1{font-size:34px;font-weight:800;line-height:1.1;margin-bottom:8px;}
+.hero p.sub{color:var(--texto2);font-size:16px;font-weight:500;max-width:640px;}
+.hero-meta{display:flex;gap:18px;margin-top:18px;flex-wrap:wrap;}
+.hero-meta div{font-size:13px;color:var(--texto2);font-weight:600;}
+.hero-meta b{color:var(--texto);font-weight:700;}
+.pills{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.pill{
+  background:var(--fundo);border:1px solid var(--borda);color:var(--texto2);
+  font-size:13px;font-weight:700;padding:5px 12px;border-radius:8px;
+}
+
+/* ===== TABS ===== */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--borda);margin-bottom:26px;overflow-x:auto;}
+.tab-btn{
+  background:none;border:none;color:var(--texto2);font-size:16px;font-weight:700;
+  padding:12px 18px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  transition:.15s;
+}
+.tab-btn:hover{color:var(--texto);}
+.tab-btn.active{color:var(--laranja);border-bottom-color:var(--laranja);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== CONTENT ELEMENTS ===== */
+.section{margin-bottom:38px;}
+.section h2{font-size:24px;font-weight:800;margin-bottom:6px;color:var(--texto);}
+.section h2 .n{color:var(--laranja);}
+.section .lead{color:var(--texto2);font-size:15px;margin-bottom:18px;max-width:720px;}
+h3.sub{font-size:18px;font-weight:700;margin:22px 0 10px;color:var(--laranja);}
+
+.quote-box{
+  border-left:3px solid var(--laranja);background:var(--fundo2);
+  padding:16px 20px;border-radius:0 10px 10px 0;margin:14px 0;
+  font-size:15.5px;font-style:italic;color:var(--texto);
+}
+.quote-box b{font-style:normal;color:var(--laranja);}
+
+.aqui-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0;}
+.aqui-card{
+  background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:16px;
+  position:relative;
+}
+.aqui-card .letter{
+  font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800;color:var(--laranja);
+  line-height:1;
+}
+.aqui-card h4{font-size:15px;font-weight:700;margin:6px 0 6px;}
+.aqui-card p{font-size:13.5px;color:var(--texto2);}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--borda);vertical-align:top;}
+th{color:var(--laranja);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;}
+td{color:var(--texto);}
+tr:hover td{background:rgba(255,255,255,.02);}
+
+/* MAPA RÁPIDO — navegação interna */
+.mapa-box{border:1px solid var(--borda);border-radius:14px;background:linear-gradient(160deg,var(--fundo2),var(--fundo3));padding:22px 24px;margin-bottom:30px;}
+.mapa-journey{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px;}
+.mapa-step{
+  display:flex;align-items:center;gap:8px;background:var(--fundo);border:1px solid var(--borda);
+  border-radius:10px;padding:9px 13px;cursor:pointer;transition:.15s;font-size:13.5px;font-weight:600;
+}
+.mapa-step:hover{border-color:var(--laranja);background:rgba(10,79,170,.08);}
+.mapa-step .num{
+  width:20px;height:20px;border-radius:50%;background:var(--laranja);color:#0E0E0E;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mapa-step .arw{color:var(--texto2);font-size:12px;margin-left:2px;}
+.mapa-table-row{cursor:pointer;transition:.15s;}
+.mapa-table-row:hover td{background:rgba(10,79,170,.08);}
+.mapa-table-row .goicon{color:var(--laranja);font-weight:700;font-size:12.5px;}
+
+.mapa-card{
+  background:var(--fundo);border:1px solid var(--borda);border-radius:12px;
+  padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:.15s;
+}
+.mapa-card:hover{border-color:var(--laranja);}
+.mapa-card .mhead{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.mapa-card .mnum{
+  width:24px;height:24px;border-radius:50%;background:var(--laranja);color:#0E0E0E;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mapa-card h4{font-size:15.5px;font-weight:700;}
+.mapa-card p{font-size:13.5px;color:var(--texto2);margin-bottom:8px;}
+.mapa-card .goicon{color:var(--laranja);font-weight:700;font-size:12.5px;}
+.mapa-dest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0;}
+.mapa-dest{background:var(--fundo);border:1px solid var(--borda);border-radius:10px;padding:14px;text-align:center;}
+.mapa-dest .ic{font-size:22px;margin-bottom:6px;}
+.mapa-dest h4{font-size:14.5px;font-weight:700;margin-bottom:4px;}
+.mapa-dest p{font-size:12.5px;color:var(--texto2);}
+
+.obj-item{
+  border:1px solid var(--borda);border-radius:10px;margin-bottom:10px;overflow:hidden;background:var(--fundo2);
+}
+.obj-head{
+  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+}
+.obj-head .num{color:var(--laranja);font-weight:800;font-family:'Barlow Condensed',sans-serif;font-size:17px;margin-right:8px;}
+.obj-head .arrow{color:var(--texto2);transition:.2s;}
+.obj-item.open .arrow{transform:rotate(180deg);}
+.obj-body{max-height:0;overflow:hidden;transition:.25s ease;padding:0 16px;}
+.obj-item.open .obj-body{max-height:600px;padding:0 16px 16px;}
+.obj-body .meaning{color:var(--texto2);font-size:13.5px;margin-bottom:10px;font-style:italic;}
+.obj-line{font-size:14px;margin-bottom:6px;}
+.obj-line b{color:var(--laranja);}
+.tag-synth{
+  display:inline-block;background:rgba(10,79,170,.15);color:var(--laranja);
+  font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:6px;
+  vertical-align:middle;
+}
+
+/* SCRIPT BLOCKS */
+.script-block{
+  border:1px solid var(--borda);border-radius:12px;background:var(--fundo2);
+  padding:18px 20px;margin-bottom:16px;
+}
+.script-block .sb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.script-block h4{font-size:16px;font-weight:700;color:var(--texto);}
+.script-block .sb-context{font-size:12.5px;color:var(--texto2);margin-top:2px;}
+.copy-btn{
+  background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);
+  font-size:13px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;
+  white-space:nowrap;transition:.15s;
+}
+.copy-btn:hover{border-color:var(--laranja);color:var(--laranja);}
+.script-text{font-size:14.5px;line-height:1.7;color:var(--texto);}
+.script-text b{color:var(--laranja);}
+.script-text p{margin-bottom:8px;}
+
+/* CHECKLIST */
+.ck-pill{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--borda);
+  border-radius:9px;margin-bottom:8px;cursor:pointer;background:var(--fundo2);transition:.15s;
+}
+.ck-pill:hover{border-color:var(--laranja);}
+.ck-pill span.mark{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--texto2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--texto2);flex-shrink:0;
+}
+.ck-pill.checked span.mark{border-color:var(--verde);color:var(--verde);background:rgba(61,186,122,.12);}
+.ck-pill.checked{opacity:.75;}
+#ckStatus{font-size:13.5px;color:var(--texto2);font-weight:600;margin-top:6px;}
+
+/* QUIZ */
+.quiz-box{border:1px solid var(--borda);border-radius:14px;background:var(--fundo2);padding:24px;}
+.quiz-progress{font-size:13px;color:var(--texto2);font-weight:700;margin-bottom:14px;}
+.quiz-q{font-size:18px;font-weight:700;margin-bottom:18px;}
+.quiz-opt{
+  display:block;width:100%;text-align:left;background:var(--fundo3);border:1px solid var(--borda);
+  color:var(--texto);padding:13px 16px;border-radius:10px;margin-bottom:9px;cursor:pointer;font-size:14.5px;
+  transition:.15s;font-family:inherit;
+}
+.quiz-opt:hover{border-color:var(--laranja);}
+.quiz-opt.correct{border-color:var(--verde);background:rgba(61,186,122,.13);}
+.quiz-opt.wrong{border-color:var(--vermelho);background:rgba(224,82,82,.13);}
+.quiz-feedback{font-size:13.5px;color:var(--texto2);margin-top:10px;padding:10px 12px;background:var(--fundo);border-radius:8px;display:none;}
+.quiz-nav{display:flex;justify-content:flex-end;margin-top:16px;}
+.btn-primary{
+  background:var(--laranja);color:#0E0E0E;border:none;font-weight:800;font-size:14.5px;
+  padding:10px 22px;border-radius:9px;cursor:pointer;transition:.15s;
+}
+.btn-primary:disabled{opacity:.35;cursor:default;}
+.btn-primary:hover:not(:disabled){filter:brightness(1.08);}
+.quiz-resultado{display:none;text-align:center;padding:20px 0;}
+.quiz-resultado.show{display:block;}
+.quiz-resultado h3{font-size:26px;margin-bottom:6px;}
+.quiz-resultado p{color:var(--texto2);margin-bottom:18px;}
+
+/* MANAGER GUIDE */
+.gcard{background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.gcard h4{color:var(--laranja);font-size:15.5px;font-weight:700;margin-bottom:8px;}
+.gcard ul{padding-left:18px;font-size:14.5px;color:var(--texto);}
+.gcard li{margin-bottom:6px;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0;}
+.stat-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:10px;padding:14px;text-align:center;}
+.stat-num{font-size:26px;font-weight:800;color:var(--laranja);}
+.stat-label{font-size:11.5px;color:var(--texto2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+
+.gform{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:22px 24px;max-width:560px;}
+.gform label{display:block;font-size:13px;font-weight:700;color:var(--texto2);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.03em;}
+.gform label:first-child{margin-top:0;}
+.gform input,.gform select{
+  width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);
+  padding:11px 13px;border-radius:9px;font-size:14.5px;font-family:inherit;
+}
+.gform input:focus,.gform select:focus{outline:none;border-color:var(--laranja);}
+.gform select option{background:var(--fundo2);}
+.ghint{font-size:12px;color:var(--texto2);margin-top:5px;line-height:1.4;}
+.ghint b{color:var(--laranja);font-weight:700;}
+
+footer.pagefoot{text-align:center;color:var(--texto2);font-size:12.5px;padding:30px 0 10px;}
+
+/* ===== LOGIN ===== */
+#appWrap{display:none;}
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:16px;padding:38px 34px;width:100%;max-width:420px;}
+.auth-logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;color:var(--laranja);letter-spacing:2px;text-align:center;margin-bottom:2px;}
+.auth-sub{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--texto2);margin-bottom:26px;}
+.auth-err{background:rgba(224,82,82,.12);border:1px solid var(--vermelho);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--vermelho);margin-bottom:14px;display:none;}
+.auth-err.show{display:block;}
+.auth-fg{margin-bottom:14px;}
+.auth-fl{display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;}
+.auth-fi{width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:11px 13px;border-radius:9px;font-size:14.5px;font-family:inherit;}
+.auth-fi:focus{outline:none;border-color:var(--laranja);}
+.auth-checking{text-align:center;color:var(--texto2);font-size:14px;padding:60px 20px;}
+.user-chip{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.user-chip .uinfo{font-size:12.5px;color:var(--texto2);text-align:right;line-height:1.3;}
+.user-chip .uinfo b{color:var(--texto);display:block;font-size:13px;}
+.btn-logout{background:var(--fundo3);border:1px solid var(--borda);color:var(--texto2);font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;transition:.15s;}
+.btn-logout:hover{border-color:var(--vermelho);color:var(--vermelho);}
+
+@keyframes deeplinkPulse{
+  0%{box-shadow:0 0 0 0 rgba(10,79,170,.55);}
+  70%{box-shadow:0 0 0 14px rgba(10,79,170,0);}
+  100%{box-shadow:0 0 0 0 rgba(10,79,170,0);}
+}
+.deeplink-highlight{
+  outline:2px solid var(--laranja) !important;
+  animation:deeplinkPulse 1.4s ease-out 2;
+}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  main{padding:20px 16px 60px;}
+  .hero h1{font-size:26px;}
+  .hnav{display:none;}
+}
+.auth-logo-img{display:block;margin:0 auto 2px;height:38px;width:auto}
+.topbar-logo-img{height:20px;width:auto;display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="screen-checking">
+  <div class="auth-checking">Verificando acesso...</div>
+</div>
+
+<div class="auth-screen" id="screen-login" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo"><img class="auth-logo-img" src="data:image/png;base64,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" alt="GeFit"></div>
+    <div class="auth-sub">Central de Scripts AQÚI</div>
+    <div class="auth-err" id="login-err"></div>
+    <div class="auth-fg"><label class="auth-fl">E-mail</label><input class="auth-fi" type="email" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="auth-fg"><label class="auth-fl">Senha</label><input class="auth-fi" type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-primary" style="width:100%;padding:12px;margin-top:6px;" id="btn-login" onclick="doLogin()">Entrar</button>
+    <p style="text-align:center;font-size:12px;color:var(--texto2);margin-top:18px;">Normalmente você acessa direto pelo Desafio ROI 21 Dias (já logado). Use este login só se abriu este link diretamente.</p>
+  </div>
+</div>
+
+<div id="appWrap">
+<header class="top">
+  <a href="index.html" class="logo" style="text-decoration:none;" title="Voltar ao Desafio ROI 21 Dias"><img class="topbar-logo-img" src="data:image/png;base64,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" alt="GeFit"></a>
+  <a href="index.html" class="hnav-btn" style="border:1px solid var(--borda);border-radius:8px;">← Desafio ROI</a>
+  <nav class="hnav">
+    <button class="hnav-btn active" onclick="switchTab('conteudo',this)">Conteúdo</button>
+    <button class="hnav-btn" onclick="switchTab('script',this)">Script</button>
+    <button class="hnav-btn" onclick="switchTab('quiz',this)">Quiz</button>
+    <button class="hnav-btn" onclick="switchTab('revisao',this)">Revisão</button>
+    <button class="hnav-btn" onclick="switchTab('gestor',this)">Gestor</button>
+    <button class="hnav-btn" onclick="switchTab('gerador',this)">Gerador</button>
+  </nav>
+  <div class="badge">Universidade Corporativa · Comercial</div>
+  <div class="user-chip">
+    <div class="uinfo"><b id="userNome">—</b><span id="userAcademia">—</span></div>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="index.html" style="display:block;color:var(--texto2);font-size:13.5px;font-weight:600;margin-bottom:14px;">← Voltar ao Desafio ROI 21 Dias</a>
+    <h4>Navegar</h4>
+    <a onclick="goTo('conteudo','m-mapa')" style="color:var(--laranja)">🧭 Guia Completo (comece aqui)</a>
+    <a onclick="scrollToId('m-aqui')">Metodologia AQÚI</a>
+    <a onclick="scrollToId('m-disc')">Perfis Comportamentais (DISC)</a>
+    <a onclick="scrollToId('m-scripts')">Scripts por Situação</a>
+    <a onclick="scrollToId('m-objecoes')">Mapa de Objeções</a>
+    <a onclick="scrollToId('m-playbook')">Playbook de Roleplay</a>
+    <h4>Central de Scripts</h4>
+    <a onclick="switchTabFromSidebar('script')">Ver todos os scripts</a>
+    <a onclick="switchTabFromSidebar('quiz')">Testar conhecimento</a>
+    <a onclick="switchTabFromSidebar('gestor')">Guia do Gestor</a>
+    <a onclick="switchTabFromSidebar('gerador')" style="color:var(--laranja)">✨ Gerador de Script</a>
+
+    <div class="progress-box">
+      <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+      <div class="progress-txt" id="progTxt">0% concluído</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="breadcrumb">Universidade Corporativa <span class="sep">›</span> Comercial <span class="sep">›</span> <span class="cur">Central de Scripts AQÚI</span></div>
+
+    <div class="hero">
+      <div class="corner tl"></div><div class="corner br"></div>
+      <div class="hero-tag">Documento Mestre v1 · Aprovado</div>
+      <h1>Central de Scripts AQÚI</h1>
+      <p class="sub">Base única de metodologia, scripts e treino comercial — consolidada a partir de todo material já produzido, sem perder nenhuma fonte.</p>
+      <div class="hero-meta">
+        <div><b>17</b> blocos de script por canal/situação</div>
+        <div><b>18</b> objeções mapeadas</div>
+        <div><b>10x15</b> cadência oficial de aquisição</div>
+      </div>
+      <div class="pills">
+        <div class="pill">WhatsApp</div>
+        <div class="pill">Ligação</div>
+        <div class="pill">Presencial</div>
+        <div class="pill">Reativação</div>
+        <div class="pill">Reconexão</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('conteudo',this)">Conteúdo</button>
+      <button class="tab-btn" onclick="switchTab('script',this)">Script</button>
+      <button class="tab-btn" onclick="switchTab('quiz',this)">Quiz</button>
+      <button class="tab-btn" onclick="switchTab('revisao',this)">Revisão Rápida</button>
+      <button class="tab-btn" onclick="switchTab('gestor',this)">Guia do Gestor</button>
+      <button class="tab-btn" onclick="switchTab('gerador',this)">Gerador ✨</button>
+    </div>
+
+    <!-- ===================== TAB: CONTEÚDO ===================== -->
+    <div class="tab-pane active" id="tab-conteudo">
+
+      <div class="mapa-box" id="m-mapa">
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:4px;">🧭 Guia Completo — O Caminho do Lead</h2>
+        <p style="color:var(--texto2);font-size:14px;margin-bottom:16px;">Da chegada no WhatsApp até o agendamento. Clique em qualquer etapa, linha ou destino para ir direto ao ponto — tudo dentro deste mesmo documento, sem abrir outra página.</p>
+
+        <h3 class="sub" style="margin-top:4px;">A Jornada, passo a passo</h3>
+
+        <div class="mapa-card" onclick="goTo('script','b1txt1')">
+          <div class="mhead"><span class="mnum">1</span><h4>Lead chega no WhatsApp → Primeiro Contato (Texto + Áudio complementares)</h4></div>
+          <p>Nunca a mesma mensagem duas vezes. O texto parabeniza, posiciona a academia como diferente das convencionais e pergunta idade + se já treina. O áudio não repete essas perguntas — reforça as boas-vindas e já justifica a ligação.</p>
+          <span class="goicon">📍 Script → B.1a / B.1b ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('script','b1ctxt1')">
+          <div class="mhead"><span class="mnum">2</span><h4>2ª tentativa no mesmo dia (sem resposta) → Direcionar para Ligação</h4></div>
+          <p>Use a isca "presente de boas-vindas" pra gerar curiosidade. Nunca pergunte se a pessoa prefere ou quer a ligação — afirme com confiança: "vou te ligar, leva só 2 a 3 minutos".</p>
+          <span class="goicon">📍 Script → B.1c / B.1d ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('script','b1eaudio')">
+          <div class="mhead"><span class="mnum">3</span><h4>Lead recusa a ligação? → Peça um áudio</h4></div>
+          <p>Se a pessoa não aceita ligação de jeito nenhum, peça pra ela te mandar um áudio contando a própria história. O áudio revela o perfil comportamental dela tanto quanto uma ligação revelaria.</p>
+          <span class="goicon">📍 Script → B.1e ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('script','b2v1')">
+          <div class="mhead"><span class="mnum">4</span><h4>Lead respondeu com informações → Conduzir para agendamento</h4></div>
+          <p>Agora você já sabe o objetivo dele. É hora da Única Coisa: mostrar o valor exclusivo e propor o próximo passo com segurança.</p>
+          <span class="goicon">📍 Script → B.2 "Agendamento de Visita Presencial" ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('conteudo','m-objecoes')">
+          <div class="mhead"><span class="mnum">5</span><h4>Apareceu objeção?</h4></div>
+          <p>Nunca se defende — se pergunta primeiro. Use a técnica de confirmação ("E se não fosse [a objeção], você se matricularia agora?") antes de aprofundar.</p>
+          <span class="goicon">📍 Conteúdo → Mapa de Objeções (18, clique pra expandir) ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('script','b3wa')">
+          <div class="mhead"><span class="mnum">6</span><h4>Situação específica de campanha ou perfil</h4></div>
+          <p>Plano vencendo, renovação, nova turma, prospecção fria, aluno inativo, ex-aluno ou lead frio — cada um tem cadência própria (blocos B.3 a B.17).</p>
+          <span class="goicon">📍 Script → veja a tabela completa abaixo ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('conteudo','m-aqui')">
+          <div class="mhead"><span class="mnum">7</span><h4>Incentivar — fechar o compromisso</h4></div>
+          <p>Nunca pergunte se o lead "quer". Proponha com segurança e já sugira horário. É aqui que a conversa vira agendamento de verdade.</p>
+          <span class="goicon">📍 Conteúdo → quadro "Princípio do Incentivar (I)" ↗</span>
+        </div>
+
+        <div class="mapa-card" onclick="goTo('script','b10penultima')">
+          <div class="mhead"><span class="mnum">8</span><h4>Cadência sem resposta? → Encerramento</h4></div>
+          <p>Nunca repita a mesma mensagem. Depois de tentativas com argumentos diferentes, mande a penúltima (avisando redução de contato) e a última (despedida real, porta aberta). O tempo de descanso varia por tipo de lead (15 a 60 dias).</p>
+          <span class="goicon">📍 Script → B.10 "Encerramento de Cadência" ↗</span>
+        </div>
+
+        <h3 class="sub">Os 3 Destinos Possíveis</h3>
+        <p style="color:var(--texto2);font-size:13.5px;margin-bottom:4px;">A ÚNICA COISA de toda conversa comercial é conduzir para um destes três — nunca deixar em aberto.</p>
+        <div class="mapa-dest-grid">
+          <div class="mapa-dest"><div class="ic">🎁</div><h4>Experiência Gratuita</h4><p>7, 10 ou 12 dias. Ideal para leads mornos/indecisos, junto com o Mapeamento de Sintomas.</p></div>
+          <div class="mapa-dest"><div class="ic">☕</div><h4>Café / Visita Presencial</h4><p>Para leads mais quentes, que já demonstraram clareza sobre o que buscam.</p></div>
+          <div class="mapa-dest"><div class="ic">✍️</div><h4>Matrícula / Consultoria</h4><p>Fechamento direto — pós visita, pós consultoria personalizada ou renovação.</p></div>
+        </div>
+
+        <h3 class="sub">Regra de Ouro do Dia</h3>
+        <div class="quote-box"><b>AQÚI:</b> Acolher/Atenção → Qualificar → Única Coisa → Incentivar. Nessa ordem, sempre.</div>
+        <div class="quote-box"><b>Incentivar:</b> nunca "quer que eu...?", "sem compromisso" ou "qualquer coisa a gente se fala". Proponha com segurança, já com horário.</div>
+
+        <h3 class="sub">Checklist antes de atender o primeiro lead</h3>
+        <div class="ck-pill" onclick="toggleCk(this)"><span class="mark"></span><span>Sei em qual bloco (B.1 a B.17) está o script da situação que estou atendendo</span></div>
+        <div class="ck-pill" onclick="toggleCk(this)"><span class="mark"></span><span>Sei onde consultar as 18 objeções se o lead hesitar (aba Conteúdo)</span></div>
+        <div class="ck-pill" onclick="toggleCk(this)"><span class="mark"></span><span>Entendi que a mensagem sempre termina propondo um passo concreto, nunca uma pergunta aberta</span></div>
+        <div class="ck-pill" onclick="toggleCk(this)"><span class="mark"></span><span>Sei qual dos 3 destinos (Experiência, Café/Visita, Matrícula) faz sentido pra esse lead</span></div>
+        <div class="ck-pill" onclick="toggleCk(this)"><span class="mark"></span><span>Fiz pelo menos 1 rodada de roleplay antes de atender de verdade</span></div>
+
+        <h3 class="sub" style="margin-top:24px;">Tabela completa — "Preciso de... → Vai direto para"</h3>
+        <table>
+          <tr><th>Preciso de...</th><th>Vai direto para</th></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b1txt1')"><td>Primeiro contato com lead novo (texto + áudio)</td><td><span class="goicon">Script → B.1a/B.1b ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b1ctxt1')"><td>Levar o lead do WhatsApp pra ligação</td><td><span class="goicon">Script → B.1c/B.1d ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b1eaudio')"><td>Lead não aceita ligar — pedir áudio</td><td><span class="goicon">Script → B.1e ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b2v1')"><td>Agendar visita presencial</td><td><span class="goicon">Script → B.2 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b3wa')"><td>Plano prestes a vencer</td><td><span class="goicon">Script → B.3 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b4wa')"><td>Renovação de plano</td><td><span class="goicon">Script → B.4 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b5')"><td>Nova turma / promoção</td><td><span class="goicon">Script → B.5 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b6')"><td>Prospecção de novos clientes (ligação)</td><td><span class="goicon">Script → B.6 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b7')"><td>Recepção de lead presencial</td><td><span class="goicon">Script → B.7 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b8c1msg')"><td>Aluno ativo desengajado</td><td><span class="goicon">Script → B.8 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b9contato')"><td>Lead frio que sumiu</td><td><span class="goicon">Script → B.9 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b10penultima')"><td>Cadência sem resposta — encerrar com classe</td><td><span class="goicon">Script → B.10 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b11d2')"><td>Cadência 10x15 completa (lead de aquisição)</td><td><span class="goicon">Script → B.11 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b12d1')"><td>Lead antigo (30+ dias sem interação)</td><td><span class="goicon">Script → B.12 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b13d1')"><td>Aluno inativo (sem frequência)</td><td><span class="goicon">Script → B.13 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b14d1')"><td>Ex-aluno (reconexão)</td><td><span class="goicon">Script → B.14 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b16d3')"><td>Aluno com plano novo (onboarding)</td><td><span class="goicon">Script → B.16 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('script','b17d15')"><td>Cadência de renovação (D-15 a D-2)</td><td><span class="goicon">Script → B.17 ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('conteudo','m-objecoes')"><td>Qualquer uma das 18 objeções</td><td><span class="goicon">Mapa de Objeções ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('conteudo','m-disc')"><td>Entender o perfil comportamental do lead</td><td><span class="goicon">Perfis DISC ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('conteudo','m-playbook')"><td>Treinar / roleplay</td><td><span class="goicon">Playbook de Roleplay ↗</span></td></tr>
+          <tr class="mapa-table-row" onclick="goTo('gerador')"><td>Gerar script personalizado da minha academia</td><td><span class="goicon">Gerador ✨ ↗</span></td></tr>
+        </table>
+      </div>
+
+      <div class="section" id="m-aqui">
+        <h2><span class="n">A.</span> Metodologia AQÚI — Referência Rápida</h2>
+        <p class="lead">Os quatro pilares que estruturam toda conversa comercial da Academia Modelo QG — do primeiro contato ao fechamento.</p>
+        <div class="aqui-grid">
+          <div class="aqui-card"><div class="letter">A</div><h4>Acolher / Atenção</h4><p>Criar conexão e quebrar o modo automático do cliente. "Eu criei um ambiente humano antes de vender?"</p></div>
+          <div class="aqui-card"><div class="letter">Q</div><h4>Qualificação</h4><p>Descobrir a história real por trás do objetivo — dor, tentativa anterior, urgência. "Entendi o motivo real, ou só o declarado?"</p></div>
+          <div class="aqui-card"><div class="letter">Ú</div><h4>Única Coisa</h4><p>Fazer o cliente <b>verbalizar valor</b>, conectando a solução à dor identificada. "O cliente reconheceu sozinho por que isso é diferente?"</p></div>
+          <div class="aqui-card"><div class="letter">I</div><h4>Incentivar</h4><p>Conduzir com segurança para o próximo passo concreto. "Ficou claro qual é a próxima ação, sem pressão?"</p></div>
+        </div>
+        <div class="quote-box"><b>Quando o "A" é Acolher x quando é Atenção:</b> se a pessoa chegou até nós (respondeu, mandou mensagem), o "A" é <b>Acolher</b> — recebemos com boas-vindas. Se somos nós que estamos reabordando alguém que sumiu/não respondeu (aluno ativo faltando aos treinos, lead antigo desconectado, ex-aluno), o "A" é <b>Chamar Atenção</b> — a primeira frase funciona como uma <b>headline</b>: não pode ser "seja bem-vindo" (a pessoa não acabou de chegar), precisa gerar reação: <i>"Sentimos sua falta"</i>, <i>"Cadê você?"</i>, <i>"Nossa conversa ficou pela metade"</i>. Nesses casos, a apresentação ("aqui é a equipe da academia") e a contextualização do assunto **entram no Qualificar**, não no Atenção — a headline vem pura, sem se apresentar ainda.</div>
+        <div class="quote-box"><b>Princípio do treino:</b> Vendas não melhoram com motivação. Elas melhoram com treino estruturado. Quando o cliente fala "está caro", o consultor não entra em pânico — ele entra em <b>modo método</b>.</div>
+        <div class="quote-box"><b>Princípio das objeções:</b> Nunca responda objeção defendendo. Sempre responda perguntando primeiro. Objeções não são o problema — são <b>o cliente pensando em voz alta</b>. O papel do consultor é ajudar esse pensamento a se organizar.</div>
+        <div class="quote-box"><b>Técnica de confirmação da objeção ("E se não fosse..."):</b> antes de aprofundar o tratamento, confirme se a objeção é real: <i>"E se não fosse [o preço / o marido / o tempo], você se matricularia agora?"</i> Se a resposta for sim, a objeção está confirmada — aí sim vale investir tempo trabalhando ela a fundo.</div>
+        <div class="quote-box"><b>Princípio do Incentivar (I):</b> Incentivar não é perguntar se o cliente quer — é <b>propor com segurança</b>. Nunca use perguntas passivas ("quer que eu te envie...?"), a expressão "sem compromisso", ou frases vagas como <b>"qualquer coisa a gente se fala"</b> / <b>"qualquer coisa me liga"</b> — isso não é um compromisso, é uma saída fácil. Também nunca ofereça escolha passiva entre canais: <b>não pergunte "você prefere por ligação ou por WhatsApp"</b> — o próximo passo já vem afirmado. O incentivo reforça o valor ("vou te ajudar", "você vai ver...") e propõe um próximo passo concreto, de preferência com horário sugerido: "Consigo um encaixe amanhã ou depois, qual fica melhor pra você?" O objetivo é gerar compromisso real — não dar uma saída fácil.</div>
+        <div class="quote-box"><b>Nuance ao chamar pra ligação (não confundir com fragilidade):</b> ser assertivo não é o mesmo que ignorar o momento da pessoa. Nunca simplesmente afirme "vou te ligar" sem checar — mas também nunca pergunte "posso te ligar?" (isso é fraco). O certo é confirmar disponibilidade com <b>dupla opção confiante</b>: "Consigo ligar agora, ou prefere que eu ligue em outro horário — qual fica melhor pra você?" Reforce com 1–2 diferenciais (adaptados ao posicionamento/ICP da academia). Modelo: <i>"Entendo a correria e quero valorizar seu tempo, por isso essa ligação rápida seria o próximo passo agora! Garanto que vai valer a pena e você vai entender por que [diferencial 1] e [diferencial 2]."</i></div>
+        <div class="quote-box"><b>Mais frases proibidas (nunca usar):</b> "Se tiver interesse" · "Posso te mandar os planos?" · "Temos planos a partir de..." · "Estou à disposição" · "Quando puder me responde" · "Seu plano está vencendo" (renovação) · "Você gostaria de voltar a treinar?" / "Está interessado em renovar?" (soam a pesquisa, não a convite) · "Conhece alguém para indicar?" (pedir indicação direto — crie o ambiente para a indicação acontecer, não peça).</div>
+        <div class="quote-box"><b>Frases oficiais AQÚI (aprovadas, usar com naturalidade):</b> "Quem cria conexão, controla a venda." · "Sem conexão existe negociação. Com conexão existe decisão." · "Cliente não compra plano, compra direção." · "Nós dois contra o problema." · "Isso merece uma conversa." · "Seu presente continua reservado." · "Vamos colocar a conversa em dia." · "O CRM não automatiza relacionamentos — ele automatiza o início deles."</div>
+        <div class="quote-box"><b>Como gerar indicação sem pedir:</b> nunca "conhece alguém pra indicar?". Em vez disso, crie o ambiente: <i>"Depois quero te mostrar uma ação que estamos fazendo com alunos que estão começando junto com amigos e familiares"</i> ou <i>"Quero te apresentar uma iniciativa que estamos construindo para quem gosta de compartilhar suas conquistas."</i> A indicação nasce da conversa, não da pergunta direta.</div>
+
+        <h3 class="sub">AQÚI por canal — o que muda</h3>
+        <table>
+          <tr><th>Canal</th><th>Acolher</th><th>Qualificar</th><th>Única Coisa</th><th>Incentivar</th></tr>
+          <tr><td><b>WhatsApp</b></td><td>Resposta rápida, tom caloroso, atenção na 1ª linha</td><td>Pergunta objetiva, fácil de responder por texto</td><td>Benefício exclusivo destacado visualmente</td><td>Chamada clara com opção de horário</td></tr>
+          <tr><td><b>Ligação</b></td><td>Saudação pessoal, tom de voz acolhedor</td><td>Pergunta aberta, escuta ativa</td><td>Reforço verbal conectado à resposta do lead</td><td>Fechamento direto, sugerindo data/horário</td></tr>
+          <tr><td><b>Presencial</b></td><td>Recepção calorosa, ambiente</td><td>Pergunta aprofundada, observação de comportamento</td><td>Demonstração física do diferencial (tour)</td><td>Convite para o próximo passo no mesmo momento</td></tr>
+        </table>
+      </div>
+
+      <div class="section" id="m-disc">
+        <h2><span class="n">A.1</span> Perfis Comportamentais (DISC) — Referência Rápida</h2>
+        <p class="lead">A estrutura AQÚI não muda — o que muda é o <b>tom</b>. Identifique o perfil predominante do lead (pela forma como ele fala/escreve) e "espelhe" esse idioma, principalmente no Acolher e no Incentivar. Ninguém é só um perfil — todos temos os 4, em proporções diferentes. Regra de ouro: nunca "choque" o perfil oposto (ex: não seja hiperenergético com um perfil S, nem frio/técnico demais com um perfil I).</p>
+        <table>
+          <tr><th>Perfil</th><th>Como reconhecer</th><th>Como adaptar Acolher/Incentivar</th><th>Frase-modelo</th></tr>
+          <tr><td><b>D — Diretivo</b></td><td>Fala pouco, rápido, direto. Quer resultado, não tem paciência para enrolação.</td><td>Seja objetivo e direto ao ponto. Fale de velocidade e resultado. Segurança na voz — essa pessoa não aguenta insegurança.</td><td>"Leva 2 minutos. Quero entender se faz sentido pra você."</td></tr>
+          <tr><td><b>I — Influente</b></td><td>Fala muito, com energia, gosta de conversar e se conectar. Mais espontâneo(a).</td><td>Traga entusiasmo — "você vai amar". Fale de energia, comunidade, experiência. Não seja frio ou excessivamente técnico.</td><td>"Tenho a sensação de que você vai gostar bastante do que estamos construindo por aqui."</td></tr>
+          <tr><td><b>S — Estável</b></td><td>Mais quieto(a), fala baixo, mais tímido(a) ou inseguro(a) à primeira vista.</td><td>Fale com calma, tom baixo, transmita segurança e tranquilidade. Nunca exponha essa pessoa (nada de "vamos bater palma pra ela").</td><td>"Fica tranquilo(a), vamos no seu tempo. Meu objetivo é só te direcionar da melhor forma."</td></tr>
+          <tr><td><b>C — Calculista</b></td><td>Detalhista, exigente, quer dados precisos — avaliação, método, números.</td><td>Traga detalhes técnicos (avaliação física, revisões a cada 21 dias). Use a palavra "exatamente" — soa como música pra esse perfil.</td><td>"Antes de avançarmos, quero entender alguns detalhes pra garantir a melhor recomendação."</td></tr>
+        </table>
+        <div class="quote-box"><b>Por que isso importa:</b> conexão gera confiança, confiança leva à qualificação. E o que conecta primeiro é a linguagem. Se você não sabe o perfil da pessoa, use a <b>técnica do espelhamento</b>: responda com o mesmo ritmo, tamanho de frase e nível de energia que a pessoa te trouxe. Quando o lead não aceita ligação nem responde, peça um <b>áudio</b> dela — o áudio revela o perfil comportamental tanto quanto uma ligação revelaria.</div>
+      </div>
+
+      <div class="section" id="m-scripts">
+        <h2><span class="n">B.</span> Scripts por Canal e Situação</h2>
+        <p class="lead">17 blocos cobrindo todo o ciclo — da pré-qualificação à reativação de ex-alunos. Os scripts prontos para copiar estão na aba <b style="color:var(--laranja)">Script</b>.</p>
+        <div class="quote-box"><b>Regra de ouro do primeiro contato:</b> todo lead novo recebe texto <b>+</b> áudio <b>complementares</b> — nunca a mesma mensagem duas vezes. O texto pergunta idade e se já treina (poucas perguntas, justificadas pela personalização); o áudio reforça as boas-vindas/parabéns e já justifica a ligação. Ao falar da ligação, nunca pergunte se a pessoa prefere ou o que ela acha — afirme com confiança que o próximo passo é uma ligação rápida (2 a 3 minutos), valorizando o tempo dela. A isca "presente de boas-vindas" reforça a curiosidade. Objetivo central: tirar a conversa do WhatsApp e levar pro telefone, onde a qualificação consultiva acontece de verdade.</div>
+        <div class="quote-box"><b>Lead com BOT x sem BOT:</b> lead com BOT já respondeu uma pré-qualificação automatizada (nome, idade, objetivo, dores) — o primeiro contato pode referenciar isso. Lead sem BOT só tem nome/telefone/origem — <b>nunca diga "vi suas respostas" se não existe pré-qualificação real.</b></div>
+
+        <h3 class="sub">Matriz Oficial — duração e volume por tipo de cadência</h3>
+        <table>
+          <tr><th>Tipo</th><th>Quando usar (gatilho)</th><th>Duração da cadência ATIVA</th><th>Contatos</th></tr>
+          <tr><td>Aquisição (lead novo)</td><td>Lead acabou de chegar</td><td>10–15 dias</td><td>8–10</td></tr>
+          <tr><td>Conversão (objeção/não fechou)</td><td>Lead qualificado que travou</td><td>7–10 dias</td><td>5–8</td></tr>
+          <tr><td>Campanhas (inativos, sazonais)</td><td>Ação pontual/sazonal</td><td>5–7 dias</td><td>4–7</td></tr>
+          <tr><td>Relacionamento (plano novo, feedback)</td><td>Aluno recém-matriculado</td><td>Contínuo</td><td>Variável</td></tr>
+          <tr><td>Reativação (ex-aluno, desconectado)</td><td><b>30+ dias sem interação/frequência</b></td><td>4–7 dias (curta e espaçada)</td><td>3–5</td></tr>
+        </table>
+        <div class="quote-box"><b>Atenção para não confundir:</b> na linha de Reativação, "30+ dias" é o <b>gatilho de elegibilidade</b> — o tempo que a pessoa está sem interação para você considerar usar essa cadência (ver B.12, B.14, B.15). A cadência em si, uma vez iniciada, é <b>curta</b> (4 a 7 dias, 3 a 5 contatos) — não tem 30 dias de duração. É a cadência mais <i>espaçada e respeitosa</i>, não a mais longa.</div>
+
+        <h3 class="sub">Matriz de Decisão — antes de escolher a cadência, pergunte</h3>
+        <p style="font-size:14.5px;color:var(--texto2);">Possui BOT? · Qual a origem (Meta/Instagram/WhatsApp/Indicação/QR Code/Presencial)? · Qual a temperatura (frio/morno/quente)? · Há quanto tempo (hoje/7/30/60/90 dias)? · Qual o estágio (lead/oportunidade/matrícula/pós-venda/inativo)?</p>
+
+        <table>
+          <tr><th>Bloco</th><th>Situação</th><th>Canal(is)</th></tr>
+          <tr><td>B.1a–b</td><td>Primeiro Contato / M1 (parabenizar + posicionar + idade/treino)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td>B.1c–d</td><td>Direcionar para Ligação (metodologia + presente de boas-vindas)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td>B.1e</td><td>Pedir Áudio (quando o lead recusa ligação)</td><td>WhatsApp texto</td></tr>
+          <tr><td>B.2</td><td>Agendamento de visita presencial</td><td>WhatsApp</td></tr>
+          <tr><td>B.3</td><td>Plano prestes a vencer</td><td>WhatsApp · Ligação</td></tr>
+          <tr><td>B.4</td><td>Renovação de planos (contato pontual)</td><td>WhatsApp · Presencial</td></tr>
+          <tr><td>B.5</td><td>Nova turma / promoção</td><td>WhatsApp</td></tr>
+          <tr><td>B.6</td><td>Prospecção de novos clientes</td><td>Ligação</td></tr>
+          <tr><td>B.7</td><td>Recepção de novos leads</td><td>Presencial</td></tr>
+          <tr><td>B.8</td><td>Missão: Despertar de Interesse (alunos ativos)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td>B.9</td><td>Funil de Reconexão (leads frios)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td>B.10</td><td>Encerramento de Cadência (penúltima + última mensagem — genérico, usado por todas as cadências abaixo)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td><b>B.11</b></td><td><b>Cadência 10x15 completa</b> (aquisição — período ATIVO de tentativas: D0 a D15, 10 contatos)</td><td>Texto · Áudio · Ligação · Vídeo</td></tr>
+          <tr><td>B.12</td><td>Leads Antigos (30+ dias sem interação) — 5 dias</td><td>WhatsApp texto/vídeo</td></tr>
+          <tr><td>B.13</td><td>Cadência de Inativos (aluno sem frequência)</td><td>WhatsApp texto + áudio</td></tr>
+          <tr><td>B.14</td><td>Cadência de Ex-Alunos (relacionamento interrompido)</td><td>WhatsApp texto</td></tr>
+          <tr><td>B.15</td><td>Leads Desconectados (30+ dias sem resposta)</td><td>WhatsApp texto</td></tr>
+          <tr><td>B.16</td><td>Plano Novo — onboarding pós-matrícula (D+3/D+7/D+15)</td><td>WhatsApp texto</td></tr>
+          <tr><td>B.17</td><td>Cadência de Renovação (D-15 a D-2)</td><td>WhatsApp texto · Presencial</td></tr>
+        </table>
+        <div class="quote-box"><b>Regra da Cadência (toda a família B.8 a B.17):</b> nunca repita a mesma mensagem — cada tentativa traz um argumento diferente (áudio, presente, metodologia, prova social, urgência leve etc.). As duas últimas mensagens são especiais: a <b>penúltima</b> avisa que você vai reduzir o contato, a <b>última</b> é uma despedida real — mas sempre deixando a porta aberta (bloco B.10, reutilizado por todas). Muita gente responde justamente à mensagem de despedida — é normal, e vale a pena comemorar cada retorno.</div>
+        <h3 class="sub">Tempo de descanso após encerramento (varia por tipo)</h3>
+        <p style="font-size:13.5px;color:var(--texto2);margin-bottom:6px;">⚠️ Não confundir com a duração da cadência (ex: Cadência 10x15 = 10 contatos em 15 dias de tentativas ATIVAS). A tabela abaixo é o intervalo de <b>silêncio</b> — sem nenhuma tentativa — depois que a cadência termina sem resposta.</p>
+        <table>
+          <tr><th>Tipo</th><th>Descanso antes de reabordar</th></tr>
+          <tr><td>Lead (aquisição)</td><td>30 dias</td></tr>
+          <tr><td>Campanha / Desconectado</td><td>30 dias</td></tr>
+          <tr><td>Ex-aluno</td><td>60 dias</td></tr>
+          <tr><td>Renovação</td><td>15 dias</td></tr>
+          <tr><td>Plano Novo</td><td>Contínuo (faz parte da jornada, não encerra)</td></tr>
+        </table>
+      </div>
+
+      <div class="section" id="m-objecoes">
+        <h2><span class="n">C.</span> Mapa Completo de Objeções <span style="color:var(--texto2);font-size:16px;">(18 unificadas)</span></h2>
+        <p class="lead">Raciocínio-base para todas: <b>objeção → investigação → reconexão de valor → condução da decisão.</b> Itens marcados <span class="tag-synth">SÍNTESE</span> tiveram o Acolhimento e/ou Incentivo completados por curadoria — a fonte original trazia apenas pergunta e reconexão.</p>
+        <div id="objecoes-list"></div>
+      </div>
+
+      <div class="section" id="m-playbook">
+        <h2><span class="n">D.</span> Playbook de Roleplay Comercial</h2>
+        <p class="lead">Estrutura de treino semanal — cenário, aplicação do AQÚI, ancoragem de valor e tratamento de objeções, com pontuação.</p>
+
+        <h3 class="sub">1 — Contexto do cenário</h3>
+        <p>O líder apresenta a situação (ex: "Lead de 38 anos, quer emagrecer, já tentou academia antes, está comparando preços"). Objetivo do consultor: agendar visita ou conduzir venda consultiva. Duração: 5 a 7 minutos.</p>
+
+        <h3 class="sub">2 — Aplicação da Metodologia AQÚI (pontuação até 10)</h3>
+        <table>
+          <tr><th>Pilar</th><th>Exemplo de fala</th><th>Critérios</th><th>Pts</th></tr>
+          <tr><td><b>A</b></td><td>"O que te motivou a procurar uma academia agora?"</td><td>tom humano · pergunta aberta · interesse real</td><td>0–2</td></tr>
+          <tr><td><b>Q</b></td><td>"Você já tentou antes? O que mais te incomoda hoje?"</td><td>explorou dor real · tentativa anterior · urgência</td><td>0–3</td></tr>
+          <tr><td><b>Ú</b></td><td>"De tudo que expliquei, o que mais fez sentido pra você?"</td><td>explicou método · conectou solução à dor</td><td>0–3</td></tr>
+          <tr><td><b>I</b></td><td>"O próximo passo é vir conhecer pessoalmente."</td><td>condução natural · segurança · clareza do próximo passo</td><td>0–2</td></tr>
+        </table>
+
+        <h3 class="sub">3 — Treino de Ancoragem de Valor (até 5 pts)</h3>
+        <p>Fluxo obrigatório: <b>Revisão → Método → Cesta de valor → Âncora → Contraste.</b> Critérios: revisou a dor · apresentou método · apresentou diferenciais · criou referência de valor · apresentou contraste do plano anual.</p>
+
+        <h3 class="sub">4 — Treino de Tratamento de Objeções (até 5 pts)</h3>
+        <p>O líder provoca objeções ("Está caro." "Vou pensar." "Vou ver outras academias."). O consultor <b style="color:var(--laranja)">nunca defende o preço</b> — sempre retoma o valor através de uma pergunta estratégica.</p>
+        <div class="quote-box">"Perfeito, isso é super normal. Inclusive muita gente compara antes de decidir." → "Deixa eu te perguntar uma coisa..." → "O que você costuma olhar quando compara academias?"</div>
+
+        <h3 class="sub">Score final</h3>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-num">10</div><div class="stat-label">AQÚI</div></div>
+          <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">Ancoragem</div></div>
+          <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">Objeções</div></div>
+          <div class="stat-box"><div class="stat-num">20</div><div class="stat-label">Total possível</div></div>
+        </div>
+        <p>Classificação: <b>16–20</b> consultor preparado · <b>12–15</b> em evolução · <b>até 11</b> precisa treino intensivo.</p>
+
+        <h3 class="sub">Ritual semanal do líder</h3>
+        <p>2 sessões de roleplay por semana (40 min no total): uma focada em <b>condução da conversa</b>, outra em <b>ancoragem e objeções</b>.</p>
+      </div>
+    </div>
+
+    <!-- ===================== TAB: SCRIPT ===================== -->
+    <div class="tab-pane" id="tab-script">
+      <div id="scripts-list"></div>
+    </div>
+
+    <!-- ===================== TAB: QUIZ ===================== -->
+    <div class="tab-pane" id="tab-quiz">
+      <div class="quiz-box">
+        <div id="qBody">
+          <div class="quiz-progress" id="qProg">Questão 1 de 10</div>
+          <div class="quiz-q" id="qText"></div>
+          <div id="qOpts"></div>
+          <div class="quiz-feedback" id="qFeedback"></div>
+          <div class="quiz-nav"><button class="btn-primary" id="btnProx" onclick="proxQ()" disabled>Próxima</button></div>
+        </div>
+        <div class="quiz-resultado" id="qRes">
+          <h3 id="resMsg"></h3>
+          <p id="resSub"></p>
+          <button class="btn-primary" onclick="reiniciarQuiz()">Refazer Quiz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== TAB: REVISÃO ===================== -->
+    <div class="tab-pane" id="tab-revisao">
+      <div class="section">
+        <h2>Revisão Rápida</h2>
+        <p class="lead">6 pontos críticos para ter sempre em mente antes de qualquer contato com lead ou aluno.</p>
+        <div class="quote-box">1. AQÚI tem ordem: Acolher → Qualificar → Única Coisa → Incentivar. Pular etapa quebra a conversão.</div>
+        <div class="quote-box">2. Objeção nunca se responde defendendo — se responde perguntando primeiro.</div>
+        <div class="quote-box">3. "Está caro" quase nunca é sobre preço — é sobre incerteza de valor.</div>
+        <div class="quote-box">4. Toda mensagem de WhatsApp precisa terminar com uma pergunta ou convite de ação — nunca "fico no aguardo".</div>
+        <div class="quote-box">5. Reativação de alunos ativos: 3 contatos em 6 dias, nunca mais que isso sem reavaliar a lista.</div>
+        <div class="quote-box">6. A ÚNICA COISA sempre volta para o agendamento — é o norte de qualquer conversa comercial.</div>
+
+        <h3 class="sub">Checklist antes de usar um script</h3>
+        <div id="checklist-list"></div>
+        <div id="ckStatus">0 de 8 etapas confirmadas</div>
+      </div>
+    </div>
+
+    <!-- ===================== TAB: GESTOR ===================== -->
+    <div class="tab-pane" id="tab-gestor">
+      <div class="section">
+        <h2>Guia do Gestor</h2>
+        <p class="lead">O que observar em campo, como cobrar a aplicação da metodologia, e como conduzir a reunião semanal.</p>
+
+        <div class="gcard">
+          <h4>O que observar em campo</h4>
+          <ul>
+            <li>O consultor está seguindo a ordem A → Q → Ú → I, ou pulando direto para preço?</li>
+            <li>As mensagens de WhatsApp terminam sempre com uma pergunta/convite de ação?</li>
+            <li>Quando surge objeção, o consultor pergunta primeiro ou já sai defendendo o preço?</li>
+            <li>A missão de reativação de alunos ativos está sendo feita com os 3 contatos em 6 dias, ou abandonada no meio?</li>
+          </ul>
+        </div>
+
+        <div class="gcard">
+          <h4>Como cobrar</h4>
+          <ul>
+            <li>Rodar roleplay 2x por semana (ritual do líder) e registrar o score de cada consultor(a).</li>
+            <li>Pedir print/áudio real de pelo menos 1 atendimento por semana para calibrar junto com o time.</li>
+            <li>Se o score de roleplay estiver abaixo de 12/20 de forma recorrente, priorizar treino individual antes de cobrar meta.</li>
+          </ul>
+        </div>
+
+        <div class="gcard">
+          <h4>Pauta da reunião semanal (15 min)</h4>
+          <ul>
+            <li>Quantos alunos/leads foram contatados na semana?</li>
+            <li>Quantas consultorias/visitas foram agendadas e quantas realizadas?</li>
+            <li>Quais objeções mais apareceram — e como foram tratadas?</li>
+            <li>Quais mensagens/scripts funcionaram melhor?</li>
+            <li>Quem precisa de mais atenção/treino essa semana?</li>
+          </ul>
+        </div>
+
+        <div class="gcard">
+          <h4>Indicadores GeFit ligados a este tema</h4>
+          <div class="stat-grid">
+            <div class="stat-box"><div class="stat-num">30–50</div><div class="stat-label">Tentativas/dia 🟢</div></div>
+            <div class="stat-box"><div class="stat-num">20–30</div><div class="stat-label">Contatos/dia 🟢</div></div>
+            <div class="stat-box"><div class="stat-num">5–10</div><div class="stat-label">Agendamentos/dia 🟢</div></div>
+            <div class="stat-box"><div class="stat-num">2+</div><div class="stat-label">Ciclos exclusivos CRM/dia</div></div>
+          </div>
+        </div>
+
+        <div class="gcard">
+          <h4>Indicadores obrigatórios por frequência</h4>
+          <table style="margin-top:4px;">
+            <tr><th>Indicador</th><th>Frequência</th></tr>
+            <tr><td>Leads · Tentativas · Contatos · Agendamentos · Comparecimento · Conversão</td><td>Diário</td></tr>
+            <tr><td>Ticket Médio · Renovação</td><td>Semanal</td></tr>
+            <tr><td>Retenção · Indicações</td><td>Mensal</td></tr>
+          </table>
+        </div>
+
+        <div class="gcard">
+          <h4>Reuniões obrigatórias</h4>
+          <ul>
+            <li><b>Diária (10 min):</b> metas, indicadores, prioridades do dia</li>
+            <li><b>Semanal (30 min):</b> feedback, melhorias, roleplay</li>
+            <li><b>Mensal (60 min):</b> performance, ranking, evolução do time</li>
+          </ul>
+        </div>
+
+        <div class="gcard">
+          <h4>Perfil do consultor AQÚI x o que não funciona</h4>
+          <ul>
+            <li><b>Funciona:</b> curioso (faz perguntas) · observador (percebe padrões) · comunicador (transmite segurança) · disciplinado (executa as cadências) · responsável (sabe que todo lead tem dono)</li>
+            <li><b>Não funciona:</b> "distribuidor de tabela" ("temos planos a partir de...") · "operador de WhatsApp" ("qualquer coisa me chama") · "tirador de pedidos" ("qual plano você quer?") · improvisador (atende diferente a cada vez)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== TAB: GERADOR ===================== -->
+    <div class="tab-pane" id="tab-gerador">
+      <div class="section">
+        <h2>Gerador de Script Personalizado</h2>
+        <p class="lead">Sem IA, sem créditos — monta o script combinando a base validada da metodologia com o briefing da sua academia. 100% offline.</p>
+
+        <div class="gform">
+          <label>Nome da Academia</label>
+          <input type="text" id="gNome" placeholder="Ex: Academia Vitalis">
+
+          <label>Diferencial principal de posicionamento</label>
+          <input type="text" id="gDiferencial" placeholder="Ex: o acompanhamento individual toda semana, com avaliação física completa">
+          <div class="ghint">Complete a frase: "O que faz a gente diferente é <b>___</b>." Escreva já nesse formato, sem pontuação no final.</div>
+
+          <label>Benefícios da campanha (o que está sendo oferecido agora)</label>
+          <input type="text" id="gBeneficio" placeholder="Ex: uma semana de teste gratuita e avaliação física sem custo">
+          <div class="ghint">Complete a frase: "E agora você também tem direito a <b>___</b>." Escreva já nesse formato, sem pontuação no final.</div>
+
+          <label>Situação / Canal</label>
+          <select id="gSituacao">
+            <option value="">Selecione...</option>
+            <optgroup label="Situações do funil" id="optSituacoes"></optgroup>
+            <optgroup label="Tratar objeção" id="optObjecoes"></optgroup>
+          </select>
+
+          <button class="btn-primary" style="margin-top:14px" onclick="gerarScript()">Gerar Script</button>
+        </div>
+
+        <div id="gOutputWrap" style="margin-top:24px;display:none;">
+          <div class="script-block">
+            <div class="sb-head">
+              <div><h4 id="gOutTitle"></h4><div class="sb-context" id="gOutCtx">Mensagem pronta para copiar e enviar</div></div>
+              <button class="copy-btn" onclick="copiarScript(this,'gOutput')">Copiar</button>
+            </div>
+            <div class="script-text" id="gOutput"></div>
+          </div>
+
+          <div class="obj-item" id="gEstrutura" style="margin-top:10px;">
+            <div class="obj-head" onclick="toggleObj(document.getElementById('gEstrutura'))">
+              <div>Ver estrutura AQÚI <span style="color:var(--texto2);font-weight:500;">(uso interno / treino — não enviar assim)</span></div>
+              <span class="arrow">▾</span>
+            </div>
+            <div class="obj-body">
+              <div id="gOutputAqui" style="padding-top:8px;"></div>
+            </div>
+          </div>
+
+          <p style="font-size:12.5px;color:var(--texto2);margin-top:8px;">Gerado a partir da base validada da metodologia AQÚI — revise antes de enviar, como qualquer script.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer class="pagefoot">Central de Scripts AQÚI · Universidade Corporativa GeFit · Documento Mestre v1</footer>
+</div>
+
+<script>
+// ── TABS ──
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.hnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4,gerador:5};
+  const tabs=document.querySelectorAll('.tab-btn');
+  const htabs=document.querySelectorAll('.hnav-btn');
+  if(map[id]!==undefined){tabs[map[id]]?.classList.add('active');htabs[map[id]]?.classList.add('active');}
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='quiz'&&respondidas===0)renderQ();
+}
+function switchTabFromSidebar(id){
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4,gerador:5};
+  const tabs=document.querySelectorAll('.tab-btn');
+  switchTab(id,tabs[map[id]]);
+}
+function scrollToId(id){
+  switchTab('conteudo',document.querySelectorAll('.tab-btn')[0]);
+  setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  },80);
+}
+// Navegação interna: troca de aba + rola até o bloco + destaca (usado pelo Mapa Rápido)
+function goTo(tab,id){
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4,gerador:5};
+  const tabs=document.querySelectorAll('.tab-btn');
+  if(map[tab]!==undefined)switchTab(tab,tabs[map[tab]]);
+  if(!id)return;
+  setTimeout(()=>{
+    let el=document.getElementById('wrap-'+id)||document.getElementById(id);
+    if(el){
+      if(el.classList.contains('obj-item')&&!el.classList.contains('open'))el.classList.add('open');
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.classList.add('deeplink-highlight');
+      setTimeout(()=>el.classList.remove('deeplink-highlight'),3000);
+    }
+  },150);
+}
+
+// ── ACCORDION OBJEÇÕES ──
+function toggleObj(el){el.classList.toggle('open');}
+
+// ── COPIAR SCRIPT ──
+function copiarScript(btn,id){
+  const el=document.getElementById(id);
+  const txt=el.innerText;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='Copiado!';
+    setTimeout(()=>btn.textContent='Copiar',1800);
+  });
+}
+
+// ── CHECKLIST ──
+function toggleCk(el){
+  el.classList.toggle('checked');
+  el.querySelector('.mark').textContent=el.classList.contains('checked')?'✓':'';
+  const tot=document.querySelectorAll('.ck-pill').length;
+  const ck=document.querySelectorAll('.ck-pill.checked').length;
+  document.getElementById('ckStatus').textContent=`${ck} de ${tot} etapas confirmadas`;
+  updProg(ck/tot*0.4);
+}
+
+// ── PROGRESSO ──
+function updProg(pct){
+  const p=Math.min(100,Math.round(pct*100));
+  document.getElementById('progFill').style.width=p+'%';
+  document.getElementById('progTxt').textContent=p+'% concluído';
+}
+
+// ══════════════════════════════════════════
+// DADOS — MAPA DE 18 OBJEÇÕES
+// ══════════════════════════════════════════
+const OBJ = [
+{n:1,t:'"Está caro"',synth:true,meaning:'"Não tenho certeza se vale o investimento" (percepção de custo-benefício).',
+ a:'Entendo que o preço é uma consideração importante para você.',
+ q:'Quando você pensa em caro... você está comparando com outra academia ou com o investimento que imaginava fazer?',
+ u:'Entendo perfeitamente. A diferença é que aqui você não está comprando apenas acesso. Você está entrando em um projeto com acompanhamento e evolução.',
+ i:'Vou te mostrar de perto tudo que está incluso — consigo um horário pra você conhecer a estrutura amanhã ou depois, qual fica melhor pra você?'},
+{n:2,t:'"Vou pensar"',synth:true,meaning:'O cliente ainda não organizou a decisão.',
+ a:'Perfeito, é natural querer pensar antes de decidir algo importante.',
+ q:'O que você sente que ainda precisa avaliar antes de decidir?',
+ u:'Se te ajudar a pensar com mais clareza, normalmente as pessoas com um objetivo parecido com o seu escolhem o projeto anual justamente para garantir constância.',
+ i:'Vou te ajudar nessa decisão. Separo os pontos principais agora mesmo e já te confirmo um horário pra fecharmos isso juntos essa semana.'},
+{n:3,t:'"Vou ver outras academias"',synth:false,meaning:'Comparação natural.',
+ a:'Perfeito. Inclusive comparar é importante.',
+ q:'Quando você compara academias, o que costuma olhar primeiro?',
+ u:'Conduzir a comparação para: método · acompanhamento · resultado.',
+ i:'Para te ajudar a comparar com justiça, faço questão de te presentear com uma visita guiada e uma consultoria com nosso especialista. Consigo um encaixe amanhã ou depois — qual fica melhor pra você?'},
+{n:4,t:'"Preciso falar com meu marido/esposa"',synth:true,meaning:'Busca por segurança.',
+ a:'Perfeito, é importante decidir juntos.',
+ q:'Quando você explicar para ele/ela, qual ponto você acha que vai fazer mais sentido?',
+ u:'(o próprio cliente verbaliza o valor de novo, ao responder a pergunta acima)',
+ i:'Vou te mandar agora as informações principais pra vocês decidirem juntos, e já deixo reservado um horário pra confirmarmos — amanhã ou depois?'},
+{n:5,t:'"Agora não é um bom momento"',synth:true,meaning:'Prioridade emocional baixa.',
+ a:'Entendo, momentos assim acontecem.',
+ q:'O que está acontecendo nesse momento que faz você sentir isso?',
+ u:'E se você deixar para depois, o que pode acontecer com esse objetivo que você comentou?',
+ i:'Justamente por isso quero te ajudar a começar do jeito certo, sem pesar na sua rotina. Vou reservar um horário leve pra você essa semana — prefere de manhã ou à tarde?'},
+{n:6,t:'"Já tentei academia antes e não deu certo"',synth:true,meaning:'Medo de frustração.',
+ a:'Isso acontece com muita gente.',
+ q:'O que você acha que fez não funcionar daquela vez?',
+ u:'É exatamente por isso que aqui a gente trabalha com acompanhamento.',
+ i:'Dessa vez vai ser diferente, porque você vai ter acompanhamento de verdade. Vou te mostrar como funciona na prática — consigo um horário amanhã, topa?'},
+{n:7,t:'"Não sei se vou conseguir manter"',synth:true,meaning:'Dúvida sobre disciplina.',
+ a:'Essa dúvida é mais comum do que parece.',
+ q:'O que normalmente faz você parar quando começa?',
+ u:'Aqui a gente acompanha evolução justamente para evitar isso.',
+ i:'Vou te acompanhar de perto justamente pra isso não acontecer de novo. Bora começar com seu plano de adaptação — consigo te encaixar essa semana.'},
+{n:8,t:'"Vou começar mês que vem"',synth:true,meaning:'Procrastinação elegante.',
+ a:'Faz sentido querer se planejar.',
+ q:'Se você começasse agora, o que mudaria na sua rotina?',
+ u:'Às vezes começar agora ajuda exatamente a criar o ritmo que você comentou que precisa.',
+ i:'Vou garantir sua condição especial agora, pra você não perder isso — e já começamos no seu ritmo, com uma avaliação essa semana.'},
+{n:9,t:'"Preciso organizar minhas finanças"',synth:true,meaning:'Medo de compromisso.',
+ a:'Entendo, isso é uma preocupação válida.',
+ q:'Hoje o que mais pesa para você quando pensa em investir nisso?',
+ u:'Por isso muita gente prefere o projeto anual — ele acaba sendo o melhor custo-benefício ao longo do ano.',
+ i:'Vou te mostrar as opções que cabem no seu momento agora. Consigo um horário rápido pra vermos isso juntos, amanhã ou depois?'},
+{n:10,t:'"Estou só pesquisando"',synth:true,meaning:'Fase inicial de decisão.',
+ a:'Perfeito, pesquisar é importante.',
+ q:'O que você espera encontrar em uma academia ideal?',
+ u:'(conectar com os diferenciais da Academia Modelo QG a partir da resposta)',
+ i:'Para te ajudar nessa pesquisa, vou te presentear com um Mapa Completo da Saúde e uma consultoria com nosso especialista — assim você compara com muito mais clareza. Consigo um encaixe amanhã, fico te esperando?'},
+{n:11,t:'"A academia X é mais barata"',synth:true,meaning:'Comparação superficial.',
+ a:'Pode ser mesmo.',
+ q:'Você chegou a ver se lá também tem acompanhamento e avaliação periódica?',
+ u:'Reposicionar a comparação de preço para valor vs. preço.',
+ i:'Vou te mostrar tudo que está incluso aqui, pra você comparar com justiça. Consigo um horário pra você conhecer de perto amanhã ou depois.'},
+{n:12,t:'"Preciso de mais tempo (para decidir)"',synth:true,meaning:'O cliente ainda não se sente seguro.',
+ a:'Sem problema, quero que você decida com segurança.',
+ q:'O que você sente que ainda falta para tomar a decisão?',
+ u:'Se te ajudar, posso revisar rapidamente os pontos que conversamos.',
+ i:'Vou te ajudar a fechar esse ponto com segurança. Reservo 10 minutos pra gente amanhã, pode ser?'},
+{n:13,t:'"Não conheço/confio no vendedor"',synth:false,meaning:'Ativa resposta de defesa/risco — confiança é pré-requisito para decisão.',
+ a:'Entendo que confiar no vendedor é essencial. Por isso, queria que você conhecesse alguns depoimentos de nossos alunos satisfeitos.',
+ q:'Alguns dos nossos alunos também tinham dúvidas no início, mas após experimentar nossos serviços, tiveram transformações incríveis. O que faria você se sentir mais seguro?',
+ u:'Estamos aqui para ajudar você a alcançar seus objetivos com a mesma dedicação que oferecemos a todos os nossos membros.',
+ i:'Vou te apresentar nossa equipe e te mostrar de perto como trabalhamos. Consigo um horário pra você vir conhecer amanhã ou depois?'},
+{n:14,t:'"Será que esse método funciona?"',synth:false,meaning:'Busca por evidência/validação racional.',
+ a:'Sei que é importante para você saber se nossos programas realmente funcionam.',
+ q:'Posso compartilhar alguns estudos de caso e depoimentos de alunos que alcançaram resultados incríveis.',
+ u:'Nossos programas são baseados em métodos comprovados e personalizados para atender às suas necessidades.',
+ i:'Vou te mostrar resultados reais de quem já passou por aqui. Vamos marcar sua sessão experimental — consigo um encaixe essa semana.'},
+{n:15,t:'"Será que funciona para mim?"',synth:false,meaning:'Necessidade de relevância/personalização pessoal.',
+ a:'Entendo que você quer ter certeza de que nossos programas vão funcionar especificamente para você.',
+ q:'Quais são seus objetivos específicos e desafios que você enfrenta atualmente?',
+ u:'Personalizamos nossos programas para atender às suas necessidades únicas, garantindo que você obtenha os melhores resultados possíveis.',
+ i:'Vou montar com você um plano que faz sentido pro seu objetivo. Consigo um horário pra conversarmos sobre isso amanhã ou depois.'},
+{n:16,t:'"E se eu não conseguir usar/acompanhar?"',synth:false,meaning:'Medo de falhar por falta de suporte.',
+ a:'Entendo que você possa estar preocupado se conseguirá aproveitar da melhor forma.',
+ q:'Quais são suas principais preocupações ou dificuldades quando se trata de frequentar uma academia?',
+ u:'Oferecemos suporte contínuo com treinadores especializados que vão acompanhar seu progresso e ajustar o plano conforme necessário.',
+ i:'Vou te acompanhar de perto desde o primeiro dia, com nossos treinadores especializados. Consigo te encaixar numa sessão de orientação essa semana.'},
+{n:17,t:'"E se eu não gostar?"',synth:false,meaning:'Risco percebido sobre satisfação futura — reduzido por experiência direta.',
+ a:'Sei que pode ser difícil decidir sem experimentar antes.',
+ q:'Quais são os aspectos mais importantes para você em uma academia?',
+ u:'Oferecemos uma semana de experiência gratuita para que você possa ver por si mesmo se nossa academia é o lugar certo para você.',
+ i:'Vou te mostrar como é treinar aqui de verdade — já separo sua semana de experiência. Consigo começar amanhã ou prefere sexta?'},
+{n:18,t:'"Estou sem tempo" (rotina — diferente de "preciso de mais tempo para decidir")',synth:false,meaning:'Uma das objeções mais comuns em academias — exige mostrar que a solução cabe na rotina.',
+ a:'Percebi que você está bastante ocupado ultimamente.',
+ q:'Poderia me contar um pouco mais sobre os horários que você tem disponíveis, mesmo que sejam apenas alguns minutos por dia?',
+ u:'Temos uma série de treinos rápidos e eficientes que podem ser feitos em apenas 20–30 minutos, projetados para ótimos resultados mesmo com tempo limitado.',
+ i:'Vou te mostrar como isso cabe na sua rotina sem pesar. Consigo uma avaliação rápida de 15 minutos — amanhã à noite ou no horário de almoço, qual funciona melhor?'}
+];
+
+function renderObjecoes(){
+  const wrap=document.getElementById('objecoes-list');
+  wrap.innerHTML=OBJ.map(o=>`
+    <div class="obj-item" id="obj-${o.n}">
+      <div class="obj-head" onclick="toggleObj(document.getElementById('obj-${o.n}'))">
+        <div><span class="num">${o.n}.</span>${o.t}${o.synth?'<span class="tag-synth">SÍNTESE</span>':''}</div>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="obj-body">
+        <div class="meaning">${o.meaning}</div>
+        <div class="obj-line"><b>A —</b> ${o.a}</div>
+        <div class="obj-line"><b>Q —</b> ${o.q}</div>
+        <div class="obj-line"><b>Ú —</b> ${o.u}</div>
+        <div class="obj-line"><b>I —</b> ${o.i}</div>
+      </div>
+    </div>`).join('');
+}
+renderObjecoes();
+
+// ══════════════════════════════════════════
+// DADOS — SCRIPTS (aba Script)
+// ══════════════════════════════════════════
+const SCRIPTS = [
+{id:'b1txt1',block:'B.1a · Primeiro Contato — Texto',ctx:'WhatsApp · Variação 1 — imediatamente quando o lead chega',
+ text:`Oi, [Nome]! Que alegria receber sua mensagem 🙌 Antes de mais nada, parabéns pela decisão — dar esse passo já mostra que você está levando sua saúde a sério, e isso já é o mais difícil.
+
+Aqui na Academia Modelo QG a gente trabalha diferente das academias convencionais: montamos um projeto personalizado pra cada aluno, com acompanhamento de verdade.
+
+Pra eu já entender como te ajudar melhor: qual sua idade, e você já está treinando ou se exercitando atualmente?`},
+{id:'b1txt2',block:'B.1a · Primeiro Contato — Texto',ctx:'WhatsApp · Variação 2',
+ text:`Oi, [Nome]! Tudo bem? Fico muito feliz com seu interesse 😊 Parabéns por dar esse passo — muita gente pensa e não faz, e você já está na frente.
+
+Diferente das academias tradicionais, aqui a gente monta um programa personalizado, pensado pro seu momento e objetivo.
+
+Posso te fazer duas perguntinhas rápidas pra já direcionar certo? Qual sua idade, e você já treina ou seria seu primeiro contato com atividade física?`},
+{id:'b1txt3',block:'B.1a · Primeiro Contato — Texto',ctx:'WhatsApp · Variação 3',
+ text:`Oi, [Nome]! Que bom ter você por aqui 🙌 Antes de tudo, parabéns pela decisão de cuidar de você — esse é o primeiro passo, e ele já faz toda diferença.
+
+A Academia Modelo QG não é uma academia convencional: a gente trabalha com programas exclusivos, pensados pra cada pessoa de um jeito diferente.
+
+Pra eu montar algo sob medida pra você: qual sua idade, e hoje você já pratica alguma atividade física?`},
+{id:'b1aud1',block:'B.1b · Primeiro Contato — Áudio (complementar ao texto)',ctx:'WhatsApp · Variação 1 (25–30s) — enviar junto com o texto B.1a. Não repete as perguntas do texto: reforça as boas-vindas e já justifica a ligação.',
+ text:`Só reforçando aqui: parabéns mesmo pela decisão de se cuidar e escolher uma academia com metodologia e acompanhamento de verdade — isso já faz toda diferença no resultado. Pra eu já te apresentar o projeto certo pra você, o próximo passo é um bate-papo rápido por telefone, de uns 2 a 3 minutinhos, só pra eu entender melhor seus objetivos. Consigo ligar agora, ou prefere que eu ligue em outro horário?`},
+{id:'b1aud2',block:'B.1b · Primeiro Contato — Áudio (complementar ao texto)',ctx:'WhatsApp · Variação 2 (25–30s)',
+ text:`Quero reforçar aqui os parabéns pela decisão — escolher uma academia com metodologia e acompanhamento de verdade muda completamente o resultado. Pra eu montar o projeto ideal pra você, o próximo passo é uma ligação rápida, de 2 a 3 minutos, só pra entender seus objetivos direitinho e já te trazer a melhor opção. Já vou te ligar!`},
+{id:'b1aud3',block:'B.1b · Primeiro Contato — Áudio (complementar ao texto)',ctx:'WhatsApp · Variação 3 (20–25s, mais direta)',
+ text:`Reforçando as boas-vindas! Parabéns por dar esse passo e escolher um lugar que realmente acompanha o aluno de perto — isso muda tudo no resultado. Pra eu já te trazer o projeto certo, vamos fazer uma ligação rápida, de 2 a 3 minutinhos, só pra eu entender melhor seu objetivo. Te ligo em instantes!`},
+{id:'b1ctxt1',block:'B.1c · Direcionar para Ligação — Texto',ctx:'WhatsApp · Variação 1 — 2ª tentativa no mesmo dia (sem resposta)',
+ text:`Oi, [Nome]! Passando novamente por aqui 😊 Separei um presente de boas-vindas especial pra você e quero te explicar rapidinho como funciona nossa metodologia. Entendo a correria e quero valorizar seu tempo — consigo ligar rapidinho agora, ou prefere que eu ligue em outro horário? São só 2 a 3 minutinhos, garanto que vai valer a pena.`},
+{id:'b1ctxt2',block:'B.1c · Direcionar para Ligação — Texto',ctx:'WhatsApp · Variação 2',
+ text:`Oi, [Nome]! Não quero que você perca seu presente de boas-vindas. Quero te contar rapidinho sobre nossa metodologia e os diferenciais que fazem toda a diferença no resultado — consigo ligar agora, ou prefere outro horário? São só 2 a 3 minutos, direto ao ponto.`},
+{id:'b1caud1',block:'B.1d · Direcionar para Ligação — Áudio',ctx:'WhatsApp · Variação 1 (25–30s)',
+ text:`Oi, [Nome]! Passando rapidinho aqui porque quero muito te explicar direitinho como funciona o nosso método — a gente tem alguns diferenciais que fazem toda a diferença no resultado. Ah, e separei um presente de boas-vindas especialmente pra você, quero muito te contar o que é. Consigo ligar agora, ou prefere que eu ligue em outro horário? É rápido, só 2 a 3 minutinhos, e garanto que vai valer a pena.`},
+{id:'b1caud2',block:'B.1d · Direcionar para Ligação — Áudio',ctx:'WhatsApp · Variação 2 (20–25s) — quando o lead ainda não respondeu',
+ text:`Oi, [Nome]! Vi que você ainda não respondeu, imagino que a correria tenha tomado conta aí. Só não queria que você perdesse seu presente de boas-vindas — é algo bem especial que separei pra quem está começando essa jornada. Consigo ligar agora rapidinho, ou prefere que eu ligue em outro horário? São só 2 a 3 minutos.`},
+{id:'b1ctxt3',block:'B.1c · Direcionar para Ligação — Texto',ctx:'WhatsApp · Variação 3 — quando você já tentou ligar antes de mandar a mensagem',
+ text:`Oi, [Nome]! Fui eu que te liguei agorinha pouco. Separei um presente de boas-vindas especial pra você e quero te explicar rapidinho como funciona nossa metodologia. Consigo falar com você agora, ou prefere que eu ligue em outro horário? São só 2 a 3 minutinhos.`},
+{id:'b1eaudio',block:'B.1e · Pedir Áudio (quando o lead recusa ligação)',ctx:'WhatsApp texto — última alternativa antes de insistir na ligação',
+ text:`Sem problema! Você pode me mandar um áudio contando um pouco da sua história? Quanto tempo já treinou, o que já tentou antes, qual seu objetivo hoje — assim eu já consigo montar o projeto ideal pra você e te retorno rapidinho.`},
+{id:'b2v1',block:'B.2 · Agendamento de Visita Presencial',ctx:'WhatsApp · Variação 1 — pós-qualificação',
+ text:`Olá, [Nome]! Aqui é [Seu Nome] da Academia Modelo QG. Fico feliz em falar com você e agradeço por já ter compartilhado suas informações conosco.
+
+Para aprofundarmos o atendimento, gostaria de entender um pouco mais sobre sua experiência com treinos — se já teve contato com academias, quais são seus objetivos e se há algum cuidado especial que você considera importante.
+
+Com base no que você me contou, o próximo passo fundamental é agendar uma visita presencial à nossa academia. Qual seria o melhor dia para você?`},
+{id:'b2v2',block:'B.2 · Agendamento de Visita Presencial',ctx:'WhatsApp · Variação 2',
+ text:`Oi, [Nome]! Aqui é [Seu Nome] da Academia Modelo QG. É ótimo poder conversar com você e aprofundar nossa compreensão das suas necessidades.
+
+Para garantir que o atendimento seja ideal, gostaria de saber mais sobre sua vivência com atividades físicas, os desafios que já enfrentou e suas metas atuais.
+
+Proponho agendarmos uma visita presencial à nossa academia — essa etapa é decisiva para que possamos apresentar um projeto sob medida para você. Qual dia e horário se encaixam melhor na sua agenda?`},
+{id:'b2v3',block:'B.2 · Agendamento de Visita Presencial',ctx:'WhatsApp · Variação 3',
+ text:`Olá, [Nome]! Aqui é [Seu Nome] da Academia Modelo QG. É um prazer falar com você novamente e saber que está comprometido em investir em sua saúde.
+
+Gostaria de entender melhor sua experiência com treinos, seus objetivos e se há alguma necessidade especial que devemos considerar.
+
+O próximo passo é agendar uma visita presencial. Essa visita é rápida e fundamental para que você veja de perto nossa estrutura. Qual opção de data e horário seria mais conveniente para você?`},
+{id:'b3wa',block:'B.3 · Cliente com Plano Prestes a Vencer',ctx:'WhatsApp',
+ text:`Atenção: "Dê um passo além no seu projeto! 🌟"
+Acolhimento: "Olá, [Nome do Cliente], espero que esteja bem! Aqui é [Seu Nome] da Academia Modelo QG."
+Qualificação: "Queremos ajudar você a atingir seus objetivos de fitness com um plano de treino personalizado."
+Única Coisa: "Estou aqui para te oferecer uma oportunidade exclusiva de dar um passo além no seu projeto e progredir ainda mais nos seus resultados."
+Incentivo: "Estou muito animado para ajudar você a começar essa jornada! Que tal agendarmos essa reunião para a próxima terça-feira às 10h? 😊"`},
+{id:'b3lig',block:'B.3 · Cliente com Plano Prestes a Vencer',ctx:'Ligação',
+ text:`Acolhimento: "Olá, [Nome do Cliente], tudo bem? Aqui é [Seu Nome] da Academia Modelo QG. Como você está?"
+Qualificação: "Nosso propósito é avançar sempre e te ajudar a inserir novos hábitos, por isso a continuidade do projeto é fundamental."
+Única Coisa: "Como nosso cliente, você tem uma chance exclusiva de renovar e dar upgrade no seu projeto de resultados."
+Incentivo: "Que tal agendarmos essa reunião para a próxima terça-feira às 10h?"`},
+{id:'b4wa',block:'B.4 · Renovação de Planos',ctx:'WhatsApp',
+ text:`Atenção: "Seu próximo passo para o sucesso começa agora! 💪"
+Acolhimento: "Oi, [Nome do Cliente]! Aqui é [Seu Nome] da Academia Modelo QG."
+Qualificação: "Nós sabemos que a continuidade é essencial para alcançar seus objetivos de fitness."
+Única Coisa: "Responda a esta mensagem para garantir uma condição exclusiva na renovação do seu projeto."
+Incentivo: "Estou muito empolgado para ver você progredir ainda mais! Vamos agendar sua renovação?"`},
+{id:'b4pres',block:'B.4 · Renovação de Planos',ctx:'Presencial',
+ text:`Acolhimento: "Oi, [Nome do Cliente], que bom ver você aqui! Como estão seus treinos?"
+Qualificação: "Percebi que seu plano está prestes a vencer e gostaria de discutir as melhores opções para sua continuidade."
+Única Coisa: "Temos algumas ofertas especiais para renovação que podem ser de seu interesse."
+Incentivo: "Vamos sentar e conversar sobre como podemos continuar avançando no seu projeto de fitness?"`},
+{id:'b5',block:'B.5 · Nova Turma / Promoção',ctx:'WhatsApp',
+ text:`Atenção: "Não perca essa chance! Inscreva-se na nossa nova turma! 🚀"
+Acolhimento: "Olá, [Nome do Cliente], tudo bem? Aqui é [Seu Nome] da Academia Modelo QG."
+Qualificação: "Estamos lançando uma nova turma de [nome da aula/programa] que pode ser perfeita para você."
+Única Coisa: "As vagas são limitadas, então não perca tempo! Garanta já o seu lugar."
+Incentivo: "Estou ansioso para vê-lo nessa nova jornada! Vamos fazer sua inscrição?"`},
+{id:'b6',block:'B.6 · Prospecção de Novos Clientes',ctx:'Ligação',
+ text:`Acolhimento: "Oi, [Nome do Lead], aqui é [Seu Nome] da Academia Modelo QG. Você tem um momento para conversar?"
+Qualificação: "Eu vi que você mostrou interesse em nossos serviços de fitness e gostaria de entender melhor seus objetivos e necessidades."
+Única Coisa: "Acredito que temos um programa que pode ser perfeito para você. Gostaria de saber mais detalhes?"
+Incentivo: "Vamos marcar uma visita para você conhecer nossa academia e nossos treinadores? Tenho certeza de que você vai adorar!"`},
+{id:'b7',block:'B.7 · Recepção de Novos Leads',ctx:'Presencial',
+ text:`Acolhimento: "Olá, bem-vindo à Academia Modelo QG! Como posso ajudar você hoje?"
+Qualificação: "Eu gostaria de saber mais sobre seus objetivos de fitness para que possamos encontrar o melhor programa para você."
+Única Coisa: "Temos uma variedade de opções que podem atender às suas necessidades. Posso mostrar alguns detalhes?"
+Incentivo: "Vamos fazer um tour pela academia? Assim você pode conhecer nossas instalações e se sentir à vontade."`},
+{id:'b8c1msg',block:'B.8 · Missão Despertar de Interesse',ctx:'Contato 1 (Dia 1) — Mensagem de texto',
+ text:`Oi, [nome]! Tudo bem? Aqui é [seu nome] da Academia Modelo QG 😊 Estamos iniciando um novo projeto interno para melhorar ainda mais a experiência dos nossos alunos. Quero te enviar um presente especial que preparamos para quem está treinando com a gente. Posso te explicar rapidinho?`},
+{id:'b8c1audio',block:'B.8 · Missão Despertar de Interesse',ctx:'Contato 1 (Dia 1) — Áudio (20–30s)',
+ text:`Oi, [nome]! Aqui é o [seu nome] da Academia Modelo QG. Como você já treina com a gente, queremos te oferecer um mapeamento completo da sua saúde + uma consultoria com um treinador especialista, totalmente sem custo. Isso vai nos ajudar a entender seu momento atual e te mostrar como evoluir com mais segurança e resultado. Queria te explicar rapidinho — posso te mandar os próximos passos?`},
+{id:'b8c2',block:'B.8 · Missão Despertar de Interesse',ctx:'Contato 2 (Dia 3) — Mensagem + Áudio',
+ text:`Mensagem: "[Nome], passando aqui para te lembrar do mapa completo da saúde que liberamos para você. Ele mostra suas prioridades, pontos de atenção e te dá um plano personalizado de evolução."
+
+Áudio (20–25s): "Quero muito que você aproveite essa consultoria, [nome]. São só alguns minutos, mas isso muda totalmente o jeito de treinar — você para de adivinhar e começa a seguir um caminho claro. Posso reservar um horário para você ainda essa semana?"`},
+{id:'b8c3',block:'B.8 · Missão Despertar de Interesse',ctx:'Contato 3 (Dia 6) — Mensagem + Áudio',
+ text:`Mensagem: "[Nome], estou finalizando os horários da semana para o mapa da saúde + consultoria com especialista. Consigo te encaixar amanhã ou depois — o que fica melhor para você?"
+
+Áudio (25–30s): "Eu queria muito que você aproveitasse essa oportunidade. Poucos alunos receberam essa liberação, e como você está no processo com a gente, faz todo sentido dar esse passo agora. É rápido, leve e totalmente personalizado. Qual horário você prefere?"`},
+{id:'b9contato',block:'B.9 · Funil de Reconexão',ctx:'Primeiro contato de reconexão',
+ text:`Oi [nome], tudo bem? Vi que você conversou com a gente, mas talvez a rotina tenha apertado aí. Queria te avisar que seu presente de boas-vindas ainda está reservado.`},
+{id:'b9audio',block:'B.9 · Funil de Reconexão',ctx:'Roteiro de áudio — Apresentação inicial',
+ text:`Oi [nome], tudo bem? Aqui é [seu nome] da Academia Modelo QG. Passando rapidinho porque vi que você se interessou e quero te contar uma coisa importante: nossa academia é diferente das academias convencionais. A gente trabalha com uma metodologia exclusiva, voltada para resultados reais. A gente começa com uma avaliação física tecnológica, onde você entende 15 áreas da sua saúde, e a partir disso montamos um planejamento de treino de verdade, totalmente individualizado. Queria muito te garantir o seu presente de boas-vindas: o mapeamento completo da sua saúde + consultoria personalizada. Se você topar, eu te explico rapidinho como funciona. Leva menos de 3 minutinhos. Me chama aqui quando puder!`},
+{id:'b9curto',block:'B.9 · Funil de Reconexão',ctx:'Mensagem curta de reconexão (WhatsApp)',
+ text:`Oi [nome]! Consegui separar aqui seu presente de boas-vindas — o mapeamento completo da sua saúde + consultoria personalizada. Vou te explicar rapidinho como funciona e já reservar seu horário. Consigo um encaixe amanhã ou depois, qual fica melhor pra você?`},
+{id:'b10penultima',block:'B.10 · Encerramento de Cadência — Penúltima Mensagem',ctx:'WhatsApp texto/áudio — usar quando a cadência (B.8 ou B.9) não teve resposta',
+ text:`Oi, [Nome]. Percebi que a rotina tá bem corrida pra você conversar comigo agora, e tudo bem — eu não quero ser mais uma cobrança no seu dia. A partir de agora vou dar mais espaço, mas o seu presente de boas-vindas continua reservado.`},
+{id:'b10ultima',block:'B.10 · Encerramento de Cadência — Última Mensagem (despedida real)',ctx:'WhatsApp texto/áudio — se não houver resposta após a penúltima, aguardar ~30 dias antes de reabordar',
+ text:`Oi, [Nome]. Como a gente não conseguiu se falar, entendo que agora não é prioridade pra você — e tudo bem. O importante é que eu não vou desistir de você: quando fizer sentido, é só me chamar que eu vou estar aqui pra te ajudar.`},
+
+{id:'b11d2',block:'B.11 · Cadência 10x15 — D2 (Ligação)',ctx:'Objetivo do contato: Presença',
+ text:`Oi, [Nome]! Aqui é [Seu Nome] da Academia Modelo QG. Consigo falar 2 a 3 minutinhos com você agora? Vi que a gente trocou mensagem e quero entender rapidinho o que te motivou a procurar a gente nesse momento.`},
+{id:'b11d3txt',block:'B.11 · Cadência 10x15 — D3 (Texto)',ctx:'Objetivo do contato: Conexão',
+ text:`Oi, [Nome]! Passando pra te lembrar que seu presente de boas-vindas continua reservado. Inclusive, alguns alunos que começaram recentemente comentaram que gostariam de ter conhecido esse processo antes. Consigo ligar rapidinho agora, ou prefere outro horário? Vou te mostrar como funciona.`},
+{id:'b11d3aud',block:'B.11 · Cadência 10x15 — D3 (Áudio complementar)',ctx:'Não repete o texto — reforça emocionalmente e já anuncia a ligação',
+ text:`Oi, [Nome]! Só reforçando aqui: seu presente de boas-vindas ainda tá separado especialmente pra você. A gente tem um jeito bem diferente de acompanhar os alunos, e acho que você vai se identificar bastante com o que construímos. Consigo ligar agora, ou prefere outro horário? São só 2 a 3 minutinhos, prometo ser rápido.`},
+{id:'b11d5',block:'B.11 · Cadência 10x15 — D5 (Vídeo + Texto)',ctx:'Objetivo do contato: Autoridade. Vídeo curto (até 30s): estrutura, metodologia, bastidores ou depoimento',
+ text:`Separei um vídeo rapidinho pra você conhecer um pouco mais de como funciona por aqui, [Nome] — acho que você vai se identificar com o que a gente construiu. [vídeo]`},
+{id:'b11d7',block:'B.11 · Cadência 10x15 — D7 (Ligação)',ctx:'Objetivo do contato: Compromisso',
+ text:`Oi, [Nome]! Aqui é [Seu Nome] de novo, da Academia Modelo QG. Queria só confirmar uma coisa com você: esse objetivo que você me contou ainda é prioridade pra esse momento, ou mudou alguma coisa aí?`},
+{id:'b11d9',block:'B.11 · Cadência 10x15 — D9 (Texto)',ctx:'Objetivo do contato: Reaproximação',
+ text:`Oi, [Nome]! Algumas conversas acontecem exatamente no momento certo — por isso resolvi passar aqui de novo antes de encerrar seu acompanhamento inicial. Consigo ligar rapidinho agora, ou prefere outro horário?`},
+{id:'b11d11',block:'B.11 · Cadência 10x15 — D11 (Vídeo + Texto)',ctx:'Objetivo do contato: Prova social. Vídeo com aluno, ambiente, experiência ou depoimento',
+ text:`Separei mais um vídeo que acho que você vai gostar de ver, [Nome] — muita gente que treina com a gente hoje começou exatamente como você: com uma dúvida e uma mensagem. [vídeo]`},
+{id:'b11d13',block:'B.11 · Cadência 10x15 — D13 (Texto — só para leads mornos/quentes)',ctx:'Objetivo do contato: Reflexão',
+ text:`Só uma reflexão rápida, [Nome]: quantas vezes você já disse pra si mesmo(a) que ia começar "semana que vem"? Consigo te ligar amanhã, ou prefere outro dia? São só 2 minutinhos pra gente conversar sobre isso.`},
+
+{id:'b12d1',block:'B.12 · Leads Antigos (30+ dias) — Dia 1',ctx:'Atenção — nunca "seja bem-vindo" para quem já conversou antes',
+ text:`Nossa conversa ficou pela metade, [Nome], e resolvi aparecer novamente. Como você está?`},
+{id:'b12d2',block:'B.12 · Leads Antigos (30+ dias) — Dia 2',ctx:'Curiosidade',
+ text:`Seu presente de boas-vindas continua reservado, [Nome] — separei um tempinho essa semana caso você queira retomar essa conversa.`},
+{id:'b12d3',block:'B.12 · Leads Antigos (30+ dias) — Dia 3',ctx:'Prova social',
+ text:`Muita gente que treina com a gente hoje começou de um jeito parecido com o seu, [Nome] — com uma pausa no meio do caminho. Separei um vídeo rápido que acho que vai fazer sentido pra você. [vídeo]`},
+{id:'b12d4',block:'B.12 · Leads Antigos (30+ dias) — Dia 4 (CTA)',ctx:'Convite assertivo',
+ text:`Consigo te ligar amanhã rapidinho, [Nome], ou prefere outro horário? São só 2 a 3 minutinhos, só pra retomarmos essa conversa com calma.`},
+
+{id:'b13d1',block:'B.13 · Cadência de Inativos — Dia 1',ctx:'Aluno sem frequência/afastado — objetivo é "sentimos sua falta", nunca "volte a treinar"',
+ text:`Oi, [Nome]! Estávamos organizando algumas coisas por aqui e percebemos que faz um tempo que a gente não coloca a conversa em dia. Como você está?`},
+{id:'b13d2',block:'B.13 · Cadência de Inativos — Dia 2 (Áudio)',ctx:'Humanizar — sobre a pessoa, não sobre o treino',
+ text:`Oi, [Nome]! Passando pra saber mesmo como você está — não é sobre treino agora, é sobre você. Sentimos sua falta por aqui.`},
+{id:'b13d4',block:'B.13 · Cadência de Inativos — Dia 4',ctx:'Curiosidade leve',
+ text:`Uma coisa que eu percebo com quem retorna depois de um tempo parado, [Nome]: o mais difícil é sempre dar o primeiro passo de novo — o resto flui naturalmente.`},
+{id:'b13d5',block:'B.13 · Cadência de Inativos — Dia 5 (CTA)',ctx:'Convite assertivo pro café',
+ text:`Vamos tomar um café antes ou depois do seu próximo treino, [Nome]? Vou separar um horário essa semana especialmente pra isso.`},
+
+{id:'b14d1',block:'B.14 · Cadência de Ex-Alunos — Dia 1',ctx:'Ex-aluno não é lead — é relacionamento interrompido',
+ text:`Seu nome apareceu numa conversa aqui na equipe hoje, [Nome], e resolvi te mandar uma mensagem.`},
+{id:'b14d3',block:'B.14 · Cadência de Ex-Alunos — Dia 3',ctx:'Pertencimento',
+ text:`Algumas pessoas fazem parte da história da academia mesmo quando estão longe, [Nome] — e você é uma delas.`},
+{id:'b14d5',block:'B.14 · Cadência de Ex-Alunos — Dia 5 (CTA)',ctx:'Convite assertivo — descanso após encerramento: 60 dias (diferente do padrão de 30)',
+ text:`Se fizer sentido pra você, [Nome], gostaria muito de tomar um café e ouvir como as coisas têm sido. Consigo essa semana — qual dia fica melhor?`},
+
+{id:'b15d1',block:'B.15 · Leads Desconectados (30+ dias sem resposta) — Dia 1',ctx:'Tratados como "relacionamentos não iniciados"',
+ text:`Nossa conversa ficou pela metade e resolvi aparecer novamente, [Nome].`},
+{id:'b15d2',block:'B.15 · Leads Desconectados — Dia 2',ctx:'Reforço do presente',
+ text:`Seu presente de boas-vindas continua reservado, [Nome].`},
+{id:'b15d4',block:'B.15 · Leads Desconectados — Dia 4 (CTA)',ctx:'Novidade como gancho',
+ text:`Tenho a impressão que você vai gostar de uma novidade que estamos preparando por aqui, [Nome]. Consigo te ligar amanhã rapidinho pra te contar, ou prefere outro horário? São só 2 a 3 minutinhos.`},
+
+{id:'b16d3',block:'B.16 · Plano Novo — D+3',ctx:'Objetivo real: aumentar proximidade e validar a decisão — nunca vira pesquisa/NPS',
+ text:`Passando pra saber como estão sendo esses primeiros dias, [Nome]. Quero reservar alguns minutinhos pra colocarmos a conversa em dia antes ou depois do seu próximo treino — consigo te encaixar essa semana.`},
+{id:'b16d7',block:'B.16 · Plano Novo — D+7',ctx:'Reforço de proximidade',
+ text:`Os primeiros dias costumam ser os mais importantes, [Nome], por isso quero muito ouvir suas primeiras percepções pessoalmente. Quando vier treinar essa semana, me chama que eu já te encontro por lá.`},
+{id:'b16d15',block:'B.16 · Plano Novo — D+15',ctx:'Gerar curiosidade sem revelar — prepara terreno pra próxima etapa (upgrade, indicação etc.)',
+ text:`Tenho acompanhado sua jornada por aqui, [Nome], e já tenho alguns pontos legais pra conversarmos. Inclusive, quero te mostrar uma coisa que acho que vai fazer ainda mais sentido pro seu momento. Vou te encontrar no seu próximo treino, combinado?`},
+
+{id:'b17d15',block:'B.17 · Cadência de Renovação — D-15',ctx:'Nunca "seu plano está vencendo" — sempre "próximos passos da jornada"',
+ text:`Estava olhando sua jornada por aqui, [Nome], e acho que vale a pena a gente conversar sobre os próximos passos.`},
+{id:'b17d10',block:'B.17 · Cadência de Renovação — D-10',ctx:'Antecipação de valor',
+ text:`Tenho algumas ideias que acho que fazem bastante sentido pro momento que você está vivendo agora, [Nome] — quero te mostrar antes de mais nada.`},
+{id:'b17d5',block:'B.17 · Cadência de Renovação — D-5',ctx:'Reforço de continuidade',
+ text:`Vou reservar uns minutinhos pra alinharmos como vai ser a continuidade do seu projeto, [Nome] — consigo te encontrar essa semana.`},
+{id:'b17d2',block:'B.17 · Cadência de Renovação — D-2 (CTA)',ctx:'Convite presencial assertivo — descanso após encerramento: 15 dias (mais curto, pois é aluno ativo)',
+ text:`Vamos tomar um café antes do seu próximo treino, [Nome]? Acho que essa conversa merece acontecer pessoalmente. Te espero [dia da semana]?`}
+];
+
+function renderScripts(){
+  const wrap=document.getElementById('scripts-list');
+  wrap.innerHTML=SCRIPTS.map(s=>`
+    <div class="script-block" id="wrap-${s.id}">
+      <div class="sb-head">
+        <div><h4>${s.block}</h4><div class="sb-context">${s.ctx}</div></div>
+        <button class="copy-btn" onclick="copiarScript(this,'${s.id}')">Copiar</button>
+      </div>
+      <div class="script-text" id="${s.id}">${s.text.split('\\n').map(l=>l.trim()?`<p>${l}</p>`:'').join('')}</div>
+    </div>`).join('');
+}
+renderScripts();
+
+// ══════════════════════════════════════════
+// CHECKLIST
+// ══════════════════════════════════════════
+const CK=[
+ 'Já sei o nome e o contexto do lead/aluno (não vou mandar mensagem genérica)',
+ 'Escolhi o script certo para a situação (canal + etapa do funil)',
+ 'Substituí todos os [Nome], [Seu Nome] pelos dados reais',
+ 'A mensagem termina com uma pergunta ou convite de ação claro',
+ 'Se for objeção, vou perguntar antes de defender',
+ 'Sei qual é a ÚNICA COISA que quero que essa pessoa faça a seguir',
+ 'Vou registrar o contato no sistema depois de enviar',
+ 'Revisei o tom — humano, sem jargão técnico'
+];
+function renderChecklist(){
+  const wrap=document.getElementById('checklist-list');
+  wrap.innerHTML=CK.map((c,i)=>`
+    <div class="ck-pill" onclick="toggleCk(this)">
+      <span class="mark"></span><span>${c}</span>
+    </div>`).join('');
+}
+renderChecklist();
+
+// ══════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════
+const QS=[
+{q:'Qual é a ordem correta dos quatro pilares da metodologia AQÚI?',
+ opts:['Qualificar → Acolher → Incentivar → Única Coisa','Acolher → Qualificar → Única Coisa → Incentivar','Única Coisa → Acolher → Incentivar → Qualificar','Incentivar → Qualificar → Acolher → Única Coisa'],
+ correct:1,fb:'A ordem é sempre Acolher, Qualificar, Única Coisa, Incentivar — pular etapa reduz a conversão.'},
+{q:'Segundo o princípio central do playbook, o que muda um consultor treinado?',
+ opts:['Motivação diária antes do turno','Treino estruturado e repetido','Mais tempo de experiência apenas','Scripts decorados palavra por palavra'],
+ correct:1,fb:'"Vendas não melhoram com motivação. Elas melhoram com treino estruturado."'},
+{q:'Como o consultor deve reagir quando o cliente diz "Está caro"?',
+ opts:['Oferecer desconto imediatamente','Defender o preço com argumentos','Perguntar primeiro, sem entrar em modo de defesa','Ignorar e mudar de assunto'],
+ correct:2,fb:'Objeção nunca se responde defendendo — sempre se responde perguntando primeiro.'},
+{q:'No pilar "Única Coisa", qual é o objetivo real?',
+ opts:['Empurrar o plano mais caro','Fazer o cliente verbalizar o valor por conta própria','Fechar a venda imediatamente','Listar todos os diferenciais de uma vez'],
+ correct:1,fb:'A Única Coisa busca que o próprio cliente reconheça e verbalize por que a solução faz sentido para ele.'},
+{q:'Na Missão de Despertar de Interesse (alunos ativos), qual é a cadência de contatos?',
+ opts:['1 contato único','5 contatos em 10 dias','3 contatos em 6 dias','7 contatos em 1 semana'],
+ correct:2,fb:'A cadência é de 3 contatos (Dia 1, Dia 3 e Dia 6), combinando mensagem de texto e áudio.'},
+{q:'No Funil de Reconexão, qual é a frase-chave obrigatória ao reforçar o presente de boas-vindas?',
+ opts:['"Esse presente é só por hoje"','"Esse presente é o primeiro passo do seu diagnóstico completo da saúde"','"Esse presente vale para qualquer pessoa"','"Esse presente substitui a consultoria"'],
+ correct:1,fb:'A frase-chave reforça que o presente é o primeiro passo de um diagnóstico completo — não um brinde isolado.'},
+{q:'Quantos pontos, no máximo, o roleplay pontua no bloco AQÚI?',
+ opts:['5 pontos','10 pontos','15 pontos','20 pontos'],
+ correct:1,fb:'O bloco AQÚI vale até 10 pontos (A: 0–2, Q: 0–3, Ú: 0–3, I: 0–2).'},
+{q:'Qual é o score total possível no roleplay completo (AQÚI + Ancoragem + Objeções)?',
+ opts:['10 pontos','15 pontos','20 pontos','25 pontos'],
+ correct:2,fb:'AQÚI (10) + Ancoragem (5) + Objeções (5) = 20 pontos possíveis.'},
+{q:'Qual é o fluxo obrigatório do Treino de Ancoragem de Valor?',
+ opts:['Preço → Desconto → Fechamento','Revisão → Método → Cesta de valor → Âncora → Contraste','Objeção → Defesa → Argumento → Fechamento','Saudação → Preço → Convite'],
+ correct:1,fb:'O fluxo de ancoragem segue: Revisão → Método → Cesta de valor → Âncora → Contraste (com o plano anual).'},
+{q:'Na objeção "Preciso falar com meu marido/esposa", qual é o significado real por trás dela?',
+ opts:['O cliente não tem interesse nenhum','Busca por segurança na decisão','O cliente está mentindo','Falta de dinheiro'],
+ correct:1,fb:'Essa objeção normalmente reflete busca por segurança — o cliente quer decidir em conjunto, não recusar.'},
+{q:'No perfil DISC, qual letra representa a pessoa mais detalhista, que valoriza dados e precisão?',
+ opts:['D — Diretivo','I — Influente','S — Estável','C — Calculista'],
+ correct:3,fb:'O perfil C (Calculista) é o mais exigente com detalhes técnicos — use dados precisos e a palavra "exatamente".'},
+{q:'Qual técnica confirma se uma objeção é real antes de você investir tempo tratando ela a fundo?',
+ opts:['Perguntar o preço da concorrência','"E se não fosse [a objeção], você se matricularia agora?"','Oferecer desconto direto','Insistir até a pessoa responder'],
+ correct:1,fb:'A técnica de confirmação ("E se não fosse...") mostra se aquela é de fato a barreira real ou só uma desculpa.'},
+{q:'Qual dessas frases NUNCA deve ser usada, segundo a metodologia?',
+ opts:['"Consigo um encaixe amanhã ou depois"','"Qualquer coisa a gente se fala"','"Vou te ajudar nessa decisão"','"Você tem direito a um presente de boas-vindas"'],
+ correct:1,fb:'"Qualquer coisa a gente se fala" é vago e não gera compromisso real — sempre afirme o próximo passo concreto.'},
+{q:'Durante o período ATIVO da Cadência 10x15 — ou seja, enquanto as tentativas de contato acontecem (D0 a D15) — quantos contatos são feitos e em quantos dias?',
+ opts:['5 contatos em 10 dias','10 contatos em 15 dias','15 contatos em 10 dias','10 contatos em 30 dias'],
+ correct:1,fb:'São 10 contatos ao longo de 15 dias de tentativas ativas (D0 a D15), cada um com objetivo psicológico diferente. Isso é diferente do "tempo de descanso" (ex: 30 dias) que vem depois, se não houver resposta até o fim da cadência.'},
+{q:'Depois que a Cadência 10x15 termina SEM resposta do lead, quanto tempo se deve esperar antes de tentar reabordar?',
+ opts:['Reabordar no dia seguinte','Nunca mais reabordar','~30 dias de descanso','~7 dias de descanso'],
+ correct:2,fb:'O tempo de descanso é diferente do período ativo da cadência: para leads de aquisição, é ~30 dias. Esse intervalo varia por tipo (ex-aluno: 60 dias · renovação: 15 dias).'},
+{q:'Na cadência de Reativação (ex-aluno/desconectado), o que significa "30+ dias" na Matriz Oficial?',
+ opts:['A cadência ativa fica 30+ dias rodando','É o tempo sem interação/frequência que qualifica a pessoa para essa cadência — a cadência em si dura só 4 a 7 dias','É quantos contatos são feitos no total','É o tempo de descanso depois que a cadência termina'],
+ correct:1,fb:'"30+ dias" é o gatilho de elegibilidade (tempo sem interação), não a duração da cadência. Uma vez iniciada, a cadência de Reativação é curta e espaçada: 4 a 7 dias, 3 a 5 contatos (veja B.12, B.14, B.15).'}
+];
+let qAt=0,acertos=0,respondidas=0,sel=null;
+
+function renderQ(){
+  const item=QS[qAt];
+  document.getElementById('qProg').textContent=`Questão ${qAt+1} de ${QS.length}`;
+  document.getElementById('qText').textContent=item.q;
+  document.getElementById('qFeedback').style.display='none';
+  document.getElementById('btnProx').disabled=true;
+  sel=null;
+  document.getElementById('qOpts').innerHTML=item.opts.map((o,i)=>
+    `<button class="quiz-opt" onclick="responder(${i})">${o}</button>`).join('');
+}
+function responder(i){
+  if(sel!==null)return;
+  sel=i;
+  const item=QS[qAt];
+  const btns=document.querySelectorAll('.quiz-opt');
+  btns.forEach((b,idx)=>{
+    b.style.pointerEvents='none';
+    if(idx===item.correct)b.classList.add('correct');
+    else if(idx===i)b.classList.add('wrong');
+  });
+  if(i===item.correct)acertos++;
+  respondidas++;
+  const fb=document.getElementById('qFeedback');
+  fb.style.display='block';
+  fb.textContent=item.fb;
+  document.getElementById('btnProx').disabled=false;
+}
+function proxQ(){
+  qAt++;
+  if(qAt>=QS.length){mostrarResultado();return;}
+  renderQ();
+}
+function mostrarResultado(){
+  document.getElementById('qBody').style.display='none';
+  const res=document.getElementById('qRes');
+  res.classList.add('show');
+  const ap=acertos/QS.length>=0.7;
+  document.getElementById('resMsg').textContent=ap?'✓ Aprovado! Você domina o conteúdo.':'✗ Abaixo do mínimo. Revise o conteúdo e tente novamente.';
+  document.getElementById('resSub').textContent=`${acertos} de ${QS.length} questões corretas. Mínimo: 70% (${Math.ceil(QS.length*0.7)} acertos).`;
+  updProg(0.6+ (ap?0.4:0.2));
+}
+function reiniciarQuiz(){
+  qAt=0;acertos=0;respondidas=0;sel=null;
+  document.getElementById('qBody').style.display='block';
+  document.getElementById('qRes').classList.remove('show');
+  renderQ();
+}
+
+// ══════════════════════════════════════════
+// GERADOR DE SCRIPT (sem IA — motor de templates da base validada)
+// ══════════════════════════════════════════
+const GER_SIT=[
+{id:'preq',label:'Pré-qualificação (novo lead)',canal:'WhatsApp',
+ a:'Olá! Aqui é a equipe da {NOME}. Fico muito feliz em ver seu interesse em transformar sua rotina e cuidar da sua saúde.',
+ q:'Para te atender do jeito certo, me conta rapidinho: você já treinou antes ou seria sua primeira vez? Qual seu principal objetivo hoje?',
+ i:'Vou te mostrar exatamente como isso se encaixa no seu momento. Consigo um horário rápido com nossa especialista — amanhã ou depois, qual prefere?'},
+{id:'agendavisita',label:'Agendamento de visita presencial',canal:'WhatsApp',
+ a:'Que bom falar com você! Obrigado por compartilhar suas informações com a gente na {NOME}.',
+ q:'Com base no que você me contou, quero te mostrar de perto como funciona nosso método.',
+ i:'Vou te mostrar de perto nossa estrutura e o método na prática. Consigo um horário pra sua visita amanhã ou depois — qual fica melhor?'},
+{id:'planovencendo',label:'Plano prestes a vencer',canal:'WhatsApp',
+ a:'Olá! Espero que esteja bem. Aqui é a equipe da {NOME}.',
+ q:'Notei que seu plano está próximo do vencimento e não queria que você perdesse a continuidade dos seus resultados.',
+ i:'Vou garantir sua condição de renovação agora, pra você não perder a continuidade dos resultados. Consigo fechar isso com você hoje ou amanhã?'},
+{id:'renovacao',label:'Renovação de plano',canal:'Presencial',
+ a:'Que bom ver você aqui! Como estão seus treinos?',
+ q:'Percebi que seu plano está prestes a vencer e queria conversar sobre as melhores opções pra você continuar.',
+ i:'Vou te mostrar as melhores opções pra você seguir avançando sem perder o ritmo. Consigo 10 minutos agora mesmo pra fecharmos isso.'},
+{id:'novaturma',label:'Nova turma / promoção',canal:'WhatsApp',
+ a:'Olá! Tudo bem? Aqui é a equipe da {NOME}.',
+ q:'Estamos lançando uma nova turma que pode ser perfeita pra você.',
+ i:'Vou garantir sua vaga agora, porque elas são limitadas. Consigo confirmar sua inscrição já — fechamos?'},
+{id:'prospeccao',label:'Prospecção de novos clientes',canal:'Ligação',
+ a:'Oi! Aqui é da equipe da {NOME}. Você tem um minuto?',
+ q:'Vi que você demonstrou interesse em treinar com a gente — pode me contar um pouco do seu objetivo?',
+ i:'Vou te mostrar de perto a estrutura e apresentar nossos treinadores. Consigo um horário pra sua visita amanhã ou depois?'},
+{id:'recepcao',label:'Recepção de novo lead (presencial)',canal:'Presencial',
+ a:'Olá, seja bem-vindo(a) à {NOME}! Como posso te ajudar hoje?',
+ q:'Me conta um pouco dos seus objetivos, pra eu te mostrar o que faz mais sentido.',
+ i:'Vou te levar agora mesmo pra você conhecer cada espaço de perto. Vem comigo?'},
+{id:'reativacao',label:'Reativação de aluno ativo (faltando aos treinos)',canal:'WhatsApp',atencao:true,
+ a:'Sentimos sua falta por aqui! Já faz um tempo que a gente não te vê nos treinos.',
+ q:'Aqui é a equipe da {NOME} — passando pra saber como você está e entender se rolou algo que te afastou da rotina ultimamente.',
+ i:'Vou reservar sua consultoria com nosso especialista essa semana — consigo um horário amanhã ou depois, qual fica melhor pra você?'},
+{id:'reconexao',label:'Reconexão (lead frio que sumiu)',canal:'WhatsApp',atencao:true,
+ a:'Nossa conversa ficou pela metade, e resolvi aparecer novamente.',
+ q:'Aqui é a equipe da {NOME} — vi que você demonstrou interesse, mas talvez a rotina tenha apertado. Seu presente de boas-vindas continua reservado.',
+ i:'Vou te explicar agora mesmo como funciona e já reservar seu horário. Consigo um encaixe amanhã ou depois, qual fica melhor pra você?'},
+{id:'exaluno',label:'Ex-aluno (relacionamento interrompido)',canal:'WhatsApp',atencao:true,
+ a:'Seu nome apareceu numa conversa aqui na equipe hoje.',
+ q:'Aqui é a equipe da {NOME} — quis te mandar uma mensagem porque você faz parte da nossa história, mesmo estando um tempo fora.',
+ i:'Vou separar um horário pra gente tomar um café e colocar a conversa em dia. Consigo essa semana — qual dia fica melhor?'},
+{id:'leadantigo',label:'Lead antigo desconectado (30+ dias sem interação)',canal:'WhatsApp',atencao:true,
+ a:'Nossa conversa ficou pela metade, e resolvi aparecer novamente.',
+ q:'Aqui é a equipe da {NOME} — seu presente de boas-vindas continua reservado, caso você queira retomar essa conversa.',
+ i:'Consigo ligar amanhã rapidinho, ou prefere outro horário? São só 2 a 3 minutinhos, só pra retomarmos com calma.'}
+];
+
+function popularSelectGerador(){
+  const optSit=document.getElementById('optSituacoes');
+  optSit.innerHTML=GER_SIT.map(s=>`<option value="sit-${s.id}">${s.label} (${s.canal})</option>`).join('');
+  const optObj=document.getElementById('optObjecoes');
+  optObj.innerHTML=OBJ.map(o=>`<option value="obj-${o.n}">${o.n}. ${o.t}</option>`).join('');
+}
+popularSelectGerador();
+
+// ══════════════════════════════════════════
+// DEEP LINK — abrir direto na aba/bloco certo via URL
+// Uso: UC-CentralScriptsAQUI.html?tab=script&id=b1txt1
+//      UC-CentralScriptsAQUI.html?tab=conteudo&anchor=m-objecoes
+// ══════════════════════════════════════════
+function handleDeepLink(){
+  const params=new URLSearchParams(window.location.search);
+  const tab=params.get('tab');
+  const id=params.get('id');
+  const anchor=params.get('anchor');
+  if(!tab)return;
+
+  const map={conteudo:0,script:1,quiz:2,revisao:3,gestor:4,gerador:5};
+  const tabs=document.querySelectorAll('.tab-btn');
+  if(map[tab]!==undefined && tabs[map[tab]]){
+    switchTab(tab,tabs[map[tab]]);
+  }
+
+  const targetId = id ? ('wrap-'+id) : (anchor || null);
+  if(targetId){
+    setTimeout(()=>{
+      const el=document.getElementById(targetId) || document.getElementById(id);
+      if(el){
+        // se estiver dentro de um accordion de objeção, abre ele
+        if(el.classList.contains('obj-item') && !el.classList.contains('open')){
+          el.classList.add('open');
+        }
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+        el.classList.add('deeplink-highlight');
+        setTimeout(()=>el.classList.remove('deeplink-highlight'),3000);
+      }
+    },150);
+  }
+}
+
+// Executa a inicialização da ferramenta (deep-link etc.) — chamado só DEPOIS do login confirmado
+let appJaIniciado=false;
+function iniciarAppInterno(){
+  if(appJaIniciado)return; // evita rodar 2x (ex: reload de sessão + login manual)
+  appJaIniciado=true;
+  handleDeepLink();
+}
+
+// ══════════════════════════════════════════
+// AUTENTICAÇÃO — compatível com o mesmo login do Desafio ROI 21 Dias
+// (mesma tabela `gestores` no Supabase — suspender lá também bloqueia aqui)
+// ══════════════════════════════════════════
+const SB_URL='https://irwvagffrguiljaxrzmd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A';
+const SB_H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+async function sbGet(t,p=''){
+  const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:SB_H});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+const ROLES_PERMITIDOS=['gestor','admin','consultor']; // 'consultor' já preparado para quando existir
+
+function mostrarTela(id){
+  document.getElementById('screen-checking').style.display='none';
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('appWrap').style.display='none';
+  const el=document.getElementById(id);
+  if(el)el.style.display=(id==='appWrap')?'block':'flex';
+}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const senha=document.getElementById('login-senha').value;
+  const err=document.getElementById('login-err');err.classList.remove('show');
+  if(!email||!senha){err.textContent='Preencha e-mail e senha.';err.classList.add('show');return;}
+  const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Verificando...';
+  try{
+    const res=await sbGet('gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=id,nome,email,academia_id,role`);
+    if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){
+      err.textContent='E-mail ou senha incorretos, ou acesso não autorizado.';err.classList.add('show');
+      btn.disabled=false;btn.textContent='Entrar';return;
+    }
+    sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));
+    aplicarSessao(res[0]);
+    mostrarTela('appWrap');
+    iniciarAppInterno();
+  }catch(e){
+    err.textContent='Erro de conexão. Tente novamente.';err.classList.add('show');console.error(e);
+  }
+  btn.disabled=false;btn.textContent='Entrar';
+}
+
+function doLogout(){
+  sessionStorage.removeItem('qg90_sessao');
+  document.getElementById('login-email').value='';
+  document.getElementById('login-senha').value='';
+  mostrarTela('screen-login');
+}
+
+function aplicarSessao(s){
+  document.getElementById('userNome').textContent=s.nome||s.email;
+  document.getElementById('userAcademia').textContent=s.role==='admin'?'GeFit · Master':(s.role==='consultor'?'Consultor(a)':'Gestor(a)');
+}
+
+// Ao carregar: PRIORIDADE 1 — entrada automática vinda do Desafio ROI 21 Dias
+// (link do tipo central-scripts-aqui.html?uid=ID_DO_GESTOR, já logado por lá)
+// PRIORIDADE 2 — sessão salva neste navegador, revalidada no Supabase
+// PRIORIDADE 3 — tela de login manual (acesso direto, sem vir do painel)
+async function checkSession(){
+  const params=new URLSearchParams(window.location.search);
+  const uidAuto=params.get('uid');
+
+  if(uidAuto){
+    try{
+      const res=await sbGet('gestores',`id=eq.${encodeURIComponent(uidAuto)}&ativo=eq.true&select=id,nome,email,academia_id,role`);
+      if(res&&res.length&&ROLES_PERMITIDOS.includes(res[0].role)){
+        sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));
+        aplicarSessao(res[0]);
+        mostrarTela('appWrap');
+        iniciarAppInterno();
+        return;
+      }
+      // uid inválido ou inativo: cai para o fluxo normal abaixo
+    }catch(e){console.error(e);}
+  }
+
+  const raw=sessionStorage.getItem('qg90_sessao');
+  if(!raw){mostrarTela('screen-login');return;}
+  let s;
+  try{s=JSON.parse(raw);}catch(e){mostrarTela('screen-login');return;}
+  try{
+    const res=await sbGet('gestores',`id=eq.${encodeURIComponent(s.id)}&ativo=eq.true&select=id,nome,email,academia_id,role`);
+    if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){
+      sessionStorage.removeItem('qg90_sessao');
+      mostrarTela('screen-login');
+      return;
+    }
+    sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));
+    aplicarSessao(res[0]);
+    mostrarTela('appWrap');
+    iniciarAppInterno();
+  }catch(e){
+    console.error(e);
+    mostrarTela('screen-login');
+  }
+}
+checkSession();
+
+function gerarScript(){
+  const nome=document.getElementById('gNome').value.trim()||'[Nome da Academia]';
+  const dif=document.getElementById('gDiferencial').value.trim()||'[diferencial principal]';
+  const ben=document.getElementById('gBeneficio').value.trim()||'[benefício da campanha]';
+  const sel=document.getElementById('gSituacao').value;
+  if(!sel){alert('Selecione uma situação ou objeção para gerar o script.');return;}
+
+  let a,q,i,label,canal,ehAtencao=false;
+  const unica=`O que faz a ${nome} diferente é ${dif}. E, especialmente agora, você também tem direito a ${ben}.`;
+
+  if(sel.startsWith('sit-')){
+    const s=GER_SIT.find(x=>x.id===sel.replace('sit-',''));
+    a=s.a.replaceAll('{NOME}',nome);q=s.q.replaceAll('{NOME}',nome);i=s.i;label=s.label;canal=s.canal;ehAtencao=!!s.atencao;
+  }else{
+    const o=OBJ.find(x=>x.n===parseInt(sel.replace('obj-','')));
+    a=o.a;q=o.q;i=o.i;label='Objeção: '+o.t;canal='WhatsApp / Ligação';
+  }
+
+  document.getElementById('gOutTitle').textContent=label;
+  document.getElementById('gOutCtx').textContent=`${canal} · gerado para ${nome} · pronto para copiar e enviar`;
+
+  // Mensagem limpa — o que realmente vai para o aluno, sem rótulos da metodologia
+  const partes=[a,q,unica,i];
+  document.getElementById('gOutput').innerHTML=partes.map(p=>`<p>${p}</p>`).join('');
+
+  // Estrutura AQÚI — só para conferência/treino interno, não faz parte do texto copiado
+  const rotuloA=ehAtencao?'Atenção (headline — gerar reação, não "seja bem-vindo")':'Acolher';
+  document.getElementById('gOutputAqui').innerHTML=`
+    <p style="font-size:13.5px;"><b style="color:var(--laranja)">${rotuloA} —</b> ${a}</p>
+    <p style="font-size:13.5px;"><b style="color:var(--laranja)">Qualificar (apresentação + contexto) —</b> ${q}</p>
+    <p style="font-size:13.5px;"><b style="color:var(--laranja)">Única Coisa —</b> ${unica}</p>
+    <p style="font-size:13.5px;"><b style="color:var(--laranja)">Incentivar —</b> ${i}</p>`;
+
+  document.getElementById('gOutputWrap').style.display='block';
+  document.getElementById('gOutputWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+  updProg(1);
+}
+</script>
+</body>
+</html>

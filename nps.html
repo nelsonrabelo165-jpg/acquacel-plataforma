@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Avalie sua experiência — GeFit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --or:#0A4FAA; --bg:#0a0a0a; --s1:#141414; --s2:#1c1c1c;
+    --bd:rgba(255,255,255,0.07); --tx:#fff; --tm:rgba(255,255,255,0.68); --td:rgba(255,255,255,0.38);
+    --gr:#22c55e; --re:#ef4444; --am:#f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Barlow',sans-serif; background:var(--bg); color:var(--tx);
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .box{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:32px 26px;width:100%;max-width:420px}
+  .logo{text-align:center;font-family:'Barlow Condensed';font-weight:800;font-size:26px;color:var(--or);letter-spacing:1px;margin-bottom:6px}
+  h1{font-size:19px;text-align:center;margin-bottom:6px;font-weight:600}
+  .sub{text-align:center;color:var(--tm);font-size:13px;margin-bottom:26px}
+  label{font-size:12.5px;font-weight:600;color:var(--tm);display:block;margin-bottom:8px}
+  select,input{width:100%;padding:11px 13px;border:1px solid var(--bd);border-radius:8px;background:var(--s2);color:var(--tx);font-family:'Barlow';font-size:14px;margin-bottom:18px}
+  .nota-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:5px;margin-bottom:6px}
+  .nota-btn{aspect-ratio:1;border:1px solid var(--bd);background:var(--s2);color:var(--tx);border-radius:7px;font-family:'Barlow Condensed';font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .nota-btn.sel{background:var(--or);border-color:var(--or)}
+  .nota-legenda{display:flex;justify-content:space-between;font-size:10.5px;color:var(--td);margin-bottom:22px}
+  button.submit{width:100%;background:var(--or);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Barlow Condensed';font-size:16px;font-weight:700;cursor:pointer}
+  button.submit:disabled{opacity:.5;cursor:not-allowed}
+  .obrigado{text-align:center;padding:20px 0}
+  .obrigado .emoji{font-size:48px;margin-bottom:12px}
+  .foot{text-align:center;font-size:10.5px;color:var(--td);margin-top:20px}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo">GeFit</div>
+    <div id="form-nps">
+      <h1>Como foi sua experiência?</h1>
+      <div class="sub">Sua opinião ajuda a academia a melhorar</div>
+
+      <label>Sobre o quê você quer avaliar?</label>
+      <select id="contexto">
+        <option value="geral">Experiência geral com a academia</option>
+        <option value="consultoria">Consultoria comercial</option>
+        <option value="avaliacao_fisica">Avaliação física</option>
+        <option value="revisao_treino">Revisão de treino</option>
+        <option value="time_tecnico">Atendimento do time técnico</option>
+      </select>
+
+      <label>De 0 a 10, o quanto você indicaria a gente pra um amigo ou familiar?</label>
+      <div class="nota-grid" id="nota-grid"></div>
+      <div class="nota-legenda"><span>Não indicaria</span><span>Indicaria com certeza</span></div>
+
+      <label>Seu nome (opcional)</label>
+      <input type="text" id="nome" placeholder="Como podemos te chamar?">
+
+      <button class="submit" id="btn-enviar" disabled onclick="enviarNps()">Enviar avaliação</button>
+    </div>
+
+    <div id="obrigado" class="obrigado" style="display:none">
+      <div class="emoji">🙏</div>
+      <h1>Obrigado pela sua avaliação!</h1>
+      <div class="sub">Isso ajuda muito a academia a evoluir.</div>
+    </div>
+
+    <div class="foot">Powered by GeFit — Fitness Intelligence</div>
+  </div>
+
+<script>
+  // ── Configuração: ajuste ACADEMIA_ID conforme o cliente ──
+  const SUPABASE_URL = "https://irwvagffrguiljaxrzmd.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A";
+  const ACADEMIA_ID = "1e4293f8-78f8-488d-bd9e-dc5658b3909e";
+
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let notaSelecionada=null;
+  const grid=document.getElementById('nota-grid');
+  for(let i=0;i<=10;i++){
+    const b=document.createElement('button');
+    b.className='nota-btn'; b.textContent=i; b.type='button';
+    b.onclick=()=>{
+      notaSelecionada=i;
+      document.querySelectorAll('.nota-btn').forEach(el=>el.classList.remove('sel'));
+      b.classList.add('sel');
+      document.getElementById('btn-enviar').disabled=false;
+    };
+    grid.appendChild(b);
+  }
+
+  async function enviarNps(){
+    if(notaSelecionada===null)return;
+    const contexto=document.getElementById('contexto').value;
+    const btn=document.getElementById('btn-enviar');
+    btn.disabled=true; btn.textContent='Enviando...';
+    try{
+      await supabaseClient.from('nps_respostas').insert({
+        academia_id: ACADEMIA_ID,
+        tipo: contexto==='geral' ? 'geral' : 'pontual',
+        contexto: contexto==='geral' ? null : contexto,
+        nota: notaSelecionada,
+        aluno_nome: document.getElementById('nome').value.trim() || null
+      });
+      document.getElementById('form-nps').style.display='none';
+      document.getElementById('obrigado').style.display='block';
+    }catch(e){
+      console.error(e);
+      btn.disabled=false; btn.textContent='Enviar avaliação';
+      alert('Não foi possível enviar agora. Tente novamente.');
+    }
+  }
+</script>
+</body>
+</html>
