@@ -3,28 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeFit | Controle de Experiências</title>
+<title>Acquacel | Controle de Experiências</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#0a0a0a;
-  --bg-elev:#141414;
-  --bg-card:#1a1a1a;
-  --bg-card-hover:#1f1f1f;
-  --border:#2a2a2a;
-  --border-soft:#222;
-  --orange:#0A4FAA;
-  --orange-dim:#c95500;
-  --orange-glow:rgba(10,79,170,.15);
-  --white:#f5f5f5;
-  --grey:#9a9a9a;
-  --grey-dim:#666;
-  --green:#3ecf6e;
-  --yellow:#e6b800;
-  --red:#e6473e;
-  --font-display:'Barlow Condensed',sans-serif;
-  --font-body:'Barlow',sans-serif;
+  --bg:#F8FAFF;--bg-elev:#ffffff;--bg-card:#ffffff;--bg-card-hover:#F1F4FC;
+  --border:rgba(10,36,114,.14);--border-soft:rgba(10,36,114,.08);
+  --orange:#1B4FD8;--orange-dim:#1639a8;--orange-glow:rgba(27,79,216,.15);
+  --white:#0A2472;--grey:rgba(10,36,114,.62);--grey-dim:rgba(10,36,114,.44);
+  --green:#16a34a;--yellow:#d97706;--red:#dc2626;
+  --font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
@@ -42,7 +31,7 @@ h1,h2,h3,h4,.display{font-family:var(--font-display);font-weight:700;letter-spac
 /* ===== LOGIN ===== */
 #loginScreen{
   min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 50% 0%, #1a1005 0%, #0a0a0a 60%);
+  background:radial-gradient(circle at 50% 0%, #E6ECFA 0%, #F8FAFF 60%);
   padding:20px;
 }
 .login-box{
@@ -155,7 +144,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
   font-size:10.5px;font-weight:700;padding:2.5px 7px;border-radius:5px;
   text-transform:uppercase;letter-spacing:.03em;
 }
-.tag-95{background:rgba(10,79,170,.18);color:var(--orange);}
+.tag-95{background:rgba(27,79,216,.18);color:var(--orange);}
 .tag-5{background:rgba(158,158,158,.15);color:var(--grey);}
 .tag-noqual{background:rgba(230,184,0,.18);color:var(--yellow);}
 .tag-prog{background:var(--bg-elev);color:var(--grey);border:1px solid var(--border);}
@@ -172,7 +161,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
   position:fixed;bottom:26px;right:26px;z-index:30;
   width:56px;height:56px;border-radius:50%;background:var(--orange);
   display:flex;align-items:center;justify-content:center;font-size:28px;color:#0a0a0a;
-  box-shadow:0 6px 20px rgba(10,79,170,.35);border:none;cursor:pointer;font-weight:700;
+  box-shadow:0 6px 20px rgba(27,79,216,.35);border:none;cursor:pointer;font-weight:700;
 }
 .fab:hover{background:#ff7d1a;transform:scale(1.05);}
 
@@ -225,7 +214,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 .check-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--orange);flex-shrink:0;cursor:pointer;}
 .check-row.done label{color:var(--grey);text-decoration:line-through;}
 .check-row label{cursor:pointer;flex:1;}
-.check-row.critical{background:rgba(10,79,170,.06);margin:0 -8px;padding:8px;border-radius:8px;border-bottom:none;}
+.check-row.critical{background:rgba(27,79,216,.06);margin:0 -8px;padding:8px;border-radius:8px;border-bottom:none;}
 
 .task-item{
   border:1px solid var(--border-soft);border-radius:10px;padding:12px 14px;margin-bottom:10px;
@@ -234,7 +223,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 .task-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
 .task-head .t-name{font-weight:700;font-size:14px;}
 .task-head .t-role{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;padding:2px 7px;border-radius:5px;}
-.role-vendas{background:rgba(10,79,170,.15);color:var(--orange);}
+.role-vendas{background:rgba(27,79,216,.15);color:var(--orange);}
 .role-tecnico{background:rgba(62,207,110,.15);color:var(--green);}
 .task-script{
   background:var(--bg-elev);border-left:2px solid var(--orange-dim);
@@ -334,7 +323,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 <!-- ===== LOGIN ===== -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">GeFit</div>
+    <div class="login-logo">Acquacel</div>
     <div class="login-title">Controle de<br>Experiências</div>
     <div class="login-sub">Acesso da equipe — vendas e técnico</div>
     <div class="field">
@@ -356,7 +345,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
     <div class="brand">
       <a href="index.html" class="brand-mark" style="text-decoration:none;" title="Voltar ao Desafio ROI 21 Dias">QG</a>
       <div class="brand-text">
-        <div class="t1">GeFit · GeFit</div>
+        <div class="t1">Acquacel · Acquacel</div>
         <div class="t2">Controle de Experiências</div>
       </div>
     </div>
@@ -364,7 +353,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
       <a href="index.html" class="btn btn-ghost btn-sm" style="text-decoration:none;">← Desafio ROI</a>
       <button class="btn btn-ghost btn-sm" onclick="abrirCampanhasExp()">📢 Campanhas</button>
       <button class="btn btn-ghost btn-sm" onclick="abrirScriptsExp()">📚 Scripts</button>
-      <a href="mapa-ferramenta.html" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;">🗺️ Mapa</a>
+      
       <div class="tab-switch">
         <button class="active" id="tabKanbanBtn" onclick="switchTab('kanban')">Kanban</button>
         <button id="tabAgendaBtn" onclick="switchTab('agenda')">Agenda</button>
@@ -487,9 +476,9 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 <script>
 /* ================= CONFIG SUPABASE ================= */
 // ⚠️ Nelson: cole aqui a ANON KEY do projeto Supabase (Settings > API).
-// URL já configurada com o projeto GeFit existente.
-const SUPABASE_URL = "https://irwvagffrguiljaxrzmd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A";
+// URL já configurada com o projeto Acquacel existente.
+const SUPABASE_URL = "https://oevngnabqlxsensaohdy.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U";
 
 let supabaseClient = null;
 let DEMO_MODE = false;
@@ -564,7 +553,7 @@ async function doLogin(){
 
   try{
     const {data, error} = await supabaseClient
-      .from('gestores')
+      .from('roi_gestores')
       .select('*')
       .eq('email', email)
       .eq('senha_hash', pass) // mesmo padrão usado no Desafio ROI / Central de Scripts (comparação direta)
@@ -579,7 +568,7 @@ async function doLogin(){
 
     const modulos = data.modulos_ativos || [];
     if(!modulos.includes('experiencias')){
-      errEl.textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o GeFit.";
+      errEl.textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o Acquacel.";
       errEl.style.display='block';
       return;
     }
@@ -629,8 +618,8 @@ async function loadEquipe(){
     const academiaId = currentUser.academia_id;
     if(!academiaId){ equipeConsultoras=[]; equipeTreinadores=[]; return; }
     const [{data:cons}, {data:trei}] = await Promise.all([
-      supabaseClient.from('consultoras').select('id,nome').eq('academia_id', academiaId),
-      supabaseClient.from('treinadores').select('id,nome').eq('academia_id', academiaId).eq('ativo', true)
+      supabaseClient.from('roi_consultoras').select('id,nome').eq('academia_id', academiaId),
+      supabaseClient.from('roi_treinadores').select('id,nome').eq('academia_id', academiaId).eq('ativo', true)
     ]);
     equipeConsultoras = cons || [];
     equipeTreinadores = trei || [];
@@ -652,7 +641,7 @@ async function tentarLoginAutomatico(){
 
   try{
     const {data, error} = await supabaseClient
-      .from('gestores')
+      .from('roi_gestores')
       .select('*')
       .eq('id', uid)
       .eq('ativo', true)
@@ -662,7 +651,7 @@ async function tentarLoginAutomatico(){
 
     const modulos = data.modulos_ativos || [];
     if(!modulos.includes('experiencias')){
-      document.getElementById('loginError').textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o GeFit.";
+      document.getElementById('loginError').textContent = "Este módulo ainda não foi liberado para sua academia. Fale com o Acquacel.";
       document.getElementById('loginError').style.display='block';
       return false;
     }
@@ -755,7 +744,7 @@ async function loadExperiencias(){
     return;
   }
   try{
-    let query = supabaseClient.from('experiencias').select('*').order('created_at',{ascending:false});
+    let query = supabaseClient.from('roi_experiencias').select('*').order('created_at',{ascending:false});
     if(currentUser.academia_id){
       query = query.eq('academia_id', currentUser.academia_id);
     }else if(currentUser.role==='admin'){
@@ -784,7 +773,7 @@ async function persist(exp){
   }
   try{
     exp.updated_at = new Date().toISOString();
-    const {error} = await supabaseClient.from('experiencias').upsert(exp);
+    const {error} = await supabaseClient.from('roi_experiencias').upsert(exp);
     if(error) throw error;
   }catch(e){
     console.error(e);
@@ -1325,7 +1314,7 @@ async function syncAgendaFromCard(experienciaId, tipo, obs){
   alvo.feita_em = new Date().toISOString();
   if(obs) alvo.obs = obs;
   if(!DEMO_MODE && supabaseClient){
-    try{ await supabaseClient.from('agenda_tarefas').update({feita:true, feita_em:alvo.feita_em}).eq('id', alvo.id); }
+    try{ await supabaseClient.from('roi_agenda_tarefas').update({feita:true, feita_em:alvo.feita_em}).eq('id', alvo.id); }
     catch(e){ console.error(e); }
   }
 }
@@ -1345,11 +1334,11 @@ async function sincronizarCampanhas(exp, status){
   if(!exp.campanha_card_id || DEMO_MODE || !supabaseClient) return;
   try{
     if(status==='convertida'){
-      await supabaseClient.from('campanha_cards').update({etapa_atual:'convertido', status:'convertido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+      await supabaseClient.from('roi_campanha_cards').update({etapa_atual:'convertido', status:'convertido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
     } else if(status==='nao_convertida'){
-      await supabaseClient.from('campanha_cards').update({status:'perdido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+      await supabaseClient.from('roi_campanha_cards').update({status:'perdido', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
     } else if(status==='iniciada'){
-      await supabaseClient.from('campanha_cards').update({etapa_atual:'exp_iniciada', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
+      await supabaseClient.from('roi_campanha_cards').update({etapa_atual:'exp_iniciada', updated_at:Date.now()}).eq('id', exp.campanha_card_id);
     }
   }catch(e){
     console.error(e);
@@ -1457,7 +1446,7 @@ async function loadAgendaTarefas(){
     return;
   }
   try{
-    let query = supabaseClient.from('agenda_tarefas').select('*').order('data_prevista',{ascending:true});
+    let query = supabaseClient.from('roi_agenda_tarefas').select('*').order('data_prevista',{ascending:true});
     if(currentUser.academia_id){
       query = query.eq('academia_id', currentUser.academia_id);
     }else if(currentUser.role!=='admin'){
@@ -1513,7 +1502,7 @@ async function criarTarefaAgenda(exp, tipo, titulo, responsavelId, responsavelNo
   };
   agendaTarefas.push(tarefa);
   if(!DEMO_MODE && supabaseClient){
-    try{ await supabaseClient.from('agenda_tarefas').insert(tarefa); }
+    try{ await supabaseClient.from('roi_agenda_tarefas').insert(tarefa); }
     catch(e){ console.error(e); }
   }
 }

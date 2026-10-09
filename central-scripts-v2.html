@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Central de Scripts — Acquacel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+  --or:#1B4FD8;--or-d:rgba(27,79,216,0.10);--or-m:rgba(27,79,216,0.22);
+  --bg:#F8FAFF;--s1:#ffffff;--s2:#F1F4FC;--s3:#E6ECFA;
+  --bd:rgba(10,36,114,0.10);--bdo:rgba(27,79,216,0.30);
+  --tx:#0A2472;--tm:rgba(10,36,114,0.68);--td:rgba(10,36,114,0.44);
+  --gr:#16a34a;--gr-d:rgba(22,163,74,0.10);
+  --re:#dc2626;--re-d:rgba(220,38,38,0.10);
+  --am:#d97706;--am-d:rgba(217,119,6,0.10);
+  --pu:#9333ea;--bl:#2563eb;
+}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--tx)}
+  h1,h2,h3{font-family:'Barlow Condensed'}
+  header{background:var(--s1);padding:0 24px;display:flex;align-items:center;gap:20px;border-bottom:1px solid var(--bd);height:56px;position:sticky;top:0;z-index:50}
+  header a.back{color:var(--tm);text-decoration:none;font-size:13px}
+  .logo{font-family:'Barlow Condensed';font-weight:800;font-size:18px;color:var(--or)}
+  nav.pages{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);padding:0 24px}
+  nav.pages .np{padding:13px 18px;font-size:13px;font-weight:600;color:var(--td);cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.4px;font-family:'Barlow Condensed'}
+  nav.pages .np:hover{color:var(--tm)}
+  nav.pages .np.active{color:var(--or);border-bottom-color:var(--or)}
+  main{max-width:980px;margin:0 auto;padding:26px 20px 60px}
+  .page{display:none}.page.active{display:block}
+  .card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;margin-bottom:14px}
+  .card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+  .sub{font-size:12px;color:var(--td);margin-bottom:14px}
+  .field-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--or);margin-top:12px;margin-bottom:4px}
+  .field-txt{font-size:13.5px;color:var(--tm);line-height:1.5}
+  .meaning-box{background:var(--s2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--td);margin-top:10px}
+  .search{width:100%;padding:11px 14px;border:1px solid var(--bd);border-radius:8px;background:var(--s2);color:var(--tx);font-family:'Barlow';font-size:14px;margin-bottom:18px}
+  .funil-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .funil-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--bd);background:var(--s2);color:var(--tm);font-size:12.5px;font-weight:600;cursor:pointer}
+  .funil-btn.active{background:var(--or);border-color:var(--or);color:#fff}
+  .dia-chip{display:inline-flex;align-items:center;gap:6px;background:var(--s2);border-radius:20px;padding:5px 12px;font-size:11.5px;color:var(--tm);margin-bottom:10px}
+  .empty{color:var(--td);font-size:13px;padding:30px;text-align:center;background:var(--s1);border-radius:12px;border:1px dashed var(--bd)}
+  .badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase}
+  .badge.real{background:rgba(239,68,68,.15);color:var(--re)}
+  .badge.synth{background:rgba(245,158,11,.15);color:var(--am)}
+</style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="back">← Voltar</a>
+    <div class="logo">Acquacel</div>
+    <div style="font-size:13px;color:var(--tm)">Central de Scripts</div>
+  </header>
+
+  <nav class="pages">
+    <div class="np active" data-page="metodologia" onclick="switchPage('metodologia')">📖 Metodologia</div>
+    <div class="np" data-page="funil" onclick="switchPage('funil')">💬 Scripts por Funil</div>
+    <div class="np" data-page="objecoes" onclick="switchPage('objecoes')">🛡️ Objeções</div>
+    <div class="np" data-page="atendimento" onclick="switchPage('atendimento')">🤝 Atendimento Presencial</div>
+  </nav>
+
+  <main>
+    <div id="page-metodologia" class="page active">
+      <div id="metodologia-lista"></div>
+    </div>
+
+    <div id="page-funil" class="page">
+      <div class="funil-picker" id="funil-picker"></div>
+      <div id="funil-lista"></div>
+    </div>
+
+    <div id="page-objecoes" class="page">
+      <input class="search" id="obj-busca" placeholder="Buscar objeção (ex: caro, tempo, pensar...)" oninput="renderObjecoes()">
+      <div id="objecoes-lista"></div>
+    </div>
+
+    <div id="page-atendimento" class="page">
+      <div id="atendimento-lista"></div>
+    </div>
+  </main>
+
+<script>
+  const SB_URL='https://oevngnabqlxsensaohdy.supabase.co';
+  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+  const H={apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
+  async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json()}
+
+  const params=new URLSearchParams(location.search);
+  const uid=params.get('uid');
+  let academiaId=null;
+
+  const FUNIS=[
+    {id:'leads_novos',nome:'Leads Novos',cor:'#1B4FD8'},
+    {id:'feedback_indicacao',nome:'Feedback + Indicação',cor:'#a855f7'},
+    {id:'rematricula',nome:'Rematrícula',cor:'#f59e0b'},
+    {id:'renovacao',nome:'Renovação',cor:'#3b82f6'},
+    {id:'sucesso_cliente',nome:'Sucesso do Cliente',cor:'#22c55e'}
+  ];
+  let funilAtivo='leads_novos';
+
+  async function init(){
+    if(uid){
+      try{const g=await sbGet('roi_gestores',`id=eq.${uid}`);academiaId=g[0]?.academia_id;}catch(e){console.error(e);}
+    }
+    renderMetodologia();
+    renderFunilPicker();
+    carregarFunil();
+    renderObjecoes();
+    renderAtendimento();
+  }
+
+  function switchPage(p){
+    document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+p));
+    document.querySelectorAll('.np').forEach(el=>el.classList.toggle('active',el.dataset.page===p));
+  }
+
+  // ── Metodologia ──
+  async function renderMetodologia(){
+    const el=document.getElementById('metodologia-lista');
+    try{
+      const rows=await sbGet('roi_scripts_metodologia',`academia_id=eq.${academiaId}&order=ordem.asc`);
+      if(!rows.length){el.innerHTML='<div class="empty">Conteúdo de metodologia ainda não cadastrado.</div>';return;}
+      el.innerHTML=rows.map(r=>`<div class="card"><h3>${r.titulo}</h3><div class="field-txt" style="white-space:pre-wrap">${r.conteudo}</div></div>`).join('');
+    }catch(e){el.innerHTML='<div class="empty">Conteúdo de metodologia ainda não cadastrado.</div>';}
+  }
+
+  // ── Scripts por Funil ──
+  function renderFunilPicker(){
+    document.getElementById('funil-picker').innerHTML=FUNIS.map(f=>
+      `<button class="funil-btn ${f.id===funilAtivo?'active':''}" onclick="selecionarFunil('${f.id}')">${f.nome}</button>`
+    ).join('');
+  }
+  function selecionarFunil(id){funilAtivo=id;renderFunilPicker();carregarFunil();}
+  async function carregarFunil(){
+    const el=document.getElementById('funil-lista');
+    el.innerHTML='<div class="empty">Carregando...</div>';
+    try{
+      const rows=await sbGet('roi_scripts_cadencia',`academia_id=eq.${academiaId}&funil=eq.${funilAtivo}&order=dia.asc,ordem.asc`);
+      if(!rows.length){el.innerHTML='<div class="empty">Ainda não há scripts cadastrados pra esse funil.</div>';return;}
+      el.innerHTML=rows.map(r=>`<div class="card">
+        <span class="dia-chip">📅 Dia ${r.dia}${r.perfil?' · '+r.perfil:''}</span>
+        <h3>${r.canal_objetivo||''}</h3>
+        ${r.texto_wpp?`<div class="field-lbl">💬 WhatsApp</div><div class="field-txt">${r.texto_wpp}</div>`:''}
+        ${r.texto_audio?`<div class="field-lbl">🎙️ Áudio</div><div class="field-txt">${r.texto_audio}</div>`:''}
+        ${r.gatilho?`<div class="field-lbl">Gatilho</div><div class="field-txt">${r.gatilho}</div>`:''}
+        ${r.observacao_operacional?`<div class="meaning-box">${r.observacao_operacional}</div>`:''}
+      </div>`).join('');
+    }catch(e){console.error(e);el.innerHTML='<div class="empty">Ainda não há scripts cadastrados pra esse funil.</div>';}
+  }
+
+  // ── Objeções ──
+  let objecoesCache=[];
+  async function renderObjecoes(){
+    const el=document.getElementById('objecoes-lista');
+    if(!objecoesCache.length){
+      try{objecoesCache=await sbGet('roi_scripts_objecoes',`academia_id=eq.${academiaId}&order=ordem.asc`);}catch(e){console.error(e);}
+    }
+    const busca=document.getElementById('obj-busca').value.toLowerCase();
+    const lista=busca?objecoesCache.filter(o=>o.titulo.toLowerCase().includes(busca)):objecoesCache;
+    if(!lista.length){el.innerHTML='<div class="empty">Nenhuma objeção cadastrada ainda, ou nenhum resultado pra essa busca.</div>';return;}
+    el.innerHTML=lista.map(o=>`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>${o.titulo}</h3>
+        <span class="badge ${o.synth?'synth':'real'}">${o.synth?'Sintética':'Real'}</span>
+      </div>
+      ${o.meaning?`<div class="meaning-box">${o.meaning}</div>`:''}
+      <div class="field-lbl">Acolher</div><div class="field-txt">${o.acolher||''}</div>
+      <div class="field-lbl">Qualificar</div><div class="field-txt">${o.qualificar||''}</div>
+      <div class="field-lbl">Única Coisa</div><div class="field-txt">${o.unica_coisa||''}</div>
+      <div class="field-lbl">Incentivar</div><div class="field-txt">${o.incentivar||''}</div>
+    </div>`).join('');
+  }
+
+  // ── Atendimento Presencial ──
+  async function renderAtendimento(){
+    const el=document.getElementById('atendimento-lista');
+    try{
+      const rows=await sbGet('roi_scripts_atendimento',`academia_id=eq.${academiaId}&order=ordem.asc`);
+      if(!rows.length){el.innerHTML='<div class="empty">Conteúdo de atendimento presencial ainda não cadastrado.</div>';return;}
+      el.innerHTML=rows.map(r=>`<div class="card"><h3>${r.titulo}</h3><div class="field-txt" style="white-space:pre-wrap">${r.conteudo}</div></div>`).join('');
+    }catch(e){el.innerHTML='<div class="empty">Conteúdo de atendimento presencial ainda não cadastrado.</div>';}
+  }
+
+  init();
+</script>
+</body>
+</html>

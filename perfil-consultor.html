@@ -2,16 +2,21 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Perfil do(a) Consultor(a) — GeFit</title>
+<title>Perfil do(a) Consultor(a) — Acquacel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --or:#0A4FAA; --bg:#0a0a0a; --s1:#141414; --s2:#1c1c1c; --s3:#252525;
-    --bd:rgba(255,255,255,0.07); --tx:#fff; --tm:rgba(255,255,255,0.68); --td:rgba(255,255,255,0.38);
-    --gr:#22c55e; --re:#ef4444; --am:#f59e0b;
-  }
+  --or:#1B4FD8;--or-d:rgba(27,79,216,0.10);--or-m:rgba(27,79,216,0.22);
+  --bg:#F8FAFF;--s1:#ffffff;--s2:#F1F4FC;--s3:#E6ECFA;
+  --bd:rgba(10,36,114,0.10);--bdo:rgba(27,79,216,0.30);
+  --tx:#0A2472;--tm:rgba(10,36,114,0.68);--td:rgba(10,36,114,0.44);
+  --gr:#16a34a;--gr-d:rgba(22,163,74,0.10);
+  --re:#dc2626;--re-d:rgba(220,38,38,0.10);
+  --am:#d97706;--am-d:rgba(217,119,6,0.10);
+  --pu:#9333ea;--bl:#2563eb;
+}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--tx)}
   h1,h2,h3{font-family:'Barlow Condensed'}
@@ -35,7 +40,7 @@
   .item .meta{font-size:11px;color:var(--td);margin-top:3px}
   .badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;text-transform:uppercase}
   .badge.pendente{background:rgba(245,158,11,.15);color:var(--am)}
-  .badge.em_andamento{background:rgba(10,79,170,.15);color:var(--or)}
+  .badge.em_andamento{background:rgba(27,79,216,.15);color:var(--or)}
   .badge.concluido{background:rgba(34,197,94,.15);color:var(--gr)}
   table{width:100%;border-collapse:collapse;font-size:12.5px}
   th{text-align:left;color:var(--td);font-size:10.5px;text-transform:uppercase;padding:0 8px 8px;border-bottom:1px solid var(--bd)}
@@ -46,7 +51,7 @@
 <body>
   <header>
     <a href="index.html">← Voltar</a>
-    <div class="logo">GeFit</div>
+    <div class="logo">Acquacel</div>
     <div style="font-size:13px;color:var(--tm)">Perfil do(a) Consultor(a)</div>
   </header>
 
@@ -55,8 +60,8 @@
   </main>
 
 <script>
-  const SB_URL='https://irwvagffrguiljaxrzmd.supabase.co';
-  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlyd3ZhZ2Zmcmd1aWxqYXhyem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNDk5ODUsImV4cCI6MjEwNDkyNTk4NX0.YAApyaH6iIHEua_89fgCUpMzgXRIcWb_vNRkBQAoq5A';
+  const SB_URL='https://oevngnabqlxsensaohdy.supabase.co';
+  const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
   const H={apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json'};
   async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:{...H,'Prefer':''}});if(!r.ok)throw new Error(await r.text());return r.json()}
   async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:H,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json()}
@@ -76,8 +81,8 @@
     if(!uid||!consultoraId){app.innerHTML='<div class="locked">Link inválido — acesse pela aba Equipe do sistema.</div>';return;}
     try{
       const [viewers,conss]=await Promise.all([
-        sbGet('gestores',`id=eq.${uid}`),
-        sbGet('consultoras',`id=eq.${consultoraId}`)
+        sbGet('roi_gestores',`id=eq.${uid}`),
+        sbGet('roi_consultoras',`id=eq.${consultoraId}`)
       ]);
       viewer=viewers[0]; consultora=conss[0];
     }catch(e){console.error(e);}
@@ -148,7 +153,7 @@
   }
 
   async function carregarMetas(){
-    const rows=await sbGet('consultora_metas_periodo',`consultora_id=eq.${consultoraId}&order=periodo_inicio.desc`);
+    const rows=await sbGet('roi_consultora_metas_periodo',`consultora_id=eq.${consultoraId}&order=periodo_inicio.desc`);
     const tipoLbl={planos:'Nº Planos',rs:'R$ Valor',treino:'Treinamento'};
     const el=document.getElementById('metas-lista');
     if(!rows.length){el.innerHTML='<div class="item" style="color:var(--td)">Nenhum período registrado ainda.</div>';return;}
@@ -158,7 +163,7 @@
   async function addMetaPeriodo(){
     const inicio=document.getElementById('mp-inicio').value;
     if(!inicio)return alert('Informe o início do período.');
-    await sbPost('consultora_metas_periodo',{
+    await sbPost('roi_consultora_metas_periodo',{
       academia_id:consultora.academia_id, consultora_id:consultoraId,
       periodo_inicio:inicio, periodo_fim:document.getElementById('mp-fim').value||null,
       meta_tipo:document.getElementById('mp-tipo').value, meta_valor:parseFloat(document.getElementById('mp-valor').value)||null,
@@ -168,8 +173,8 @@
   }
 
   async function carregarKpis(){
-    const regs=await sbGet('registros',`consultora_id=eq.${consultoraId}&order=data.desc`);
-    const kpisSalvos=await sbGet('consultor_kpis_mensais',`consultora_id=eq.${consultoraId}`);
+    const regs=await sbGet('roi_registros',`consultora_id=eq.${consultoraId}&order=data.desc`);
+    const kpisSalvos=await sbGet('roi_consultor_kpis_mensais',`consultora_id=eq.${consultoraId}`);
     const obsMap={}; kpisSalvos.forEach(k=>obsMap[k.mes_referencia.slice(0,7)]=k.observacao||'');
     const porMes={};
     regs.forEach(r=>{
@@ -189,11 +194,11 @@
     }).join('');
   }
   async function salvarObsKpi(mes,valor){
-    await sbUpsert('consultor_kpis_mensais',{academia_id:consultora.academia_id,consultora_id:consultoraId,mes_referencia:mes+'-01',observacao:valor,updated_at:Date.now()});
+    await sbUpsert('roi_consultor_kpis_mensais',{academia_id:consultora.academia_id,consultora_id:consultoraId,mes_referencia:mes+'-01',observacao:valor,updated_at:Date.now()});
   }
 
   async function carregarRegistros(tipo,elId){
-    const rows=await sbGet('consultor_registros',`consultora_id=eq.${consultoraId}&tipo=eq.${tipo}&order=data.desc`);
+    const rows=await sbGet('roi_consultor_registros',`consultora_id=eq.${consultoraId}&tipo=eq.${tipo}&order=data.desc`);
     const el=document.getElementById(elId);
     if(!rows.length){el.innerHTML='<div class="item" style="color:var(--td)">Nenhum registro ainda.</div>';return;}
     el.innerHTML=rows.map(r=>`<div class="item">
@@ -205,14 +210,14 @@
     const data=document.getElementById('a1a-data').value;
     const desc=document.getElementById('a1a-desc').value.trim();
     if(!data||!desc)return alert('Preencha data e anotação.');
-    await sbPost('consultor_registros',{academia_id:consultora.academia_id,consultora_id:consultoraId,tipo:'1a1',data,descricao:desc,criado_por:uid,criado_em:Date.now()});
+    await sbPost('roi_consultor_registros',{academia_id:consultora.academia_id,consultora_id:consultoraId,tipo:'1a1',data,descricao:desc,criado_por:uid,criado_em:Date.now()});
     document.getElementById('a1a-desc').value='';
     carregarRegistros('1a1','a1a-lista');
   }
   async function addPlanoAcao(){
     const desc=document.getElementById('pa-desc').value.trim();
     if(!desc)return alert('Descreva o plano de ação.');
-    await sbPost('consultor_registros',{
+    await sbPost('roi_consultor_registros',{
       academia_id:consultora.academia_id,consultora_id:consultoraId,tipo:'plano_acao',
       data:new Date().toISOString().slice(0,10),trimestre:document.getElementById('pa-trimestre').value,
       descricao:desc,status:document.getElementById('pa-status').value,criado_por:uid,criado_em:Date.now()
