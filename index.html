@@ -240,6 +240,12 @@ tbody tr:hover td{background:var(--s2)}
 .auth-box .gf-foot{padding:16px 0 0}
 .auth-screen.active~.gf-foot,#loginScreen:not([style*="none"])~.gf-foot{display:none}
 .app.show~.gf-foot{margin-left:210px}
+</style><style id="modo-consultor-css">
+body.role-consultor .tab:not([data-tab="painel"]):not([data-tab="relatorio"]){display:none!important}
+body.role-consultor .nav-group-label{display:none!important}
+body.role-consultor #btn-add-cons-top,body.role-consultor #btn-tv,body.role-consultor #admin-ac-row,
+body.role-consultor #roi-dia-edit,body.role-consultor #btn-finalizar-desafio,body.role-consultor #sel-desafio,
+body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{display:none!important}
 </style></head>
 <body>
 
@@ -1411,7 +1417,7 @@ async function doLogin(){
   if(!email||!senha){err.textContent='Preencha e-mail e senha.';err.classList.add('show');return}
   const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Verificando...';
   try{
-    const res=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=id,nome,email,academia_id,role`);
+    const res=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,modulos_ativos`);
     if(!res||!res.length){err.textContent='E-mail ou senha incorretos.';err.classList.add('show');btn.disabled=false;btn.textContent='Entrar';return}
     sessao=res[0];
     sessionStorage.setItem('qg90_sessao_roi',JSON.stringify(sessao));
@@ -1432,7 +1438,7 @@ async function checkSessaoInicial(){
   let s;
   try{s=JSON.parse(raw);}catch(e){sessionStorage.removeItem('qg90_sessao_roi');return;}
   try{
-    const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(s.id)}&ativo=eq.true&select=id,nome,email,academia_id,role`);
+    const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(s.id)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,modulos_ativos`);
     if(!res||!res.length){sessionStorage.removeItem('qg90_sessao_roi');return;}
     sessao=res[0];
     sessionStorage.setItem('qg90_sessao_roi',JSON.stringify(sessao));
@@ -1471,12 +1477,38 @@ function abrirAgendaUnificada(){
 }
 
 // ══ INICIAR APP ══
+
+// ══ MODO CONSULTOR(A): vê só o próprio painel, lançamentos, relatório e os módulos liberados ══
+function isConsultor(){return !!(sessao&&sessao.role==='consultor')}
+function aplicarModoConsultor(){
+  if(!isConsultor())return;
+  document.body.classList.add('role-consultor');
+  const mods=sessao.modulos_ativos||[];
+  const mapa=[['abrirCentralScriptsV2','__nunca__'],['abrirCentralScripts','scripts'],['abrirCampanhas','campanhas'],['abrirExperiencias','experiencias'],['abrirAgendaUnificada','experiencias']];
+  document.querySelectorAll('.topbar-r button[onclick]').forEach(b=>{
+    const oc=b.getAttribute('onclick')||'';
+    for(const [fn,mod] of mapa){
+      if(oc.indexOf(fn+'(')>=0){b.style.display=mods.includes(mod)?'':'none';break}
+    }
+  });
+  switchTab('painel');
+}
+function filtrarDadosConsultor(){
+  if(!isConsultor())return;
+  const meu=sessao.consultora_id||null;
+  Object.values(db.acs).forEach(a=>{
+    Object.keys(a.consultoras).forEach(id=>{if(id!==meu)delete a.consultoras[id]});
+    a.registros=(a.registros||[]).filter(r=>r.consultora_id===meu);
+  });
+}
+
 async function iniciarApp(){
   const chip=document.getElementById('user-chip');
   if(isAdmin()){chip.className='admin-chip';chip.textContent='⚡ Acquacel Admin';document.getElementById('tab-admin').classList.add('show');document.getElementById('admin-ac-row').classList.add('show');}
   else{chip.className='user-chip';chip.textContent=sessao.nome||sessao.email.split('@')[0];}
   document.getElementById('btn-add-cons-top').style.display='block';document.getElementById('btn-lancar-top').style.display='block';
   document.getElementById('loading-ov').classList.remove('hide');
+  aplicarModoConsultor();
   await loadAll();
   checkWelcome();
 }
@@ -1508,6 +1540,7 @@ async function loadAll(){
     cons.forEach(c=>{if(db.acs[c.academia_id])db.acs[c.academia_id].consultoras[c.id]={nome:c.nome,meta:c.meta,meta_tipo:c.meta_tipo||'planos',horas:c.horas||0,funis:c.funis||[],metas:c.metas||null}});
     treins.forEach(t=>{if(db.acs[t.academia_id])db.acs[t.academia_id].treinadores[t.id]={nome:t.nome}});
     regs.forEach(r=>{if(db.acs[r.academia_id])db.acs[r.academia_id].registros.push({id:r.id,dia:r.dia,data:r.data,consultora_id:r.consultora_id,obs:r.obs,funis:r.funis||{},ts:r.ts})});
+    filtrarDadosConsultor();
     if(!isAdmin()&&sessao.academia_id){acId=sessao.academia_id;}
     else if(isAdmin()){renderAcSelect();if(!acId){const k=Object.keys(db.acs);if(k.length){acId=k[0];document.getElementById('sel-ac').value=acId}}}
     setSS('ok','sincronizado');document.getElementById('loading-ov').classList.add('hide');renderAll();
@@ -2578,7 +2611,7 @@ function renderRelatorio(){
         <td style="color:var(--gr)">R$${(fd.vendido||0).toLocaleString('pt-BR')}</td>
         <td style="font-size:11px;color:var(--td)">${r.obs||'—'}</td>
         <td>${fi===0?`<button class="btn-gh btn-sm" style="font-size:11px" onclick="editarLancamento('${r.id}')">✏️</button>`:''}
-        ${fi===0&&!isAdmin()?`<button class="btn-danger" style="font-size:11px;padding:2px 6px" onclick="deletarLancamento('${r.id}')">🗑</button>`:''}
+        ${fi===0&&!isAdmin()&&!isConsultor()?`<button class="btn-danger" style="font-size:11px;padding:2px 6px" onclick="deletarLancamento('${r.id}')">🗑</button>`:''}
         </td>
       </tr>`);
     });
@@ -4678,6 +4711,11 @@ function closeWelcome(){
 }
 function checkWelcome(){
   if(!sessao||isAdmin())return;
+  if(isConsultor()){
+    const box=document.querySelector('#m-welcome .modal > div:nth-child(2)');
+    const passos=[['Acompanhe seu painel','Veja suas metas, seus funis e seus resultados no desafio.'],['Lance seus indicadores todo dia','Clique em "LANÇAR DIA" e preencha tentativas, efetivos, agendamentos e matrículas.'],['Trabalhe suas campanhas','Use o botão Campanhas para acompanhar seus leads e cadências.']];
+    if(box)box.innerHTML=passos.map((p,i)=>'<div style="background:var(--s2);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px"><div style="background:var(--or);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">'+(i+1)+'</div><div><div style="font-weight:600;font-size:14px">'+p[0]+'</div><div style="font-size:12px;color:var(--td);margin-top:1px">'+p[1]+'</div></div></div>').join('')+'<div style="background:var(--or-d);border:1px solid var(--bdo);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px"><div style="font-size:20px;flex-shrink:0">❓</div><div><div style="font-weight:600;font-size:14px">Ficou com dúvida?</div><div style="font-size:12px;color:var(--td);margin-top:1px">Fale com a gestora da sua academia.</div></div></div>';
+  }
   const visto=localStorage.getItem('qg90_welcomed_'+sessao.id);
   if(!visto)document.getElementById('m-welcome').classList.add('open');
 }
