@@ -11,7 +11,7 @@
   --bg:#F8FAFF;--bg-elev:#ffffff;--bg-card:#ffffff;--bg-card-hover:#F1F4FC;
   --border:rgba(10,36,114,.14);--border-soft:rgba(10,36,114,.08);
   --orange:#1B4FD8;--orange-dim:#1639a8;--orange-glow:rgba(27,79,216,.15);
-  --white:#0A2472;--grey:rgba(10,36,114,.62);--grey-dim:rgba(10,36,114,.44);
+  --white:#0A2472;--grey:rgba(10,36,114,.62);--grey-dim:rgba(10,36,114,.64);
   --green:#16a34a;--yellow:#d97706;--red:#dc2626;
   --font-display:'Barlow Condensed',sans-serif;--font-body:'Barlow',sans-serif;
 }
@@ -65,7 +65,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--orange);}
 textarea{resize:vertical;min-height:64px;}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--orange);color:#0a0a0a;border:none;
+  background:var(--orange);color:#fff;border:none;
   padding:11px 20px;border-radius:8px;font-weight:700;font-size:14.5px;
   cursor:pointer;transition:background .15s, transform .1s;font-family:var(--font-body);
 }
@@ -85,7 +85,7 @@ textarea{resize:vertical;min-height:64px;}
 #appShell{display:none;min-height:100vh;}
 header.topbar{
   position:sticky;top:0;z-index:40;
-  background:rgba(10,10,10,.92);backdrop-filter:blur(8px);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--border);
   padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
 }
@@ -93,7 +93,7 @@ header.topbar{
 .brand-mark{
   width:34px;height:34px;border-radius:8px;background:var(--orange);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-display);font-weight:800;color:#0a0a0a;font-size:16px;
+  font-family:var(--font-display);font-weight:800;color:#fff;font-size:16px;
 }
 .brand-text .t1{font-size:11px;letter-spacing:.2em;color:var(--grey);text-transform:uppercase;}
 .brand-text .t2{font-size:17px;font-family:var(--font-display);font-weight:700;line-height:1.1;}
@@ -103,7 +103,7 @@ header.topbar{
   background:none;border:none;color:var(--grey);padding:8px 16px;border-radius:6px;
   font-family:var(--font-body);font-weight:600;font-size:13.5px;cursor:pointer;transition:all .15s;
 }
-.tab-switch button.active{background:var(--orange);color:#0a0a0a;}
+.tab-switch button.active{background:var(--orange);color:#fff;}
 
 main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 
@@ -160,7 +160,7 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 .fab{
   position:fixed;bottom:26px;right:26px;z-index:30;
   width:56px;height:56px;border-radius:50%;background:var(--orange);
-  display:flex;align-items:center;justify-content:center;font-size:28px;color:#0a0a0a;
+  display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;
   box-shadow:0 6px 20px rgba(27,79,216,.35);border:none;cursor:pointer;font-weight:700;
 }
 .fab:hover{background:#ff7d1a;transform:scale(1.05);}
@@ -320,11 +320,12 @@ main{padding:22px 24px 60px;max-width:1600px;margin:0 auto;}
 <style id="marca-css">
 .acq-img{display:block;height:44px;width:auto}
 .acq-img.big{height:96px;margin:0 auto 8px}
-.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#7a869f;letter-spacing:.3px}
+.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#556182;letter-spacing:.3px}
 .gf-foot img{height:15px;width:auto;opacity:.85}
 .auth-box .gf-foot{padding:16px 0 0}
 .auth-screen.active~.gf-foot,#loginScreen:not([style*="none"])~.gf-foot{display:none}
 .app.show~.gf-foot{margin-left:210px}
+.brand-mark{background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
 </style></head>
 <body>
 
@@ -1707,7 +1708,7 @@ function renderAgendaCalendario(){
     celulas += `
       <div class="cal-cell ${tds.length?'has-tasks':''} ${isHoje?'is-today':''} ${isSelecionado?'is-selected':''}" onclick="${tds.length?`selecionarDiaAgenda('${dateStr}')`:''}">
         <span class="cal-daynum">${d}</span>
-        ${chips ? `<div class="cal-chips-row">${chips}</div>` : (tds.length?'<span class="cal-chip" style="background:var(--green);color:#0a0a0a;border-color:var(--green);">✓</span>':'')}
+        ${chips ? `<div class="cal-chips-row">${chips}</div>` : (tds.length?'<span class="cal-chip" style="background:var(--green);color:#fff;border-color:var(--green);">✓</span>':'')}
       </div>`;
   }
 
