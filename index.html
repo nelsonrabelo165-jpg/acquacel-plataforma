@@ -11,7 +11,7 @@
   --or:#1B4FD8;--or-d:rgba(27,79,216,0.10);--or-m:rgba(27,79,216,0.22);
   --bg:#F8FAFF;--s1:#ffffff;--s2:#F1F4FC;--s3:#E6ECFA;
   --bd:rgba(10,36,114,0.10);--bdo:rgba(27,79,216,0.30);
-  --tx:#0A2472;--tm:rgba(10,36,114,0.68);--td:rgba(10,36,114,0.44);
+  --tx:#0A2472;--tm:rgba(10,36,114,0.68);--td:rgba(10,36,114,.64);
   --gr:#16a34a;--gr-d:rgba(22,163,74,0.10);
   --re:#dc2626;--re-d:rgba(220,38,38,0.10);
   --am:#d97706;--am-d:rgba(217,119,6,0.10);
@@ -235,7 +235,7 @@ tbody tr:hover td{background:var(--s2)}
 <style id="marca-css">
 .acq-img{display:block;height:44px;width:auto}
 .acq-img.big{height:96px;margin:0 auto 8px}
-.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#7a869f;letter-spacing:.3px}
+.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#556182;letter-spacing:.3px}
 .gf-foot img{height:15px;width:auto;opacity:.85}
 .auth-box .gf-foot{padding:16px 0 0}
 .auth-screen.active~.gf-foot,#loginScreen:not([style*="none"])~.gf-foot{display:none}
@@ -305,7 +305,7 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
       <button class="btn-gh btn-sm" id="btn-add-cons-top" onclick="if(!ac()){toast('Selecione uma academia no seletor acima.',true);return}openM('m-cons')" style="display:none">+ Consultor(a)</button>
       <button class="btn-or" id="btn-lancar-top" onclick="if(!ac()){toast('Selecione uma academia no seletor acima.',true);return}openM('m-lanc')" style="display:none">Lançar Dia</button>
       <button class="btn-gh btn-sm" onclick="abrirCentralScripts()" title="Abre em nova aba, já logado">📚 Central de Scripts</button>
-      <button class="btn-gh btn-sm" onclick="abrirCentralScriptsV2()" title="Versão nova, ainda em construção — só Objeções está completa" style="color:var(--am)">🚧 Scripts v2 (beta)</button>
+      <button class="btn-gh btn-sm" onclick="abrirCentralScriptsV2()" title="Versão nova, ainda em construção — só Objeções está completa" style="color:#b45309">🚧 Scripts v2 (beta)</button>
       <button class="btn-gh btn-sm" onclick="abrirCampanhas()" title="Abre em nova aba, já logado">📢 Campanhas</button>
       <button class="btn-gh btn-sm" onclick="abrirExperiencias()" title="Abre em nova aba, já logado">🎯 Experiências</button>
       <button class="btn-gh btn-sm" onclick="abrirAgendaUnificada()" title="Abre em nova aba, já logado">📅 Agenda</button>
@@ -335,7 +335,7 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
 
     <div class="nav-group-label">⚙️ Sistema</div>
     <div class="tab tab-admin" id="tab-admin" data-tab="admin" onclick="switchTab('admin')">⚡ Todas as Academias</div>
-    <div class="tab" data-tab="ferramentas" onclick="switchTab('ferramentas')" style="color:var(--gr)">🛠 Ferramentas & Scripts</div>
+    <div class="tab" data-tab="ferramentas" onclick="switchTab('ferramentas')" style="color:#15803d">🛠 Ferramentas & Scripts</div>
     <div class="tab" data-tab="ajuda" onclick="switchTab('ajuda')" style="color:var(--or)">❓ Ajuda</div>
   </div>
 
@@ -919,6 +919,46 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
     </div>
   </div>
 
+  <!-- MODAL TREINADOR(A) -->
+  <div class="modal-ov" id="m-trein">
+    <div class="modal">
+      <div class="modal-hd"><h3>Adicionar Treinador(a)</h3><button class="btn-x" onclick="closeM('m-trein')">×</button></div>
+      <div class="form-row">
+        <div class="fg fi-full"><label class="fl">Nome completo</label><input class="fi" id="tr-nm" placeholder="Ex: Carlos Eduardo Lima"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Telefone / WhatsApp</label><input class="fi" id="tr-tel" placeholder="(00) 00000-0000"></div>
+      </div>
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">Formação</div><div class="sec-div-line"></div></div>
+      <div class="meta-options" id="tr-grau-opts">
+        <div class="meta-opt" data-g="estagio_aprendiz" onclick="selTrGrau('estagio_aprendiz')"><div class="meta-opt-icon">🎓</div><div class="meta-opt-lbl">Estagiário(a)</div></div>
+        <div class="meta-opt" data-g="provisionado" onclick="selTrGrau('provisionado')"><div class="meta-opt-icon">📄</div><div class="meta-opt-lbl">Provisionado(a)</div></div>
+        <div class="meta-opt" data-g="formado" onclick="selTrGrau('formado')"><div class="meta-opt-icon">🏅</div><div class="meta-opt-lbl">Formado(a)</div></div>
+      </div>
+      <div id="tr-cref-wrap" style="display:none" class="form-row">
+        <div class="fg fi-full"><label class="fl">CREF</label><input class="fi" id="tr-cref" placeholder="Ex: 012345-G/SP"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg fi-full"><label class="fl">Nível de carreira</label>
+          <select class="fi" id="tr-nivel">
+            <option value="estagio_treinador">Estágio/Treinador(a)</option>
+            <option value="treinador_efetivo">Treinador(a) Efetivo</option>
+            <option value="treinador_avaliador">Treinador(a) Avaliador(a)</option>
+            <option value="treinador_lider">Treinador(a) Líder</option>
+            <option value="coordenador_equipe">Coordenador(a) de Equipe</option>
+          </select></div>
+      </div>
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">Horário de trabalho</div><div class="sec-div-line"></div></div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Entrada</label><input class="fi" type="time" id="tr-hi" value="06:00"></div>
+        <div class="fg"><label class="fl">Saída</label><input class="fi" type="time" id="tr-hf" value="14:00"></div>
+      </div>
+      <div style="text-align:right;margin-top:12px">
+        <button class="btn-or" id="btn-add-trein" onclick="salvarTreinadorROI()">Adicionar Treinador(a)</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL CONSULTOR(A) -->
   <div class="modal-ov" id="m-cons">
     <div class="modal">
@@ -958,7 +998,7 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
         <div class="fg"><label class="fl">Meta 3 (R$)</label><input class="fi" type="number" id="cons-meta3" placeholder="Ex: 12000" min="0"></div>
       </div>
 
-      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">Funis priorizados (1 a 3)</div><div class="sec-div-line"></div></div>
+      <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-lbl">Funis priorizados (até 5)</div><div class="sec-div-line"></div></div>
       <div class="funil-checks" id="funil-checks-cons"></div>
 
       <div style="text-align:right;margin-top:12px">
@@ -1538,7 +1578,13 @@ async function loadAll(){
       Object.keys(db.acs).forEach(id=>{ if(id!==sessao.academia_id) delete db.acs[id]; });
     }
     cons.forEach(c=>{if(db.acs[c.academia_id])db.acs[c.academia_id].consultoras[c.id]={nome:c.nome,meta:c.meta,meta_tipo:c.meta_tipo||'planos',horas:c.horas||0,funis:c.funis||[],metas:c.metas||null}});
-    treins.forEach(t=>{if(db.acs[t.academia_id])db.acs[t.academia_id].treinadores[t.id]={nome:t.nome}});
+    treins.forEach(t=>{if(db.acs[t.academia_id])db.acs[t.academia_id].treinadores[t.id]={nome:t.nome,grau:t.grau_academico||'',cref:t.cref||'',nivel:t.nivel_carreira||'',hi:t.horario_inicio||'',hf:t.horario_fim||'',tel:t.telefone||''}});
+    try{
+      const[alR,exR]=await Promise.all([sbGet('roi_alunos','select=treinador_id,status').catch(()=>[]),sbGet('roi_experiencias','select=treinador_id,status').catch(()=>[])]);
+      treinMet={};
+      alR.forEach(x=>{if(!x.treinador_id)return;const m=treinMet[x.treinador_id]=treinMet[x.treinador_id]||{al:0,ex:0,cv:0};if(x.status==='ativo')m.al++});
+      exR.forEach(x=>{if(!x.treinador_id)return;const m=treinMet[x.treinador_id]=treinMet[x.treinador_id]||{al:0,ex:0,cv:0};if(x.status!=='agendada')m.ex++;if(x.status==='convertida')m.cv++});
+    }catch(e){treinMet={}}
     regs.forEach(r=>{if(db.acs[r.academia_id])db.acs[r.academia_id].registros.push({id:r.id,dia:r.dia,data:r.data,consultora_id:r.consultora_id,obs:r.obs,funis:r.funis||{},ts:r.ts})});
     filtrarDadosConsultor();
     if(!isAdmin()&&sessao.academia_id){acId=sessao.academia_id;}
@@ -1575,7 +1621,7 @@ function renderFunilChecks(){
 }
 function toggleFC(fid){
   if(selFunis.includes(fid)){selFunis=selFunis.filter(x=>x!==fid)}
-  else{if(selFunis.length>=4){toast('Máximo 4 funis',true);return}selFunis.push(fid)}
+  else{if(selFunis.length>=5){toast('Máximo 5 funis',true);return}selFunis.push(fid)}
   FUNIS.forEach(f=>{
     const sel=selFunis.includes(f.id);
     const item=document.getElementById('fci-'+f.id),dot=document.getElementById('fcd-'+f.id);
@@ -1663,7 +1709,7 @@ function renderEcxFunis(){
 }
 function toggleEcxFunil(fid){
   if(edFunisSel.includes(fid))edFunisSel=edFunisSel.filter(x=>x!==fid);
-  else{if(edFunisSel.length>=4){toast('Máximo 4 funis',true);return}edFunisSel.push(fid);}
+  else{if(edFunisSel.length>=5){toast('Máximo 5 funis',true);return}edFunisSel.push(fid);}
   renderEcxFunis();
 }
 async function salvarEdicaoConsultor(id){
@@ -2448,32 +2494,68 @@ function renderConsGrid(a){
 }
 
 // ══ TREINADORES(AS) ══
+const GRAU_TR={estagio_aprendiz:'Estagiário(a)',estagio_remunerado:'Estagiário(a)',provisionado:'Provisionado(a)',formado:'Formado(a)'};
+const NIVEL_TR={estagio_treinador:'Estágio/Treinador(a)',treinador_efetivo:'Treinador(a) Efetivo',treinador_avaliador:'Avaliador(a)',treinador_lider:'Líder',coordenador_equipe:'Coordenador(a)'};
+let treinMet={};let trGrauSel='';
 function renderTreinadoresGrid(a){
   const el=document.getElementById('treinadores-grid');if(!el)return;
   const en=Object.entries(a.treinadores||{});
   if(!en.length){el.innerHTML='<div style="color:var(--td);font-size:13px;padding:20px 0">Nenhum(a) treinador(a) cadastrado(a).</div>';return}
-  el.innerHTML=en.map(([id,t])=>`
-    <div class="cons-card" style="cursor:default">
+  el.innerHTML=en.map(([id,t])=>{
+    const m=treinMet[id]||{al:0,ex:0,cv:0};
+    const taxa=m.ex>0?Math.round(m.cv/m.ex*100):0;
+    const corTx=m.ex===0?'var(--td)':taxa>=50?'var(--gr)':taxa>=30?'var(--am)':'var(--re)';
+    const grau=GRAU_TR[t.grau]||'';
+    const hor=(t.hi&&t.hf)?`${t.hi} às ${t.hf}`:'';
+    const pills=[grau?`<span class="fpill" style="background:rgba(27,79,216,.1);color:var(--or)">${grau}</span>`:'',t.cref?`<span class="fpill" style="background:rgba(10,36,114,.07);color:var(--tx)">CREF ${t.cref}</span>`:'',NIVEL_TR[t.nivel]?`<span class="fpill" style="background:rgba(10,36,114,.07);color:var(--tx)">${NIVEL_TR[t.nivel]}</span>`:''].join('');
+    const nm=t.nome.replace(/'/g,"\\'");
+    return `<div class="cons-card" style="cursor:default">
       <div class="cons-head">
         <div class="avatar">${initials(t.nome)}</div>
-        <div><div class="cons-nm">${t.nome}</div><div class="cons-sub">Time técnico · Experiências</div></div>
+        <div><div class="cons-nm">${t.nome}</div><div class="cons-sub">${hor?'🕒 '+hor:'Time técnico'}</div></div>
         <button class="btn-gh btn-sm" style="flex-shrink:0;font-size:11px;padding:3px 10px;margin-left:6px" onclick="window.location.href='perfil-treinador.html?uid=${sessao.id}&id=${id}'">👤 Perfil</button>
-        <button class="btn-gh btn-sm" style="flex-shrink:0;font-size:11px;padding:3px 10px;margin-left:6px" onclick="abrirAcessoPessoa('treinador','${id}','${t.nome.replace(/'/g,"\\'")}')">🔑 Acesso</button>
+        <button class="btn-gh btn-sm" style="flex-shrink:0;font-size:11px;padding:3px 10px;margin-left:6px" onclick="abrirAcessoPessoa('treinador','${id}','${nm}')">🔑 Acesso</button>
       </div>
-    </div>`).join('');
+      ${pills?`<div style="display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px">${pills}</div>`:''}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 14px">
+        <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--tx)">${m.al}</div><div style="font-size:10px;color:var(--td)">Alunos na carteira</div></div>
+        <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--tx)">${m.ex}</div><div style="font-size:10px;color:var(--td)">Experiências realizadas</div></div>
+        <div style="background:var(--s2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:22px;font-weight:700;color:${corTx}">${m.cv}</div><div style="font-size:10px;color:var(--td)">Convertidas${m.ex>0?' · '+taxa+'%':''}</div></div>
+      </div>
+    </div>`}).join('');
+}
+function selTrGrau(g){
+  trGrauSel=g;
+  document.querySelectorAll('#tr-grau-opts .meta-opt').forEach(o=>o.classList.toggle('sel',o.dataset.g===g));
+  document.getElementById('tr-cref-wrap').style.display=(g==='formado'||g==='provisionado')?'flex':'none';
 }
 function abrirNovoTreinadorROI(){
-  const nome=prompt('Nome do(a) treinador(a):');
-  if(!nome||!nome.trim())return;
-  criarTreinadorROI(nome.trim());
+  if(!acId){toast('Selecione uma academia',true);return}
+  ['tr-nm','tr-tel','tr-cref'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('tr-nivel').value='estagio_treinador';
+  document.getElementById('tr-hi').value='06:00';document.getElementById('tr-hf').value='14:00';
+  selTrGrau('estagio_aprendiz');
+  openM('m-trein');
 }
-async function criarTreinadorROI(nome){
+async function salvarTreinadorROI(){
   if(!acId){toast('Academia não definida',true);return}
+  const nome=document.getElementById('tr-nm').value.trim();
+  if(!nome){toast('Informe o nome',true);return}
+  const comCref=trGrauSel==='formado'||trGrauSel==='provisionado';
+  const btn=document.getElementById('btn-add-trein');btn.disabled=true;
   try{
-    await sbPost('roi_treinadores',{id:uid(),academia_id:acId,nome,ativo:true,created_at:Date.now()});
+    await sbPost('roi_treinadores',{id:uid(),academia_id:acId,nome,ativo:true,created_at:Date.now(),
+      telefone:document.getElementById('tr-tel').value.trim()||null,
+      grau_academico:trGrauSel||null,
+      cref:comCref?(document.getElementById('tr-cref').value.trim()||null):null,
+      nivel_carreira:document.getElementById('tr-nivel').value,
+      horario_inicio:document.getElementById('tr-hi').value||null,
+      horario_fim:document.getElementById('tr-hf').value||null});
+    closeM('m-trein');
     toast('Treinador(a) adicionado(a)!');
     await loadAll();
-  }catch(e){console.error(e);toast('Erro ao salvar',true);}
+  }catch(e){console.error(e);toast('Erro ao salvar: '+(e.message||'').slice(0,80),true);}
+  btn.disabled=false;
 }
 
 // ══ ACESSO UNIFICADO (consultor(a) e treinador(a)) — cria login já escolhendo quais
@@ -2517,7 +2599,7 @@ async function abrirAcessoPessoa(tipo,pessoaId,pessoaNome){
       el.innerHTML=`<div style="color:var(--re);font-size:13.5px;padding:10px 0">⚠️ Limite de 5 ${tipo==='consultor'?'consultores(as)':'treinadores(as)'} com acesso já atingido nesta academia. Suspenda ou remova um acesso existente antes de criar outro.</div>`;
       return;
     }
-    const modulosDefault=tipo==='consultor'?['roi21','campanhas']:['roi21','experiencias'];
+    const modulosDefault=tipo==='consultor'?['roi21','campanhas']:['roi21','experiencias','campanhas'];
     el.innerHTML=`
       <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--td);margin-bottom:4px">Criar acesso para</div><div style="font-weight:600;font-size:15px">${pessoaNome}</div></div>
       <p style="font-size:12.5px;color:var(--td);margin-bottom:14px">${todos.length}/5 acessos de ${tipo==='consultor'?'consultor(a)':'treinador(a)'} usados nesta academia.</p>

@@ -224,13 +224,13 @@ table.vd-table th{color:var(--laranja);font-size:11px;text-transform:uppercase;}
 .kb-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;cursor:grab;user-select:none;}
 .kb-board.dragging-board{cursor:grabbing;}
 .kb-col{flex:0 0 240px;background:var(--fundo2);border:1px solid var(--borda);border-radius:12px;padding:0;min-height:120px;max-height:calc(100vh - 230px);overflow-y:auto;display:flex;flex-direction:column;}
-.kb-col.col-end{background:#141a16;border-color:rgba(61,186,122,.25);}
-.kb-col.col-wait{background:#171615;}
+.kb-col.col-end{background:#ECF8F1;border-color:rgba(61,186,122,.25);}
+.kb-col.col-wait{background:#F1F3F8;}
 .kb-col.drag-over{border-color:var(--laranja);background:rgba(27,79,216,.06);}
 .kb-col-inner{padding:0 12px 12px;}
 .kb-col h4{position:sticky;top:0;z-index:2;background:var(--fundo2);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--texto2);margin:0;padding:12px 12px 8px;display:flex;justify-content:space-between;}
-.kb-col.col-end h4{background:#171f1a;}
-.kb-col.col-wait h4{background:#1a1918;}
+.kb-col.col-end h4{background:#ECF8F1;}
+.kb-col.col-wait h4{background:#F1F3F8;}
 .kb-col h4 .cnt{background:var(--fundo3);color:var(--texto);border-radius:10px;padding:1px 8px;font-size:11.5px;}
 .kb-card{background:var(--fundo3);border:1px solid var(--borda);border-radius:9px;padding:10px 12px;margin-top:8px;cursor:grab;transition:.15s;}
 .kb-card.dragging{opacity:.35;}
@@ -297,7 +297,7 @@ table.vd-table th{color:var(--laranja);font-size:11px;text-transform:uppercase;}
 <style id="marca-css">
 .acq-img{display:block;height:44px;width:auto}
 .acq-img.big{height:96px;margin:0 auto 8px}
-.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#7a869f;letter-spacing:.3px}
+.gf-foot{display:flex;align-items:center;justify-content:center;gap:7px;padding:18px 0 14px;font-size:10.5px;color:#556182;letter-spacing:.3px}
 .gf-foot img{height:15px;width:auto;opacity:.85}
 .auth-box .gf-foot{padding:16px 0 0}
 .auth-screen.active~.gf-foot,#loginScreen:not([style*="none"])~.gf-foot{display:none}
@@ -630,7 +630,9 @@ async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{
 async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:HR,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json();}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 async function sbPatch(t,id,b){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:H,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());}
-const ROLES_PERMITIDOS=['gestor','admin','consultor'];
+const ROLES_PERMITIDOS=['gestor','admin','consultor','treinador'];
+const ehTreinador=()=>sessao&&sessao.role==='treinador';
+const ehRestrito=()=>sessao&&(sessao.role==='consultor'||sessao.role==='treinador');
 
 function toast(msg,err){
   const t=document.getElementById('toast');
@@ -658,7 +660,7 @@ async function doLogin(){
   if(!email||!senha){err.textContent='Preencha e-mail e senha.';err.classList.add('show');return;}
   const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Verificando...';
   try{
-    const res=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,modulos_ativos`);
+    const res=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,treinador_id,modulos_ativos`);
     if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){
       err.textContent='E-mail ou senha incorretos, ou acesso não autorizado.';err.classList.add('show');
       btn.disabled=false;btn.textContent='Entrar';return;
@@ -694,7 +696,7 @@ async function checkSession(){
   const uidAuto=params.get('uid');
   if(uidAuto){
     try{
-      const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(uidAuto)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,modulos_ativos`);
+      const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(uidAuto)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,treinador_id,modulos_ativos`);
       if(res&&res.length&&ROLES_PERMITIDOS.includes(res[0].role)&&(res[0].role==='admin'||(res[0].modulos_ativos||[]).includes('campanhas'))){
         sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));
         iniciarApp(res[0]);return;
@@ -705,7 +707,7 @@ async function checkSession(){
   if(!raw){mostrarTela('screen-login');return;}
   let s;try{s=JSON.parse(raw);}catch(e){mostrarTela('screen-login');return;}
   try{
-    const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(s.id)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,modulos_ativos`);
+    const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(s.id)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id,treinador_id,modulos_ativos`);
     if(!res||!res.length||!ROLES_PERMITIDOS.includes(res[0].role)||(res[0].role!=='admin'&&!(res[0].modulos_ativos||[]).includes('campanhas'))){sessionStorage.removeItem('qg90_sessao');mostrarTela('screen-login');return;}
     iniciarApp(res[0]);
   }catch(e){console.error(e);mostrarTela('screen-login');}
@@ -718,7 +720,7 @@ async function iniciarApp(s){
   sessao=s;
   sessionStorage.setItem('qg90_sessao',JSON.stringify(s));
   document.getElementById('userNome').textContent=s.nome||s.email;
-  document.getElementById('userAcademia').textContent=s.role==='admin'?'Acquacel · Master':(s.role==='consultor'?'Consultor(a)':'Gestor(a)');
+  document.getElementById('userAcademia').textContent=s.role==='admin'?'Acquacel · Master':(s.role==='consultor'?'Consultor(a)':(s.role==='treinador'?'Treinador(a)':'Gestor(a)'));
   mostrarTela('appWrap');
   try{
     consultoras=s.academia_id?await sbGet('roi_consultoras',`academia_id=eq.${s.academia_id}&select=id,nome,meta,meta_tipo,metas`):[];
@@ -732,11 +734,15 @@ async function iniciarApp(s){
   if(s.academia_id)await carregarJornadas();
   else Object.assign(ETAPAS,JORNADAS_PADRAO);
   // Consultor(a) não cria campanha, não sobe listas, nem redistribui carteira alheia
-  if(s.role==='consultor'){
+  if(s.role==='consultor'||s.role==='treinador'){
     const btnNova=document.querySelectorAll('.itab-btn')[3];
     if(btnNova)btnNova.style.display='none';
     const btnCarteiras=document.querySelectorAll('.itab-btn')[4];
     if(btnCarteiras)btnCarteiras.style.display='none';
+  }
+  if(s.role==='treinador'){
+    const bv=document.querySelectorAll('.itab-btn')[2];if(bv)bv.style.display='none';
+    const bd=document.querySelector('button[onclick="abrirMeuDesempenho()"]');if(bd)bd.style.display='none';
   }
   await carregarCampanhas();
 
@@ -811,7 +817,7 @@ async function carregarCampanhas(){
   if(!sessao.academia_id){document.getElementById('campGrid').innerHTML='<div class="empty-state">Sem academia vinculada a este usuário.</div>';return;}
   try{
     const camps=await sbGet('roi_campanhas',`academia_id=eq.${sessao.academia_id}&order=created_at.desc`);
-    minhasCampanhas=camps;
+    minhasCampanhas=ehTreinador()?camps.filter(c=>(c.perfis||[]).includes('sucesso_cliente')):camps;
     renderGridCampanhas();
   }catch(e){console.error(e);toast('Erro ao carregar campanhas',true);}
 }
@@ -831,7 +837,7 @@ function renderGridCampanhas(){
 
   grid.innerHTML=toggleHtml+visiveis.map(c=>`
     <div class="camp-card" onclick="abrirCampanhaExistente('${c.id}')" style="position:relative;">
-      <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:2;" onclick="event.stopPropagation()">
+      <div style="position:absolute;top:10px;right:10px;display:${ehTreinador()?'none':'flex'};gap:6px;z-index:2;" onclick="event.stopPropagation()">
         <button title="Editar" onclick="abrirEditarCampanha('${c.id}')" style="background:var(--fundo3);border:1px solid var(--borda);border-radius:6px;width:26px;height:26px;cursor:pointer;color:var(--texto2);font-size:13px;">✎</button>
         <button title="${c.status==='arquivada'?'Reativar':'Arquivar'}" onclick="${c.status==='arquivada'?`reativarCampanha('${c.id}')`:`arquivarCampanha('${c.id}')`}" style="background:var(--fundo3);border:1px solid var(--borda);border-radius:6px;width:26px;height:26px;cursor:pointer;color:var(--texto2);font-size:13px;">${c.status==='arquivada'?'↺':'🗄'}</button>
         <button title="Excluir definitivamente" onclick="excluirCampanhaDefinitivo('${c.id}','${c.nome.replace(/'/g,"\\'")}')" style="background:rgba(224,82,82,.12);border:1px solid var(--vermelho);border-radius:6px;width:26px;height:26px;cursor:pointer;color:var(--vermelho);font-size:13px;">🗑</button>
@@ -839,7 +845,7 @@ function renderGridCampanhas(){
       <span class="camp-status st-${c.status}">${c.status.toUpperCase()}</span>
       <h4>${c.nome}</h4>
       <div class="cmeta">${c.mes_referencia} · R$${(c.investimento_trafego||0).toLocaleString('pt-BR')} investido</div>
-      <div class="camp-perfis">${(c.perfis||[]).map(p=>`<span class="ptag ptag-${p}">${PERFIL_LABEL[p]||p}</span>`).join('')}</div>
+      <div class="camp-perfis">${(c.perfis||[]).filter(p=>!ehTreinador()||p==='sucesso_cliente').map(p=>`<span class="ptag ptag-${p}">${PERFIL_LABEL[p]||p}</span>`).join('')}</div>
       ${c.status==='planejamento'?'<div style="margin-top:8px;font-size:12px;color:var(--laranja)">↻ Clique para continuar o upload</div>':''}
     </div>`).join('');
 }
@@ -1068,7 +1074,7 @@ async function abrirRedistribuir(campanhaId,perfilInicial,deInicial){
   // academia — nunca busca no banco por ID solto, mesmo como fallback.
   const camp=minhasCampanhas.find(c=>c.id===campanhaId);
   if(!camp){toast('Campanha não encontrada nesta academia.',true);return;}
-  if(sessao.role==='consultor'){toast('Só gestor(a) pode redistribuir carteira.',true);return;}
+  if(ehRestrito()){toast('Só gestor(a) pode redistribuir carteira.',true);return;}
   fecharModalGenerico();
   const optsPerfil=camp.perfis.map(p=>`<option value="${p}" ${p===perfilInicial?'selected':''}>${PERFIL_LABEL[p]}</option>`).join('');
   const optsCons=consultoras.map(c=>`<option value="${c.id}" ${c.id===deInicial?'selected':''}>${c.nome}</option>`).join('');
@@ -1408,7 +1414,7 @@ async function carregarAgenda(){
 
   try{
     const idsStr=campsAtivas.map(c=>c.id).join(',');
-    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:'';
+    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:(ehTreinador()?'&perfil=eq.sucesso_cliente':'');
     const todosCards=await sbGet('roi_campanha_cards',`campanha_id=in.(${idsStr})&status=neq.convertido&status=neq.perdido${filtroConsultora}&order=proxima_acao_data.asc.nullslast`);
     agendaCampanhaPorCard={};
     todosCards.forEach(c=>{agendaCampanhaPorCard[c.id]=campsAtivas.find(camp=>camp.id===c.campanha_id);});
@@ -1725,7 +1731,7 @@ function adicionarEtapaJornada(){
 }
 // ── Atribuir Carteira — seleção manual de nomes pra definir/trocar consultor(a) de vez ──
 function abrirAtribuirCarteira(){
-  if(sessao.role==='consultor'){toast('Só gestor(a) pode atribuir carteira.',true);return;}
+  if(ehRestrito()){toast('Só gestor(a) pode atribuir carteira.',true);return;}
   const cardsDoPerfil=kbCards.filter(c=>c.perfil===kbPerfilAtivo&&c.status==='ativo');
   if(!cardsDoPerfil.length){toast('Nenhum card ativo nesse funil.',true);return;}
   const optsCons=consultoras.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
@@ -1863,11 +1869,12 @@ async function abrirKanban(camp){
   document.getElementById('viewKanban').style.display='block';
   document.getElementById('kbCampNome').textContent=camp.nome;
   const tabsEl=document.getElementById('kbPerfilTabs');
-  tabsEl.innerHTML=(camp.perfis||[]).map(p=>`<button class="kb-ptab" id="kbtab-${p}" onclick="trocarPerfilKanban('${p}')">${PERFIL_LABEL[p]}</button>`).join('');
-  kbPerfilAtivo=(camp.perfis||[])[0];
+  const perfisVis=(camp.perfis||[]).filter(p=>!ehTreinador()||p==='sucesso_cliente');
+  tabsEl.innerHTML=perfisVis.map(p=>`<button class="kb-ptab" id="kbtab-${p}" onclick="trocarPerfilKanban('${p}')">${PERFIL_LABEL[p]}</button>`).join('');
+  kbPerfilAtivo=perfisVis[0];
   kbFiltroConsultor='';
   const selFiltro=document.getElementById('kbFiltroConsultorSel');
-  if(sessao.role==='consultor'){
+  if(ehRestrito()){
     selFiltro.style.display='none';
   }else{
     selFiltro.innerHTML='<option value="">👥 Todos(as) os(as) consultores(as)</option>'+consultoras.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
@@ -1891,7 +1898,7 @@ let vendasCampanha=[];
 async function carregarCardsKanban(){
   try{
     // Consultor(a) só vê os próprios cards; gestor(a)/admin veem tudo (visão completa)
-    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:'';
+    const filtroConsultora=sessao.role==='consultor'&&sessao.consultora_id?`&consultora_id=eq.${sessao.consultora_id}`:(ehTreinador()?'&perfil=eq.sucesso_cliente':'');
     kbCards=await sbGet('roi_campanha_cards',`campanha_id=eq.${kbCampanha.id}${filtroConsultora}&order=nome.asc`);
   }catch(e){console.error(e);toast('Erro ao carregar cards',true);kbCards=[];}
   try{
@@ -1904,7 +1911,7 @@ function trocarPerfilKanban(perfil){
   const tabEl=document.getElementById('kbtab-'+perfil);
   if(tabEl)tabEl.classList.add('active');
   document.getElementById('btnJornadaSucesso').style.display='inline-flex';
-  document.getElementById('btnAtribuirCarteira').style.display=sessao.role==='consultor'?'none':'inline-flex';
+  document.getElementById('btnAtribuirCarteira').style.display=ehRestrito()?'none':'inline-flex';
   renderKanbanBoard();
   renderKbSummary();
 }
@@ -1963,7 +1970,7 @@ function renderKbSummary(){
   // Quebra objetiva por consultor(a) — só visível pra gestor(a)/admin (consultor(a) já vê
   // só os próprios cards, não precisa da comparação).
   let blocoPorConsultor='';
-  if(sessao.role!=='consultor'){
+  if(!ehRestrito()){
     const porConsultor={};
     cardsDoPerfil.forEach(c=>{
       const nome=nomeConsultora(c.consultora_id)||'Sem consultor(a)';
