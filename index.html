@@ -2544,7 +2544,7 @@ async function salvarTreinadorROI(){
   const comCref=trGrauSel==='formado'||trGrauSel==='provisionado';
   const btn=document.getElementById('btn-add-trein');btn.disabled=true;
   try{
-    await sbPost('roi_treinadores',{id:uid(),academia_id:acId,nome,ativo:true,created_at:Date.now(),
+    await sbPost('roi_treinadores',{id:uid(),academia_id:acId,nome,ativo:true,
       telefone:document.getElementById('tr-tel').value.trim()||null,
       grau_academico:trGrauSel||null,
       cref:comCref?(document.getElementById('tr-cref').value.trim()||null):null,
