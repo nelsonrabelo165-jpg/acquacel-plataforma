@@ -521,6 +521,26 @@ tbody tr:hover td{background:var(--s2)}
         <button class="btn-gh" onclick="salvarBriefing()">Salvar perfil do negócio</button>
         <span id="bf-msg" style="margin-left:12px;font-size:12px;color:var(--gr)"></span>
 
+        
+        <div class="sec-div" style="margin-top:28px"><div class="sec-div-line"></div><div class="sec-div-lbl">📥 Briefing completo (importação)</div><div class="sec-div-line"></div></div>
+        <p style="font-size:12px;color:var(--td);margin-bottom:12px">Reúna documentos, transcrições e briefings antigos no Claude com a skill de briefing, receba o arquivo pronto e importe aqui. Não precisa digitar campo a campo.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+          <button class="btn-or" onclick="document.getElementById('bc-file').click()">📥 Importar arquivo (.json)</button>
+          <button class="btn-gh" onclick="bcToggleColar()">📋 Colar JSON</button>
+          <button class="btn-gh" onclick="bcExportar()">⬇ Exportar</button>
+          <input type="file" id="bc-file" accept=".json,application/json" style="display:none" onchange="bcLerArquivo(this)">
+          <span id="bc-msg" style="font-size:12px;color:var(--gr)"></span>
+        </div>
+        <div id="bc-colar" style="display:none;margin-bottom:12px">
+          <textarea class="fi" id="bc-colar-txt" rows="6" placeholder="Cole aqui o JSON gerado pela skill de briefing..."></textarea>
+          <button class="btn-gh btn-sm" style="margin-top:6px" onclick="bcProcessar(document.getElementById('bc-colar-txt').value)">Ler briefing</button>
+        </div>
+        <div id="bc-preview" style="display:none;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px"></div>
+        <div id="bc-status" style="font-size:12px;color:var(--td);margin-bottom:10px"></div>
+        <div id="bc-blocos"></div>
+        <div id="bc-acoes" style="display:none;margin:12px 0 4px"><button class="btn-or" onclick="bcSalvar()">Salvar briefing completo</button></div>
+        <div id="bc-pers"></div>
+
         <div class="sec-div" style="margin-top:28px"><div class="sec-div-line"></div><div class="sec-div-lbl">🎙️ Transcrições de reunião</div><div class="sec-div-line"></div></div>
         <p style="font-size:11px;color:var(--td);margin-bottom:12px">Cole aqui a transcrição de reuniões com o cliente sobre posicionamento. Fica guardado como histórico.</p>
         <div id="bf-transcricoes-lista" style="margin-bottom:16px"></div>
@@ -1793,7 +1813,7 @@ async function renderLancFunis(){
     listaAtual[fid]=ultimoComLista?ultimoComLista.funis[fid].lista_total:0;
   });
 
-  // Um funil aparece pra esse(a) consultor(a) se: tem campanha ATIVA agora daquele perfil
+  // Um funil aparece pra esse(a) consultor(a) se: foi atribuído na ficha dele(a) (lançamento manual sempre liberado) OU tem campanha ATIVA agora daquele perfil
   // (não depende mais de atribuição manual — qualquer campanha nova já libera aqui sozinha),
   // OU — só pra funil sem equivalente no Campanhas ainda (ex: Feedback+Indicação) — se foi
   // atribuído manualmente na ficha do(a) consultor(a).
@@ -1801,7 +1821,7 @@ async function renderLancFunis(){
   await Promise.all(FUNIS.map(async f=>{
     const fid=f.id;
     const perfil=FUNIL_PARA_PERFIL_CAMPANHA[fid];
-    disponibilidade[fid]=perfil?(await idsCampanhasAtivasPorPerfil(perfil)).length>0:(c.funis||[]).includes(fid);
+    disponibilidade[fid]=(c.funis||[]).includes(fid)||(perfil?(await idsCampanhasAtivasPorPerfil(perfil)).length>0:false);
   }));
   const funisDisponiveis=FUNIS.map(f=>f.id).filter(fid=>disponibilidade[fid]);
 
@@ -3357,6 +3377,7 @@ function initBriefing(){
   if(restrito)return;
   renderModalidadesChk([]);
   carregarBriefing();
+  bcCarregar();
   carregarTranscricoes();
 }
 function renderModalidadesChk(selecionadas){
@@ -3365,6 +3386,168 @@ function renderModalidadesChk(selecionadas){
       <input type="checkbox" value="${m}" ${selecionadas.includes(m)?'checked':''}> ${m}
     </label>`).join('');
 }
+
+// ══ BRIEFING COMPLETO (importação via skill) ══
+const BC_SCHEMA=[
+ {id:'identidade',t:'🏢 Identidade e posicionamento',c:[['nome_fantasia','Nome fantasia'],['cidade_uf','Cidade / UF'],['unidades','Unidades','area'],['anos_mercado','Anos de mercado','num'],['responsavel','Proprietário(a) / gestor(a)'],['historia','História da academia','area'],['proposta_valor','Proposta de valor','area'],['posicionamento','Posicionamento','area'],['tom_de_voz','Tom de voz da marca','area'],['palavras_usar','Palavras que a marca usa (uma por linha)','list'],['palavras_evitar','Palavras a evitar (uma por linha)','list']]},
+ {id:'estrutura',t:'🏗️ Estrutura física e modalidades',c:[['espaco_m2','Espaço (m²)','num'],['capacidade','Capacidade / horários de pico'],['horario_funcionamento','Horário de funcionamento'],['ambientes','Ambientes (um por linha)','list'],['modalidades','Modalidades (uma por linha)','list'],['diferenciais_fisicos','Diferenciais físicos','area']]},
+ {id:'modelo',t:'🎯 Modelo de negócio e diferenciais',c:[['modalidade_principal','Modalidade principal / carro-chefe'],['modelo_negocio','Modelo de negócio'],['usa_bot','Usa bot de pré-qualificação?'],['diferenciais_tecnicos','Diferenciais técnicos','area'],['metodologia_propria','Metodologia própria','area']]},
+ {id:'planos',t:'💳 Planos e preços',c:[['planos','Planos (um por linha: plano | modalidade | periodicidade | valor | observação)','tab',['plano','modalidade','periodicidade','valor','observacao']],['ticket_medio','Ticket médio (R$)','num'],['taxa_matricula','Taxa de matrícula'],['formas_pagamento','Formas de pagamento (uma por linha)','list'],['promocoes_atuais','Promoções atuais','area']]},
+ {id:'publico',t:'👥 Público e personas',c:[['publico_alvo','Público-alvo','area'],['faixa_etaria','Faixa etária'],['perfil_socioeconomico','Perfil socioeconômico'],['personas','Personas (uma por linha: persona | perfil | dores | desejos)','tab',['persona','perfil','dores','desejos']]]},
+ {id:'numeros',t:'📊 Números atuais',c:[['alunos_ativos','Alunos ativos','num'],['faturamento_mensal','Faturamento mensal (R$)','num'],['leads_mes','Leads por mês','num'],['taxa_conversao','Taxa de conversão'],['churn_mensal','Cancelamento mensal'],['base_inativa','Base inativa (ex-alunos)','num'],['meta_90_dias','Meta dos próximos 90 dias','area']]},
+ {id:'equipe',t:'🧑‍💼 Equipe comercial',c:[['consultores','Nº de consultores(as)','num'],['estrutura_comercial','Estrutura comercial','area'],['horarios_atendimento','Horários de atendimento'],['ferramentas','Ferramentas usadas (uma por linha)','list'],['rotina_comercial','Rotina comercial atual','area'],['dificuldades','Maiores dificuldades da equipe','area']]},
+ {id:'funil',t:'🔻 Funil e canais',c:[['canais','Canais de aquisição (um por linha)','list'],['canal_principal','Canal principal'],['fluxo_atendimento','Fluxo de atendimento atual','area'],['experiencia_gratuita','Regras da experiência gratuita','area'],['tempo_resposta','Tempo médio de resposta ao lead'],['followup','Follow-up atual','area']]},
+ {id:'concorrencia',t:'⚔️ Concorrência',c:[['concorrentes','Concorrentes (um por linha: nome | preço | diferencial | ponto fraco)','tab',['nome','preco','diferencial','ponto_fraco']],['vantagem','Nossa vantagem competitiva','area']]},
+ {id:'dores',t:'🔥 Dores e oportunidades',c:[['dores','Dores principais (uma por linha)','list'],['oportunidades','Oportunidades (uma por linha)','list'],['prioridades_90_dias','Prioridades dos próximos 90 dias (uma por linha)','list']]},
+ {id:'regras',t:'📏 Regras comerciais',c:[['limite_desconto','Limite de desconto'],['quem_autoriza','Quem autoriza exceções'],['cancelamento','Política de cancelamento','area'],['congelamento','Política de congelamento'],['indicacao','Programa de indicação','area'],['regras_experiencia','Regras da experiência','area']]},
+ {id:'objecoes',t:'🛡️ Objeções reais e fechamento',c:[['objecoes','Objeções (uma por linha: objeção | frequência | como responde hoje)','tab',['objecao','frequencia','como_responde']],['gatilhos_fechamento','Gatilhos de fechamento (um por linha)','list']]}
+];
+let bcDados=null, bcPend=null;
+function bcEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function bcValToTxt(c,v){
+  if(v==null)return '';
+  if(c[2]==='list')return Array.isArray(v)?v.join('\n'):String(v);
+  if(c[2]==='tab')return Array.isArray(v)?v.map(o=>c[3].map(k=>(o&&o[k]!=null?o[k]:'')).join(' | ')).join('\n'):String(v);
+  return v;
+}
+function bcTxtToVal(c,txt){
+  txt=(txt||'').trim();
+  if(!txt)return null;
+  if(c[2]==='num'){const n=parseFloat(txt.replace(',','.'));return isNaN(n)?null:n}
+  if(c[2]==='list')return txt.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(c[2]==='tab')return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const p=l.split('|').map(x=>x.trim());const o={};c[3].forEach((k,i)=>o[k]=p[i]||'');return o});
+  return txt;
+}
+function bcContar(b){
+  let tot=0,ok=0;
+  BC_SCHEMA.forEach(bl=>bl.c.forEach(c=>{tot++;const v=b&&b.blocos&&b.blocos[bl.id]&&b.blocos[bl.id][c[0]];if(v!=null&&v!==''&&!(Array.isArray(v)&&!v.length))ok++}));
+  return {tot,ok};
+}
+function bcRender(){
+  const b=bcDados;
+  const box=document.getElementById('bc-blocos'); if(!box)return;
+  if(!b){
+    box.innerHTML='<div style="color:var(--td);font-size:12px;margin-bottom:6px">Nenhum briefing completo importado ainda.</div>';
+    document.getElementById('bc-acoes').style.display='none';
+    document.getElementById('bc-status').innerHTML='';document.getElementById('bc-pers').innerHTML='';return;
+  }
+  const n=bcContar(b);
+  const fontes=(b.fontes||[]).map(f=>bcEsc((f.tipo||'')+(f.titulo?': '+f.titulo:'')+(f.data?' ('+f.data+')':''))).join(' · ');
+  const lac=(b.lacunas||[]);
+  document.getElementById('bc-status').innerHTML='<strong>'+n.ok+' de '+n.tot+' campos preenchidos</strong>'+(b.gerado_em?' · gerado em '+bcEsc(b.gerado_em):'')+(fontes?'<br>Fontes: '+fontes:'')+(lac.length?'<div style="margin-top:8px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:10px 12px;color:var(--tm)"><strong>⚠️ Lacunas para confirmar com o cliente</strong><ul style="margin:6px 0 0 18px">'+lac.map(l=>'<li>'+bcEsc(l)+'</li>').join('')+'</ul></div>':'');
+  box.innerHTML=BC_SCHEMA.map(bl=>{
+    const dados=(b.blocos&&b.blocos[bl.id])||{};
+    const cheios=bl.c.filter(c=>{const v=dados[c[0]];return v!=null&&v!==''&&!(Array.isArray(v)&&!v.length)}).length;
+    return '<details style="background:var(--s2);border-radius:10px;padding:10px 14px;margin-bottom:8px"><summary style="cursor:pointer;font-size:13.5px;font-weight:700">'+bl.t+' <span style="font-weight:500;color:var(--td);font-size:11.5px">· '+cheios+'/'+bl.c.length+'</span></summary><div style="margin-top:12px">'+
+      bl.c.map(c=>{
+        const id='bc-'+bl.id+'-'+c[0], v=bcEsc(bcValToTxt(c,dados[c[0]]));
+        const multi=c[2]==='area'||c[2]==='list'||c[2]==='tab';
+        return '<div class="fg" style="margin-bottom:10px"><label class="fl">'+c[1]+'</label>'+(multi?'<textarea class="fi" id="'+id+'" rows="'+(c[2]==='tab'?5:3)+'">'+v+'</textarea>':'<input class="fi" id="'+id+'" '+(c[2]==='num'?'type="number" step="any" ':'')+'value="'+v+'">')+'</div>';
+      }).join('')+'</div></details>';
+  }).join('');
+  document.getElementById('bc-acoes').style.display='block';
+  bcRenderPers(b.personalizacao);
+}
+function bcCopy(i,g){
+  const p=(bcDados&&bcDados.personalizacao)||{};
+  const it=(p[g]||[])[i]; if(!it)return;
+  const t=it.texto||it.resposta||it.mensagem||'';
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast('Texto copiado!')).catch(()=>toast('Não foi possível copiar.',true));
+}
+function bcRenderPers(p){
+  const el=document.getElementById('bc-pers'); if(!el)return;
+  p=p||{}; const sc=p.scripts||[], ob=p.objecoes||[], ca=p.campanhas||[];
+  if(!sc.length&&!ob.length&&!ca.length){el.innerHTML='';return}
+  const card=(tit,corpo,g,i)=>'<div style="background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px"><div style="font-size:12px;font-weight:700;margin-bottom:4px">'+tit+'</div><div style="font-size:12.5px;color:var(--tm);white-space:pre-wrap">'+corpo+'</div><button class="btn-gh btn-sm" style="margin-top:6px" onclick="bcCopy('+i+',\''+g+'\')">Copiar texto</button></div>';
+  el.innerHTML='<div class="sec-div" style="margin-top:24px"><div class="sec-div-line"></div><div class="sec-div-lbl">✨ Personalização sugerida a partir do briefing</div><div class="sec-div-line"></div></div>'+
+   '<p style="font-size:12px;color:var(--td);margin-bottom:10px">Sugestões geradas pela skill com base no perfil desta academia. Revise e copie para a Central de Scripts e para as Campanhas.</p>'+
+   (sc.length?'<div class="lbl" style="margin:10px 0 6px">Ajustes de scripts</div>'+sc.map((s,i)=>card(bcEsc(s.etapa||'Etapa')+(s.ajuste?' — '+bcEsc(s.ajuste):''),bcEsc(s.texto||''),'scripts',i)).join(''):'')+
+   (ob.length?'<div class="lbl" style="margin:14px 0 6px">Respostas a objeções</div>'+ob.map((s,i)=>card('“'+bcEsc(s.objecao||'')+'”',bcEsc(s.resposta||''),'objecoes',i)).join(''):'')+
+   (ca.length?'<div class="lbl" style="margin:14px 0 6px">Ideias de campanha</div>'+ca.map((s,i)=>card(bcEsc(s.perfil||'')+(s.ideia?' — '+bcEsc(s.ideia):''),bcEsc(s.mensagem||''),'campanhas',i)).join(''):'');
+}
+async function bcCarregar(){
+  if(!sessao.academia_id)return;
+  try{
+    const rows=await sbGet('roi_briefing_negocio',`academia_id=eq.${sessao.academia_id}`);
+    const b=rows&&rows[0];
+    bcDados=(b&&b.dados&&b.dados.blocos)?b.dados:null;
+  }catch(e){console.error('briefing completo:',e);bcDados=null}
+  bcRender();
+}
+function bcToggleColar(){const e=document.getElementById('bc-colar');e.style.display=e.style.display==='none'?'block':'none'}
+function bcLerArquivo(inp){
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{bcProcessar(String(r.result||''));inp.value=''};
+  r.onerror=()=>toast('Não foi possível ler o arquivo.',true);
+  r.readAsText(f,'utf-8');
+}
+function bcProcessar(txt){
+  let o;
+  try{o=JSON.parse((txt||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim())}catch(e){return toast('Arquivo inválido. Use o JSON gerado pela skill de briefing.',true)}
+  if(!o||typeof o!=='object'||!o.blocos||typeof o.blocos!=='object')return toast('Este arquivo não parece um briefing (falta o campo "blocos").',true);
+  bcPend=o;
+  const n=bcContar(o);
+  const lac=o.lacunas||[];
+  const pr=document.getElementById('bc-preview');
+  pr.style.display='block';
+  pr.innerHTML='<div style="font-weight:700;margin-bottom:6px">Conferir antes de salvar</div>'+
+    '<div style="font-size:12.5px;margin-bottom:8px">Academia no arquivo: <strong>'+bcEsc(o.academia||'não informada')+'</strong> · '+n.ok+' de '+n.tot+' campos preenchidos'+(bcDados?' · <span style="color:var(--rd)">substitui o briefing atual</span>':'')+'</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">'+BC_SCHEMA.map(bl=>{const d=o.blocos[bl.id]||{};const c=bl.c.filter(x=>{const v=d[x[0]];return v!=null&&v!==''&&!(Array.isArray(v)&&!v.length)}).length;return '<span style="font-size:11.5px;background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:3px 10px">'+bl.t.replace(/^\S+\s/,'')+': '+c+'/'+bl.c.length+'</span>'}).join('')+'</div>'+
+    (lac.length?'<div style="font-size:12px;color:var(--tm);margin-bottom:10px">⚠️ '+lac.length+' lacuna(s) apontada(s) para confirmar com o cliente.</div>':'')+
+    '<button class="btn-or btn-sm" onclick="bcConfirmar()">Confirmar e usar este briefing</button> <button class="btn-gh btn-sm" onclick="bcCancelar()">Cancelar</button>';
+}
+function bcCancelar(){bcPend=null;document.getElementById('bc-preview').style.display='none'}
+async function bcConfirmar(){
+  if(!bcPend)return;
+  bcDados=bcPend; bcPend=null;
+  document.getElementById('bc-preview').style.display='none';
+  bcRender();
+  await bcSalvar(true);
+}
+function bcColetar(){
+  const b=JSON.parse(JSON.stringify(bcDados||{versao:1,blocos:{}}));
+  b.blocos=b.blocos||{};
+  BC_SCHEMA.forEach(bl=>{
+    b.blocos[bl.id]=b.blocos[bl.id]||{};
+    bl.c.forEach(c=>{
+      const el=document.getElementById('bc-'+bl.id+'-'+c[0]);
+      if(el){const v=bcTxtToVal(c,el.value);if(v==null)delete b.blocos[bl.id][c[0]];else b.blocos[bl.id][c[0]]=v}
+    });
+  });
+  return b;
+}
+async function bcSalvar(veioDoImport){
+  if(!sessao.academia_id)return toast('Selecione uma academia.',true);
+  const b=veioDoImport===true?bcDados:bcColetar();
+  const bl=b.blocos||{}; const g=(i,k)=>(bl[i]||{})[k];
+  const payload={academia_id:sessao.academia_id,dados:b,updated_at:Date.now()};
+  // espelha os campos do perfil rápido
+  const n=v=>(v==null||v==='')?null:(parseFloat(v)||null);
+  if(g('estrutura','espaco_m2')!=null)payload.espaco_m2=n(g('estrutura','espaco_m2'));
+  if(g('planos','ticket_medio')!=null)payload.ticket_atual=n(g('planos','ticket_medio'));
+  if(g('modelo','modalidade_principal'))payload.modalidade_principal=g('modelo','modalidade_principal');
+  if(g('modelo','modelo_negocio'))payload.modelo_negocio=g('modelo','modelo_negocio');
+  if(g('modelo','diferenciais_tecnicos'))payload.diferenciais_tecnicos=g('modelo','diferenciais_tecnicos');
+  if(g('publico','publico_alvo'))payload.publico_alvo=g('publico','publico_alvo');
+  if(Array.isArray(g('estrutura','modalidades')))payload.modalidades=g('estrutura','modalidades');
+  try{
+    await sbUpsert('roi_briefing_negocio',payload);
+    bcDados=b;
+    document.getElementById('bc-msg').textContent='✓ Briefing salvo!';
+    setTimeout(()=>document.getElementById('bc-msg').textContent='',3000);
+    if(veioDoImport===true)carregarBriefing();
+    bcRender();
+    toast('Briefing salvo!');
+  }catch(e){console.error(e);toast('Erro ao salvar. Confirme se o SQL do briefing completo foi executado.',true)}
+}
+function bcExportar(){
+  const b=bcDados?bcColetar():null;
+  if(!b)return toast('Nada para exportar ainda.',true);
+  const blob=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='briefing-'+((b.academia||'academia').toLowerCase().replace(/[^a-z0-9]+/g,'-'))+'.json';a.click();
+}
+
 async function carregarBriefing(){
   if(!sessao.academia_id)return;
   try{
