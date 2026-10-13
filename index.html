@@ -2437,7 +2437,7 @@ function abrirNovoTreinadorROI(){
 async function criarTreinadorROI(nome){
   if(!acId){toast('Academia não definida',true);return}
   try{
-    await fetch(`${SB_URL}/rest/v1/roi_treinadores`,{method:'POST',headers:H,body:JSON.stringify({id:uid(),academia_id:acId,nome,ativo:true,created_at:Date.now()})});
+    await sbPost('roi_treinadores',{id:uid(),academia_id:acId,nome,ativo:true,created_at:Date.now()});
     toast('Treinador(a) adicionado(a)!');
     await loadAll();
   }catch(e){console.error(e);toast('Erro ao salvar',true);}
@@ -2510,13 +2510,13 @@ async function criarAcessoPessoa(tipo,pessoaId,pessoaNome){
     const existeEmail=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&select=id`);
     if(existeEmail.length){toast('Já existe um acesso com esse e-mail.',true);return}
     const campoId=tipo==='consultor'?'consultora_id':'treinador_id';
-    await fetch(`${SB_URL}/rest/v1/roi_gestores`,{method:'POST',headers:H,body:JSON.stringify({
-      nome:pessoaNome,email,senha_hash:senha,academia_id:acId,
+    await sbPost('roi_gestores',{
+      id:uid(),nome:pessoaNome,email,senha_hash:senha,academia_id:acId,
       role:tipo,ativo:true,[campoId]:pessoaId,modulos_ativos:modulos
-    })});
+    });
     toast(`Acesso criado! Já pode entrar em: ${modulos.map(m=>(MODULOS_QG90.find(x=>x.key===m)||{}).label).join(', ')}.`);
     closeM('m-acesso');
-  }catch(e){console.error(e);toast('Erro ao criar acesso',true);}
+  }catch(e){console.error(e);toast('Erro ao criar acesso: '+String(e.message||e).slice(0,140),true);}
 }
 function renderModulosCheckboxPessoa(loginId,ativos){
   return `<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
