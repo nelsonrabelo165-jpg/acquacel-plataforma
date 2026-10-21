@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads da Landing · Acquacel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#F8FAFF;--fundo2:#ffffff;--fundo3:#F1F4FC;
+  --azul:#1B4FD8;--texto:#0A2472;--texto2:rgba(10,36,114,0.66);
+  --verde:#16a34a;--vermelho:#dc2626;--amar:#b45309;--lima:#7FB82E;
+  --borda:rgba(10,36,114,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--fundo);color:var(--texto);font-family:'Barlow',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4,button,select{font-family:'Barlow Condensed',sans-serif;letter-spacing:.01em;}
+a{color:inherit;}
+button{cursor:pointer;}
+#appWrap{display:none;}
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-box{background:var(--fundo2);border:1px solid var(--borda);border-radius:16px;padding:36px 32px;width:100%;max-width:420px;}
+.auth-logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px;color:var(--azul);letter-spacing:2px;text-align:center;}
+.auth-sub{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--texto2);margin-bottom:24px;}
+.auth-err{background:#FDECEC;border:1px solid var(--vermelho);border-radius:8px;padding:10px 14px;font-size:13px;color:#8A1C1C;margin-bottom:14px;display:none;}
+.auth-err.show{display:block;}
+.fl{display:block;font-size:12.5px;color:var(--texto2);font-weight:600;margin-bottom:6px;}
+.fi{width:100%;background:var(--fundo3);border:1px solid var(--borda);color:var(--texto);padding:11px 13px;border-radius:9px;font-size:15px;font-family:inherit;margin-bottom:14px;}
+.fi:focus,select:focus,input:focus,textarea:focus{outline:2px solid var(--azul);outline-offset:1px;}
+.btn{background:var(--azul);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-size:16px;font-weight:700;min-height:44px;}
+.btn.sec{background:#fff;color:var(--texto);border:1px solid var(--borda);}
+.btn.danger{background:#fff;color:var(--vermelho);border:1px solid var(--vermelho);}
+.btn.lima{background:var(--lima);color:var(--texto);}
+.btn:disabled{opacity:.55;cursor:default;}
+header.top{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:14px;padding:10px 22px;flex-wrap:wrap;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:var(--azul);}
+.logo span{color:var(--texto);font-weight:600;}
+.uinfo{margin-left:auto;font-size:12.5px;color:var(--texto2);text-align:right;line-height:1.3;}
+.uinfo b{display:block;color:var(--texto);font-size:13px;}
+main{max-width:1240px;margin:0 auto;padding:24px 22px 80px;}
+.hero h1{font-size:30px;font-weight:800;}
+.hero p{color:var(--texto2);font-size:15px;max-width:720px;margin-top:4px;}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:20px 0 18px;background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:14px;}
+.filters label{display:block;font-size:12px;font-weight:700;color:var(--texto2);margin-bottom:4px;}
+.filters select,.filters input{border:1px solid var(--borda);border-radius:8px;padding:9px 10px;font-size:14.5px;background:#fff;color:var(--texto);font-family:'Barlow',sans-serif;min-height:40px;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px;}
+.kpi{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:14px 16px;}
+.kpi .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;line-height:1;color:var(--azul);}
+.kpi .l{font-size:13px;color:var(--texto2);margin-top:4px;line-height:1.3;}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-bottom:18px;}
+.card{background:var(--fundo2);border:1px solid var(--borda);border-radius:14px;padding:16px;}
+.card h3{font-size:20px;font-weight:700;margin-bottom:10px;}
+.bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:14px;}
+.bar .nm{flex:0 0 170px;color:var(--texto);}
+.bar .tr{flex:1;background:var(--fundo3);border-radius:6px;height:18px;overflow:hidden;}
+.bar .fg{height:100%;background:var(--azul);border-radius:6px;min-width:2px;}
+.bar .fg.end{background:var(--verde);}
+.bar .ct{flex:0 0 38px;text-align:right;font-weight:700;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{font-family:'Barlow Condensed',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:.5px;text-align:left;color:var(--texto2);padding:8px 10px;border-bottom:1px solid var(--borda);white-space:nowrap;}
+td{padding:9px 10px;border-bottom:1px solid var(--borda);vertical-align:middle;}
+tr.lead:hover{background:var(--fundo3);}
+.tw{overflow-x:auto;}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap;}
+.c-bio{background:#E8F1FF;color:#1B4FD8;} .c-anuncio{background:#FFF4DE;color:#8A4B06;} .c-direto{background:#EEF1F7;color:#34405c;}
+.c-sim{background:#EEF8DD;color:#3F6B0A;} .c-nao{background:#EEF1F7;color:#5A6785;}
+.tb select{border:1px solid var(--borda);border-radius:8px;padding:6px 8px;font-size:14px;background:#fff;color:var(--texto);max-width:190px;font-family:'Barlow',sans-serif;}
+.mx td,.mx th{text-align:center;} .mx td:first-child,.mx th:first-child{text-align:left;}
+.vazio{padding:40px 10px;text-align:center;color:var(--texto2);}
+#modal-bg{position:fixed;inset:0;background:rgba(6,26,79,.55);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+#modal-bg.show{display:flex;}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:620px;padding:22px;margin:auto;}
+.modal h2{font-size:26px;font-weight:800;margin-bottom:2px;}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 10px;font-size:14.5px;margin:12px 0;}
+.kv div:nth-child(odd){color:var(--texto2);font-weight:600;}
+textarea{width:100%;min-height:80px;border:1px solid var(--borda);border-radius:9px;padding:10px;font-family:'Barlow',sans-serif;font-size:14.5px;color:var(--texto);}
+.hist{font-size:13px;color:var(--texto2);max-height:130px;overflow:auto;border:1px solid var(--borda);border-radius:9px;padding:8px 10px;margin:6px 0 12px;}
+.hist div{padding:2px 0;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--texto);color:#fff;padding:11px 18px;border-radius:10px;font-size:14.5px;z-index:300;display:none;max-width:90vw;}
+#toast.err{background:var(--vermelho);}
+@media(max-width:700px){.bar .nm{flex-basis:120px}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="screen-checking" class="auth-screen"><div style="color:var(--texto2)">Verificando acesso...</div></div>
+
+<div id="screen-login" class="auth-screen" style="display:none">
+  <form class="auth-box" onsubmit="doLogin();return false;">
+    <div class="auth-logo">ACQUACEL</div>
+    <div class="auth-sub">Leads da landing</div>
+    <div id="login-err" class="auth-err"></div>
+    <label class="fl" for="login-email">E-mail</label>
+    <input class="fi" id="login-email" type="email" autocomplete="username">
+    <label class="fl" for="login-senha">Senha</label>
+    <input class="fi" id="login-senha" type="password" autocomplete="current-password">
+    <button class="btn" id="btn-login" type="submit" style="width:100%">Entrar</button>
+  </form>
+</div>
+
+<div id="appWrap">
+  <header class="top">
+    <div class="logo">ACQUACEL <span>· Leads</span></div>
+    <div class="uinfo"><b id="userNome"></b><span id="userPapel"></span></div>
+    <button class="btn sec" onclick="doLogout()">Sair</button>
+  </header>
+  <main>
+    <div class="hero">
+      <h1>Leads da landing do Método</h1>
+      <p>Todo mundo que pediu o guia ou a Experiência Acquacel pela página, com a origem do acesso e a modalidade de interesse. Acompanhe pela mesma jornada de Leads do Desafio ROI.</p>
+    </div>
+
+    <div class="filters">
+      <div><label for="f-periodo">Período</label>
+        <select id="f-periodo" onchange="render()"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option><option value="0">Todo o período</option></select></div>
+      <div><label for="f-origem">Origem</label>
+        <select id="f-origem" onchange="render()"><option value="">Todas</option><option value="anuncio">Anúncio</option><option value="bio">Link da bio</option><option value="direto">Acesso direto</option></select></div>
+      <div><label for="f-mod">Modalidade</label>
+        <select id="f-mod" onchange="render()"><option value="">Todas</option><option value="natacao_infantil">Natação infantil</option><option value="natacao_adulto">Piscina adulto</option><option value="fitness">Fitness</option></select></div>
+      <div><label for="f-guia">Pediu o guia?</label>
+        <select id="f-guia" onchange="render()"><option value="">Tanto faz</option><option value="1">Sim</option><option value="0">Não</option></select></div>
+      <div><label for="f-exp">Pediu Experiência?</label>
+        <select id="f-exp" onchange="render()"><option value="">Tanto faz</option><option value="1">Sim</option><option value="0">Não</option></select></div>
+      <div><label for="f-etapa">Etapa</label>
+        <select id="f-etapa" onchange="render()"><option value="">Todas</option></select></div>
+      <div style="flex:1;min-width:180px"><label for="f-busca">Buscar nome ou telefone</label>
+        <input id="f-busca" type="search" style="width:100%" oninput="render()"></div>
+      <button class="btn sec" onclick="exportarCSV()">Baixar planilha (CSV)</button>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid2">
+      <div class="card"><h3>Funil (jornada de Leads)</h3><div id="funil"></div></div>
+      <div class="card"><h3>Origem × modalidade</h3><div class="tw"><table class="mx" id="matriz"></table></div>
+        <p style="font-size:12.5px;color:var(--texto2);margin-top:8px">Cada pessoa conta uma vez, mesmo que tenha pedido o guia e a Experiência.</p></div>
+    </div>
+
+    <div class="card">
+      <h3>Lista de leads <span id="cont" style="font-size:15px;color:var(--texto2);font-weight:500"></span></h3>
+      <div class="tw"><table id="tab"></table></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-bg" onclick="if(event.target===this)fecharModal()"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status"></div>
+
+<script>
+/* ===== Supabase (mesmo projeto do restante da plataforma) ===== */
+const SB_URL='https://oevngnabqlxsensaohdv.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const H={'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY};
+const HR={...H,Prefer:'return=representation'};
+async function sbGet(t,p=''){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json();}
+async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:HR,body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json();}
+async function rpc(nome,args){const r=await fetch(`${SB_URL}/rest/v1/rpc/${nome}`,{method:'POST',headers:H,body:JSON.stringify(args)});if(!r.ok)throw new Error(await r.text());return r.json();}
+
+const ROLES_PERMITIDOS=['admin','gestor','consultor'];
+const JORNADA_PADRAO=[
+  {k:'lista',l:'Lista/Iniciar Cadência'},{k:'tentativa1',l:'1ª Tentativa/Contato'},
+  {k:'atendimento',l:'Iniciou Atendimento'},{k:'exp_agendada',l:'Experiência Agendada'},
+  {k:'exp_iniciada',l:'Experiência Iniciada'},{k:'agendada_matricula',l:'Agendada Visita/Matrícula'},
+  {k:'convertido',l:'Convertido',end:true},{k:'cadencia_futura',l:'Cadência Futura',end:true,wait:true}
+];
+const MOD={natacao_infantil:'Natação infantil',natacao_adulto:'Piscina adulto',fitness:'Fitness',nao_informado:'Não informado'};
+const ORI={anuncio:'Anúncio',bio:'Link da bio',direto:'Acesso direto'};
+
+let sessao=null,leads=[],etapas=JORNADA_PADRAO,consultoras=[],campanhas=[];
+
+/* ===== util ===== */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className=err?'err':'';t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',3200);}
+function fmtData(iso){const d=new Date(iso);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+function fmtTel(t){t=String(t||'');return t.length===11?`(${t.slice(0,2)}) ${t.slice(2,7)}-${t.slice(7)}`:t.length===10?`(${t.slice(0,2)}) ${t.slice(2,6)}-${t.slice(6)}`:t;}
+function etapaNome(k){const e=etapas.find(x=>x.k===k);return e?e.l:k;}
+function mostrarTela(id){['screen-checking','screen-login','appWrap'].forEach(i=>document.getElementById(i).style.display='none');document.getElementById(id).style.display=id==='appWrap'?'block':'flex';}
+
+/* ===== login (mesmo padrão do Campanhas e do Hub) ===== */
+const COLS='id,nome,email,academia_id,role,consultora_id';
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const senha=document.getElementById('login-senha').value;
+  const err=document.getElementById('login-err');err.classList.remove('show');
+  if(!email||!senha){err.textContent='Preencha e-mail e senha.';err.classList.add('show');return;}
+  const btn=document.getElementById('btn-login');btn.disabled=true;btn.textContent='Verificando...';
+  try{
+    const res=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(email)}&senha_hash=eq.${encodeURIComponent(senha)}&ativo=eq.true&select=${COLS}`);
+    if(!res.length||!ROLES_PERMITIDOS.includes(res[0].role)){err.textContent='E-mail ou senha incorretos, ou acesso não autorizado.';err.classList.add('show');}
+    else{sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));iniciar(res[0]);}
+  }catch(e){err.textContent='Erro de conexão.';err.classList.add('show');console.error(e);}
+  btn.disabled=false;btn.textContent='Entrar';
+}
+function doLogout(){sessionStorage.removeItem('qg90_sessao');mostrarTela('screen-login');}
+async function checkSession(){
+  const uid=new URLSearchParams(location.search).get('uid');
+  const raw=sessionStorage.getItem('qg90_sessao');
+  let id=uid;if(!id&&raw){try{id=JSON.parse(raw).id;}catch(e){}}
+  if(!id){mostrarTela('screen-login');return;}
+  try{
+    const res=await sbGet('roi_gestores',`id=eq.${encodeURIComponent(id)}&ativo=eq.true&select=${COLS}`);
+    if(res.length&&ROLES_PERMITIDOS.includes(res[0].role)){sessionStorage.setItem('qg90_sessao',JSON.stringify(res[0]));iniciar(res[0]);return;}
+  }catch(e){console.error(e);}
+  mostrarTela('screen-login');
+}
+
+/* ===== carga ===== */
+async function iniciar(s){
+  sessao=s;
+  document.getElementById('userNome').textContent=s.nome||s.email;
+  document.getElementById('userPapel').textContent=s.role==='admin'?'Acquacel · Master':s.role==='gestor'?'Gestor(a)':'Consultor(a)';
+  mostrarTela('appWrap');
+  try{
+    if(s.academia_id){
+      const ac=await sbGet('roi_academias',`id=eq.${s.academia_id}&select=jornada_leads`);
+      const j=ac[0]&&ac[0].jornada_leads;if(j&&j.length)etapas=j;
+      consultoras=await sbGet('roi_consultoras',`academia_id=eq.${s.academia_id}&select=id,nome`);
+    }
+  }catch(e){console.warn('jornada/consultoras',e);}
+  const fe=document.getElementById('f-etapa');
+  fe.innerHTML='<option value="">Todas</option>'+etapas.map(e=>`<option value="${esc(e.k)}">${esc(e.l)}</option>`).join('');
+  await carregar();
+}
+async function carregar(){
+  try{
+    const r=await rpc('leads_listar',{p_gestor:String(sessao.id)});
+    if(!r.ok){toast('Sem acesso aos leads.',true);leads=[];}else leads=r.leads||[];
+  }catch(e){console.error(e);toast('Não consegui carregar os leads. O SQL de leads já foi rodado no Supabase?',true);leads=[];}
+  render();
+}
+
+/* ===== filtros ===== */
+function filtrados(){
+  const per=+document.getElementById('f-periodo').value,ori=document.getElementById('f-origem').value,mod=document.getElementById('f-mod').value,
+        g=document.getElementById('f-guia').value,x=document.getElementById('f-exp').value,et=document.getElementById('f-etapa').value,
+        q=document.getElementById('f-busca').value.trim().toLowerCase(),qd=q.replace(/\D/g,'');
+  const corte=per?Date.now()-per*86400000:0;
+  return leads.filter(l=>{
+    if(corte&&new Date(l.criado_em).getTime()<corte)return false;
+    if(ori&&l.origem!==ori)return false;
+    if(mod&&l.modalidade!==mod)return false;
+    if(g!==''&&(l.pediu_guia?'1':'0')!==g)return false;
+    if(x!==''&&(l.pediu_experiencia?'1':'0')!==x)return false;
+    if(et&&l.etapa!==et)return false;
+    if(q&&!(String(l.nome).toLowerCase().includes(q)||(qd&&String(l.telefone).includes(qd))))return false;
+    return true;
+  });
+}
+
+/* ===== render ===== */
+function render(){
+  const L=filtrados();
+  const pct=(a,b)=>b?Math.round(a*100/b)+'%':'0%';
+  const guia=L.filter(l=>l.pediu_guia).length,exp=L.filter(l=>l.pediu_experiencia).length,
+        conv=L.filter(l=>l.etapa==='convertido').length,ag=L.filter(l=>['exp_agendada','exp_iniciada','agendada_matricula','convertido'].includes(l.etapa)).length;
+  document.getElementById('kpis').innerHTML=[
+    [L.length,'leads no período'],[exp,'pediram Experiência'],[guia,'pediram o guia'],
+    [L.filter(l=>l.pediu_guia&&l.pediu_experiencia).length,'pediram guia e Experiência'],
+    [ag,'já passaram do agendamento'],[conv+' ('+pct(conv,L.length)+')','convertidos']
+  ].map(k=>`<div class="kpi"><div class="n">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+
+  /* funil */
+  const cont={};L.forEach(l=>cont[l.etapa]=(cont[l.etapa]||0)+1);
+  const max=Math.max(1,...Object.values(cont));
+  let fun=etapas.map(e=>`<div class="bar"><div class="nm">${esc(e.l)}</div><div class="tr"><div class="fg ${e.end?'end':''}" style="width:${(cont[e.k]||0)*100/max}%"></div></div><div class="ct">${cont[e.k]||0}</div></div>`).join('');
+  const fora=Object.keys(cont).filter(k=>!etapas.some(e=>e.k===k));
+  fora.forEach(k=>fun+=`<div class="bar"><div class="nm">${esc(k)}</div><div class="tr"><div class="fg" style="width:${cont[k]*100/max}%"></div></div><div class="ct">${cont[k]}</div></div>`);
+  document.getElementById('funil').innerHTML=L.length?fun:'<div class="vazio">Nenhum lead neste filtro.</div>';
+
+  /* matriz origem x modalidade */
+  const mods=['natacao_infantil','natacao_adulto','fitness','nao_informado'],oris=['anuncio','bio','direto'];
+  let mx='<tr><th>Origem</th>'+mods.map(m=>`<th>${MOD[m]}</th>`).join('')+'<th>Total</th><th>Convertidos</th></tr>';
+  oris.forEach(o=>{
+    const s=L.filter(l=>l.origem===o);
+    mx+=`<tr><td><span class="chip c-${o}">${ORI[o]}</span></td>`+mods.map(m=>`<td>${s.filter(l=>l.modalidade===m).length}</td>`).join('')+`<td><b>${s.length}</b></td><td>${s.filter(l=>l.etapa==='convertido').length}</td></tr>`;
+  });
+  document.getElementById('matriz').innerHTML=mx;
+
+  /* tabela */
+  document.getElementById('cont').textContent=`(${L.length})`;
+  const optE=cur=>etapas.map(e=>`<option value="${esc(e.k)}" ${e.k===cur?'selected':''}>${esc(e.l)}</option>`).join('')+(etapas.some(e=>e.k===cur)?'':`<option value="${esc(cur)}" selected>${esc(cur)}</option>`);
+  const optC=cur=>'<option value="">—</option>'+consultoras.map(c=>`<option value="${esc(c.id)}" ${String(c.id)===String(cur)?'selected':''}>${esc(c.nome)}</option>`).join('');
+  document.getElementById('tab').innerHTML=L.length?
+   '<tr><th>Chegou em</th><th>Nome</th><th>WhatsApp</th><th>Modalidade</th><th>Origem</th><th>Guia</th><th>Experiência</th><th>Etapa</th><th>Responsável</th><th></th></tr>'+
+   L.map(l=>`<tr class="lead tb"><td>${fmtData(l.criado_em)}</td><td><b>${esc(l.nome)}</b></td>
+     <td><a href="https://wa.me/55${esc(l.telefone)}" target="_blank" rel="noopener">${esc(fmtTel(l.telefone))}</a></td>
+     <td>${esc(MOD[l.modalidade]||l.modalidade)}</td>
+     <td><span class="chip c-${esc(l.origem)}">${esc(ORI[l.origem]||l.origem)}</span>${l.origem_detalhe?`<div style="font-size:12px;color:var(--texto2)">${esc(l.origem_detalhe)}</div>`:''}</td>
+     <td><span class="chip ${l.pediu_guia?'c-sim':'c-nao'}">${l.pediu_guia?'Sim':'Não'}</span></td>
+     <td><span class="chip ${l.pediu_experiencia?'c-sim':'c-nao'}">${l.pediu_experiencia?'Sim':'Não'}</span></td>
+     <td><select aria-label="Etapa de ${esc(l.nome)}" onchange="mudarEtapa('${esc(l.id)}',this.value)">${optE(l.etapa)}</select></td>
+     <td><select aria-label="Responsável por ${esc(l.nome)}" onchange="mudarResp('${esc(l.id)}',this.value)">${optC(l.consultora_id)}</select></td>
+     <td><button class="btn sec" style="padding:6px 12px;font-size:14px;min-height:36px" onclick="abrirLead('${esc(l.id)}')">Abrir</button></td></tr>`).join('')
+   :'<tr><td class="vazio">Nenhum lead neste filtro.</td></tr>';
+}
+
+/* ===== ações ===== */
+async function atualizar(id,campos){
+  const r=await rpc('lead_atualizar',{p_gestor:String(sessao.id),p_id:id,p_campos:campos});
+  if(!r.ok)throw new Error(r.erro||'falhou');
+  const l=leads.find(x=>x.id===id);if(l)Object.assign(l,campos,{atualizado_em:new Date().toISOString()});
+}
+async function mudarEtapa(id,v){try{await atualizar(id,{etapa:v});toast('Etapa atualizada.');render();}catch(e){toast('Não consegui salvar.',true);carregar();}}
+async function mudarResp(id,v){try{await atualizar(id,{consultora_id:v});toast('Responsável atualizado.');}catch(e){toast('Não consegui salvar.',true);carregar();}}
+
+function abrirLead(id){
+  const l=leads.find(x=>x.id===id);if(!l)return;
+  const ev=(l.eventos||[]).slice().reverse().map(e=>{
+    const q=e.tipo==='guia'?'Pediu o guia':e.tipo==='experiencia'?'Pediu a Experiência':e.tipo==='etapa'?`Etapa: ${esc(etapaNome(e.de))} → ${esc(etapaNome(e.para))}`:esc(e.tipo);
+    return `<div>${fmtData(e.em)} · ${q}${e.origem?` · ${esc(ORI[e.origem]||e.origem)}`:''}</div>`;}).join('');
+  const msg=encodeURIComponent(`Olá, ${l.nome.split(' ')[0]}! Aqui é da Acquacel. Recebemos o seu pedido pela página do Método e vamos continuar por aqui.`);
+  document.getElementById('modal').innerHTML=`
+    <h2>${esc(l.nome)}</h2>
+    <div style="color:var(--texto2);font-size:14px">${esc(MOD[l.modalidade]||l.modalidade)} · chegou em ${fmtData(l.criado_em)}</div>
+    <div class="kv">
+      <div>WhatsApp</div><div><a href="https://wa.me/55${esc(l.telefone)}?text=${msg}" target="_blank" rel="noopener"><b>${esc(fmtTel(l.telefone))}</b> · abrir conversa</a></div>
+      <div>Origem</div><div><span class="chip c-${esc(l.origem)}">${esc(ORI[l.origem]||l.origem)}</span> ${esc(l.origem_detalhe||'')}</div>
+      <div>Faixa etária</div><div>${esc(l.faixa_etaria||'—')}</div>
+      <div>Pediu o guia</div><div>${l.pediu_guia?'Sim':'Não'}</div>
+      <div>Pediu Experiência</div><div>${l.pediu_experiencia?'Sim':'Não'}</div>
+      <div>Novidades</div><div>${l.aceita_novidades?'Aceitou receber':'Não marcou'}</div>
+      <div>Etapa atual</div><div>${esc(etapaNome(l.etapa))}</div>
+    </div>
+    <div style="font-weight:700;font-size:14px">Histórico</div><div class="hist">${ev||'—'}</div>
+    <label class="fl" for="m-obs">Observações da equipe</label>
+    <textarea id="m-obs">${esc(l.observacoes||'')}</textarea>
+    <div class="row">
+      <button class="btn" onclick="salvarObs('${esc(l.id)}')">Salvar observações</button>
+      ${l.card_id?'<span class="chip c-sim">Já está no Kanban de Campanhas</span>':`<button class="btn lima" onclick="abrirEnvio('${esc(l.id)}')">Enviar ao Kanban de Campanhas</button>`}
+      ${['admin','gestor'].includes(sessao.role)?`<button class="btn danger" onclick="excluir('${esc(l.id)}')">Apagar dados (LGPD)</button>`:''}
+      <button class="btn sec" onclick="fecharModal()">Fechar</button>
+    </div>
+    <div id="envio"></div>`;
+  document.getElementById('modal-bg').classList.add('show');
+}
+function fecharModal(){document.getElementById('modal-bg').classList.remove('show');}
+async function salvarObs(id){try{await atualizar(id,{observacoes:document.getElementById('m-obs').value});toast('Observações salvas.');}catch(e){toast('Não consegui salvar.',true);}}
+async function excluir(id){
+  if(!confirm('Apagar este lead e todos os dados dele? Isso não pode ser desfeito.'))return;
+  try{const r=await rpc('lead_excluir',{p_gestor:String(sessao.id),p_id:id});if(!r.ok)throw 0;leads=leads.filter(x=>x.id!==id);fecharModal();render();toast('Lead apagado.');}catch(e){toast('Não consegui apagar.',true);}
+}
+
+/* ===== enviar ao Kanban de Campanhas (funil de Leads do Desafio ROI) ===== */
+async function abrirEnvio(id){
+  const box=document.getElementById('envio');box.innerHTML='<div style="margin-top:12px;color:var(--texto2)">Carregando campanhas...</div>';
+  try{
+    campanhas=sessao.academia_id?await sbGet('roi_campanhas',`academia_id=eq.${sessao.academia_id}&order=created_at.desc&select=id,nome`):[];
+  }catch(e){campanhas=[];}
+  if(!campanhas.length){box.innerHTML='<div style="margin-top:12px;color:var(--vermelho)">Nenhuma campanha encontrada. Crie uma campanha em Campanhas Comerciais primeiro.</div>';return;}
+  box.innerHTML=`<div class="row" style="margin-top:14px"><div style="flex:1;min-width:200px"><label class="fl" for="m-camp">Campanha de destino</label>
+    <select class="fi" id="m-camp" style="margin:0">${campanhas.map(c=>`<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join('')}</select></div>
+    <button class="btn" onclick="enviar('${esc(id)}')">Confirmar envio</button></div>`;
+}
+async function enviar(id){
+  const l=leads.find(x=>x.id===id),camp=document.getElementById('m-camp').value;if(!l||!camp)return;
+  const et=etapas.find(e=>e.k===l.etapa&&!e.end)?l.etapa:etapas[0].k;
+  try{
+    const r=await sbPost('roi_campanha_cards',{
+      campanha_id:camp,onda_id:null,perfil:'leads',nome:l.nome,codigo_matricula:'',telefone:l.telefone,idade:null,
+      plano_atual:'',ticket_medio:0,
+      observacoes:`Lead da landing do Método · ${MOD[l.modalidade]||''} · ${l.pediu_experiencia?'pediu Experiência':''}${l.pediu_experiencia&&l.pediu_guia?' e ':''}${l.pediu_guia?'pediu o guia':''}`+(l.observacoes?`\n${l.observacoes}`:''),
+      data_lead:String(l.criado_em).slice(0,10),origem_lead:`Landing Metodologia · ${ORI[l.origem]||l.origem}`,
+      etapa_atual:et,etapa_maxima:et,consultora_id:l.consultora_id||null,cadencia_atual:0,cadencia_total:5,
+      status:'ativo',created_at:Date.now(),updated_at:Date.now()
+    });
+    const cid=r&&r[0]&&r[0].id;
+    await atualizar(id,{card_id:String(cid||'ok')});
+    toast('Lead enviado ao Kanban de Campanhas.');abrirLead(id);render();
+  }catch(e){console.error(e);toast('Não consegui enviar ao Kanban.',true);}
+}
+
+/* ===== CSV ===== */
+function exportarCSV(){
+  const L=filtrados();
+  const cab=['Chegou em','Nome','WhatsApp','Modalidade','Origem','Detalhe da origem','Faixa etária','Pediu o guia','Pediu Experiência','Etapa','Aceita novidades'];
+  const lin=L.map(l=>[fmtData(l.criado_em),l.nome,fmtTel(l.telefone),MOD[l.modalidade]||l.modalidade,ORI[l.origem]||l.origem,l.origem_detalhe||'',l.faixa_etaria||'',l.pediu_guia?'Sim':'Não',l.pediu_experiencia?'Sim':'Não',etapaNome(l.etapa),l.aceita_novidades?'Sim':'Não']);
+  const csv='﻿'+[cab,...lin].map(r=>r.map(v=>{v=String(v==null?'':v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"';}).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='leads-acquacel.csv';a.click();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharModal();});
+checkSession();
+</script>
+</body>
+</html>
