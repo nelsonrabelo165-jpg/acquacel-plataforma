@@ -13,7 +13,7 @@
 create extension if not exists pgcrypto;
 
 -- ============================================================
--- 2. Central de Leads (links de captação, indicação digital, convite, ranking, sorteio, artes, ocultar)
+-- 1. Central de Leads (links de captação, indicação digital, convite, ranking, sorteio, artes, ocultar)
 -- ============================================================
 create table if not exists roi_lead_campanhas (
   id uuid primary key default gen_random_uuid(),
@@ -83,9 +83,8 @@ alter table roi_lead_campanhas add column if not exists campos_extra jsonb defau
 -- ocultar leads (testes e repetidos saem da lista e do sorteio, sem apagar)
 alter table roi_leads add column if not exists oculto boolean default false;
 
--- Pasta pública de imagens das campanhas (Supabase Storage). Ela já existe no projeto
--- (é da matriz e de todas as academias): aqui só cria se faltar, sem mudar nada nela.
--- As artes da Power Fit ficam na subpasta com o id da academia.
+-- Pasta pública de imagens das campanhas (Supabase Storage), para as artes da Central de Leads.
+-- Só cria se ainda não existir, sem mudar nada se já existir.
 do $$ begin
   if to_regclass('storage.buckets') is not null then
     insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -98,7 +97,7 @@ do $$ begin
 end $$;
 
 -- ============================================================
--- 3. Hub de Pessoas (teste do candidato)
+-- 2. Hub de Pessoas (teste do candidato)
 -- ============================================================
 create table if not exists roi_pessoas_testes (
   id uuid primary key default gen_random_uuid(),
