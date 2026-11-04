@@ -16,6 +16,8 @@ const CFG=Object.assign({
   nome:'Acquacel',
   presente:'o Guia da Metodologia Acquacel para a família + o Mapa de saúde para a mãe ou o pai',
   avaliacao:'avaliação física tecnológica, onde você entende 15 áreas da sua saúde',
+  // >>> DADOS DA ACQUACEL PARA PREENCHER (aparecem na aba Rotina da Biblioteca) <<<
+  piscinas:'', // ex.: 'piscina pequena 4 x 8 m, [profundidade], [temperatura]; piscina grande 16 x 8 m, [profundidade], [temperatura]'
   cor:'#1B4FD8',corT:'#0A2472',corTexto:'#FFFFFF',escuro:'#0A2472',fundo:'#F8FAFF'
 },window.ACADEMIA_CFG||{});
 
@@ -551,9 +553,9 @@ const ROTINA=[
  ["Experiência Acquacel", "Nunca \"aula experimental\". É sempre a Experiência Acquacel, com presente de boas-vindas para a família: o Guia da Metodologia (em PDF) e o Mapa de saúde para a mãe ou o pai."],
  ["Quando mandar o Guia", "Só para quem agendou a Experiência, junto com a confirmação, pedindo o nome completo e a idade da criança. Mande o PDF direto no WhatsApp, sem pedir para preencher a página de novo."],
  ["Qualificar quem acompanha", "Pergunte se a mãe ou o pai já faz alguma atividade. Já treina: ótimo, registre. Não treina: ofereça o Mapa de saúde e o estúdio de musculação. Anote no card."],
- ["Metodologia em uma frase", "\"Evolução que a família consegue ver.\" 7 níveis, cada um com um mascote do universo aquático, e avaliações com o que a criança já conquistou, o que estamos desenvolvendo e qual é o próximo passo."],
- ["Níveis", "O primeiro nível é a adaptação (Estrelinha do mar, touca branca). Os mascotes incluem Foquinha, Tartaruga, Polvo, Golfinho e Tubarão. Use a sequência oficial dos 7 níveis definida pela equipe técnica."],
- ["Estrutura (o que a família pergunta)", "Duas piscinas aquecidas, com dois sistemas de aquecimento (a água nunca fica sem aquecer), tratamento com ozônio, vestiário infantil e acesso seguro por rampa e escada de alvenaria. Saiba a profundidade e a temperatura de cada piscina antes de atender."],
+ ["Metodologia em uma frase", "\"Evolução que a família consegue ver.\" 6 níveis, cada um com um mascote do universo aquático, e avaliações com o que a criança já conquistou, o que estamos desenvolvendo e qual é o próximo passo."],
+ ["Níveis", "São 6 níveis, nesta ordem: 1. Estrelinha do mar (adaptação, touca branca), 2. Foquinha, 3. Tartaruga, 4. Polvo, 5. Golfinho, 6. Tubarão. Cada nível tem as suas habilidades, definidas pela equipe técnica."],
+ ["Estrutura (o que a família pergunta)", "Duas piscinas aquecidas, com dois sistemas de aquecimento (a água nunca fica sem aquecer), tratamento com ozônio, vestiário infantil e acesso seguro por rampa e escada de alvenaria. Profundidade e temperatura: {PISCINAS}"],
  ["Virtudes", "Mais do que natação: a cada semana uma virtude é trabalhada com as crianças, e a família recebe o card da virtude com uma dica para casa."],
  ["Saúde", "O questionário de saúde (PAR-Q) é preenchido antes da primeira aula. Criança com febre, diarreia ou vômito fica em casa e remarca. Dúvida médica: orientar a conversar com o pediatra, nunca dar diagnóstico."],
  ["Imagem", "Só use foto ou vídeo de aluno que tem autorização de imagem SIM no cadastro."],
@@ -574,7 +576,7 @@ const ROTINA=[
 // ---------- RENDER ----------
 const st={tab:'mesa',funil:'nat',etapa:null,perfil:'geral',canal:'todos',busca:'',aberto:null};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fill=s=>String(s||'').replaceAll('{ACADEMIA}',CFG.nome).replaceAll('{PRESENTE}',CFG.presente).replaceAll('{AVALIACAO}',CFG.avaliacao);
+const fill=s=>String(s||'').replaceAll('{PISCINAS}',CFG.piscinas||'[preencher: tamanho, profundidade e temperatura de cada piscina]').replaceAll('{ACADEMIA}',CFG.nome).replaceAll('{PRESENTE}',CFG.presente).replaceAll('{AVALIACAO}',CFG.avaliacao);
 const textoDe=(s,perfil)=>fill((s.var&&s.var[perfil||st.perfil])||s.texto);
 function chip(on,label,onclick){return `<button class="${on?'fa-on':'fa-off'}" onclick="${onclick}">${label}</button>`;}
 function aquiBox(a){if(!a)return '';const l=(k,v)=>`<div style="margin-top:3px"><b>${k}</b> ${esc(fill(v))}</div>`;
