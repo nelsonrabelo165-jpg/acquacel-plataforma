@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Briefing | Acquacel</title>
+<style>
+:root{--y:#1B4FD8;--yt:#1B4FD8;--k:#111;--bg:#F8F6F6;--card:#fff;--tx:#1A1A1A;--tm:rgba(26,26,26,.68);--bd:rgba(26,26,26,.12);--gr:#16a34a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;-webkit-text-size-adjust:100%}
+header{background:var(--k);border-bottom:3px solid var(--y);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+header img{height:40px;width:auto;display:block}
+header .t{color:#fff;font-weight:700;font-size:15px;letter-spacing:.3px}
+header .t small{display:block;color:var(--y);font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.prog{height:5px;background:rgba(26,26,26,.08)}
+.prog>div{height:100%;background:var(--y);width:0;transition:width .3s}
+main{max-width:720px;margin:0 auto;padding:18px 16px 110px}
+h1{font-size:24px;line-height:1.2;margin-bottom:8px}
+h2{font-size:20px;line-height:1.25;margin-bottom:4px}
+.sub{color:var(--tm);font-size:14px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.q label{display:block;font-weight:700;font-size:15.5px;margin-bottom:3px}
+.q .hint{font-size:13px;color:var(--tm);margin-bottom:8px}
+.q textarea{width:100%;min-height:92px;border:1px solid var(--bd);border-radius:10px;padding:11px 12px;font:inherit;font-size:16px;background:#FDFCF8;color:var(--tx);resize:vertical}
+.q textarea:focus{outline:2px solid var(--y);border-color:var(--y)}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.mic{background:var(--k);color:var(--y);border:none;border-radius:999px;padding:9px 14px;font-weight:700;font-size:13.5px;cursor:pointer}
+.mic.on{background:#dc2626;color:#fff;animation:pulse 1.1s infinite}
+@keyframes pulse{50%{opacity:.7}}
+.ns{font-size:13px;color:var(--tm);display:flex;align-items:center;gap:6px;cursor:pointer}
+.ns input{width:18px;height:18px;accent-color:var(--yt)}
+.btn{background:var(--y);color:#fff;border:none;border-radius:12px;padding:14px 20px;font-weight:800;font-size:16px;cursor:pointer}
+.btn.g{background:transparent;border:1.5px solid var(--bd);color:var(--tx);font-weight:700}
+.btn:disabled{opacity:.5}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--bd);padding:10px 16px;display:flex;gap:10px;justify-content:space-between;z-index:30}
+.bar .btn{flex:1;max-width:340px}
+.msg{font-size:13px;color:var(--gr);min-height:18px;text-align:center;margin-top:6px}
+.err{color:#dc2626}
+ul.tips{margin:8px 0 0 18px;font-size:14px;color:var(--tm)}
+.big{font-size:42px;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(27,79,216,.2);color:var(--yt);font-weight:700}
+.chip.z{background:rgba(26,26,26,.07);color:var(--tm)}
+footer{text-align:center;font-size:12px;color:var(--tm);margin-top:20px}
+</style>
+</head>
+<body>
+<header><img src="logo-acquacel.png" alt="Acquacel"><div class="t"><small>Briefing do negócio</small>Acquacel</div></header>
+<div class="prog"><div id="prog"></div></div>
+<main id="app"></main>
+<div class="bar" id="bar" style="display:none"></div>
+<script>
+const SB_URL='https://oevngnabqlxsensaohdy.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+const ACADEMIA_PADRAO='';
+const H={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+const ACAD=new URLSearchParams(location.search).get('a')||ACADEMIA_PADRAO;
+const LS='briefing_gestora_'+ACAD;
+
+const BLOCOS=[
+ {id:'identidade',t:'Sobre a sua academia',emoji:'🏢',intro:'Vamos começar pela essência da academia. Pode falar do seu jeito, como se estivesse contando para alguém que acabou de chegar.',q:[
+  ['historia','Como a sua academia começou e como chegou até aqui?','Quem fundou, quando abriu, os momentos importantes. Pode ser resumido.'],
+  ['unidades','Quantas unidades existem e onde ficam?','Cidade, bairro. Se tiver só uma, é só dizer.'],
+  ['anos_mercado','Há quantos anos a sua academia está no mercado?',''],
+  ['proposta_valor','Se um aluno tivesse que explicar por que escolheu a sua academia, o que ele diria?','O que a sua academia entrega que o aluno não encontra em outro lugar.'],
+  ['posicionamento','Como você quer que a sua academia seja vista no mercado?','Por exemplo: premium, popular, técnica, para quem quer resultado, ambiente de treino pesado...'],
+  ['tom_de_voz','Como a sua academia fala com os alunos?','Mais descontraída, mais séria, motivadora, direta? Se puder, dê um exemplo de frase que a equipe usa.'],
+  ['palavras_usar','Que palavras a equipe sempre usa?','Pode listar, separadas por vírgula.'],
+  ['palavras_evitar','Existe alguma palavra ou frase que a equipe nunca deve usar?','Pode listar, separadas por vírgula.']]},
+ {id:'estrutura',t:'Estrutura e modalidades',emoji:'🏗️',intro:'Agora o espaço físico e o que a sua academia oferece.',q:[
+  ['espaco_m2','Qual o tamanho da academia em metros quadrados?','Pode ser aproximado.'],
+  ['horario_funcionamento','Qual o horário de funcionamento?','Segunda a sexta, sábados, domingos e feriados.'],
+  ['capacidade','Quais são os horários de pico e a capacidade?','Em que horas fica mais cheia e quantas pessoas cabem bem.'],
+  ['ambientes','Quais ambientes a academia tem?','Musculação, sala de aula, funcional, área de alongamento, vestiário, estacionamento...'],
+  ['modalidades','Quais modalidades e atividades a sua academia oferece?','Musculação, aulas coletivas, artes marciais, treinos funcionais, personal...'],
+  ['diferenciais_fisicos','O que a estrutura tem de melhor que os concorrentes não têm?','Equipamentos, espaço, ambiente, localização.']]},
+ {id:'modelo',t:'Modelo de negócio',emoji:'🎯',intro:'Como a sua academia funciona por dentro.',q:[
+  ['modalidade_principal','Qual é o carro-chefe da sua academia?','A modalidade ou serviço que mais atrai e mais vende.'],
+  ['modelo_negocio','Como funciona o modelo de negócio?','Mensalidade, planos recorrentes, pacotes, personal à parte, parcerias...'],
+  ['diferenciais_tecnicos','O que a parte técnica tem de diferente?','Como é a avaliação, o acompanhamento, a prescrição de treino, a forma de atender.'],
+  ['metodologia_propria','A sua academia tem um método próprio de trabalho?','Se tiver, conte como funciona e se tem um nome.'],
+  ['usa_bot','Vocês usam alguma automação ou robô para o primeiro atendimento dos contatos?','Pode responder só sim ou não, e qual ferramenta.']]},
+ {id:'planos',t:'Planos e preços',emoji:'💳',intro:'Aqui os números ajudam muito. Se não tiver de cabeça, pode mandar depois.',q:[
+  ['planos','Quais são os planos e os valores?','Um por linha: nome do plano, o que inclui, periodicidade (mensal, trimestral, anual) e valor.'],
+  ['ticket_medio','Qual é o ticket médio hoje, em reais?','O valor médio que cada aluno paga por mês.'],
+  ['taxa_matricula','Existe taxa de matrícula? De quanto?',''],
+  ['formas_pagamento','Quais formas de pagamento a sua academia aceita?','Cartão, Pix, boleto, recorrência, débito automático...'],
+  ['promocoes_atuais','Existe alguma promoção ou condição especial rodando agora?','']]},
+ {id:'publico',t:'Público e personas',emoji:'👥',intro:'Quem é o aluno da sua academia.',q:[
+  ['publico_alvo','Quem é o aluno ideal da sua academia?','Quem mais se identifica e fica mais tempo.'],
+  ['faixa_etaria','Qual a faixa de idade que mais frequenta?',''],
+  ['perfil_socioeconomico','Como é o perfil financeiro do público?','Classe, profissão, poder de compra, de forma geral.'],
+  ['personas','Se você pudesse descrever 2 ou 3 tipos de aluno, quais seriam?','Para cada um: quem é, o que sente falta, o que mais deseja alcançar.']]},
+ {id:'numeros',t:'Números atuais',emoji:'📊',intro:'Os números de hoje. Valores aproximados já ajudam. Se não souber algum, é só marcar que não sabe.',q:[
+  ['alunos_ativos','Quantos alunos ativos a sua academia tem hoje?',''],
+  ['faturamento_mensal','Qual o faturamento mensal aproximado?','Em reais. Se preferir, uma faixa.'],
+  ['leads_mes','Quantos contatos novos de interessados chegam por mês?','Por WhatsApp, Instagram, indicação e visita juntos.'],
+  ['taxa_conversao','De cada 10 interessados, quantos fecham matrícula?','Uma estimativa já serve.'],
+  ['churn_mensal','Quantos alunos cancelam por mês, mais ou menos?','Em número ou em porcentagem.'],
+  ['base_inativa','Quantos ex-alunos existem na base para recontatar?','Aproximado.'],
+  ['meta_90_dias','Qual a meta da sua academia para os próximos 90 dias?','Matrículas, faturamento, retenção, o que for mais importante.']]},
+ {id:'equipe',t:'Equipe comercial',emoji:'🧑‍💼',intro:'Quem vende e como vendem hoje.',q:[
+  ['consultores','Quantas pessoas atendem e vendem na recepção ou no comercial?',''],
+  ['estrutura_comercial','Como a equipe comercial está organizada?','Quem cuida de quê, quem faz o primeiro contato, quem fecha.'],
+  ['horarios_atendimento','Em que horários o comercial atende?',''],
+  ['ferramentas','Quais ferramentas a equipe usa no dia a dia?','Planilhas, sistema da academia, WhatsApp, CRM...'],
+  ['rotina_comercial','Como é a rotina do comercial durante o dia?','O que fazem de manhã, à tarde e à noite.'],
+  ['dificuldades','Quais as maiores dificuldades da equipe hoje?','O que mais trava as vendas ou deixa a equipe insegura.']]},
+ {id:'funil',t:'Como chegam os alunos',emoji:'🔻',intro:'O caminho do interessado até a matrícula.',q:[
+  ['canais','De onde vêm os interessados?','Instagram, anúncios, indicação, passagem na frente, Google, parcerias...'],
+  ['canal_principal','Qual canal traz mais alunos?',''],
+  ['fluxo_atendimento','Quando alguém chama, o que acontece passo a passo?','Do primeiro contato até a visita e a matrícula.'],
+  ['experiencia_gratuita','Vocês oferecem aula ou treino experimental? Como funciona?','Quantos dias, quem acompanha, o que precisa fazer.'],
+  ['tempo_resposta','Quanto tempo a equipe demora para responder um contato novo?',''],
+  ['followup','Quando a pessoa não fecha, o que a equipe faz depois?','Quantas tentativas, por qual canal, depois de quanto tempo.']]},
+ {id:'concorrencia',t:'Concorrência',emoji:'⚔️',intro:'Quem disputa os mesmos alunos que a sua academia.',q:[
+  ['concorrentes','Quais são os 3 concorrentes mais fortes na região?','Para cada um: nome, preço aproximado, o que fazem bem e onde pecam.'],
+  ['vantagem','Por que um aluno escolhe a sua academia e não eles?','']]},
+ {id:'dores',t:'Dores e oportunidades',emoji:'🔥',intro:'O que mais pesa hoje e onde estão as chances.',q:[
+  ['dores','Quais são as 3 maiores dores da sua academia hoje?','O que mais tira o seu sono no negócio.'],
+  ['oportunidades','Onde você enxerga oportunidade de crescer?',''],
+  ['prioridades_90_dias','Se pudesse resolver só 3 coisas nos próximos 90 dias, quais seriam?','']]},
+ {id:'regras',t:'Regras comerciais',emoji:'📏',intro:'As regras do jogo que a equipe precisa seguir.',q:[
+  ['limite_desconto','Existe um limite de desconto para a equipe dar?','Quanto, e em que casos.'],
+  ['quem_autoriza','Quem autoriza uma exceção?',''],
+  ['cancelamento','Como funciona o cancelamento?','Prazo, multa, carência, o que a equipe precisa fazer.'],
+  ['congelamento','Existe congelamento de plano? Como funciona?',''],
+  ['indicacao','Existe programa de indicação? Como funciona?','O que o aluno ganha e o que o indicado ganha.'],
+  ['regras_experiencia','Quais as regras da experiência ou aula gratuita?','Quem pode, quantas vezes, o que precisa trazer.']]},
+ {id:'objecoes',t:'Objeções e fechamento',emoji:'🛡️',intro:'Esse é o bloco mais valioso para personalizar os scripts. Pense nas frases que você mais ouve.',q:[
+  ['objecoes','Quais as objeções que mais aparecem e como a equipe responde hoje?','Por exemplo: está caro, vou pensar, preciso falar com meu marido ou esposa. Para cada uma, conte com que frequência aparece e o que a equipe diz.'],
+  ['gatilhos_fechamento','O que costuma fazer a pessoa decidir e fechar?','Uma condição, um brinde, uma conversa, uma visita, o treino experimental...']]}
+];
+
+let R={};          // chave -> {q,a,ns}
+let step=-1;       // -1 intro, 0..N-1 blocos, N final
+let status='rascunho';
+let reco=null, recoKey=null;
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function total(){return BLOCOS.reduce((s,b)=>s+b.q.length,0)}
+function respondidas(){return Object.values(R).filter(r=>r&&((r.a||'').trim()||r.ns)).length}
+
+async function carregar(){
+  if(!ACAD){document.getElementById('app').innerHTML='<div style="padding:40px 20px;text-align:center">Link inválido. Peça à GeFit o link correto do seu briefing.</div>';return}
+  try{R=JSON.parse(localStorage.getItem(LS)||'{}')||{}}catch(e){R={}}
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/roi_briefing_gestora?academia_id=eq.${encodeURIComponent(ACAD)}`,{headers:H});
+    if(r.ok){const rows=await r.json();if(rows[0]){
+      const srv=rows[0].respostas||{};
+      Object.keys(srv).forEach(k=>{if(!R[k]||!(R[k].a||'').trim())R[k]=srv[k]});
+      status=rows[0].status||'rascunho';
+    }}
+  }catch(e){console.error(e)}
+  render();
+}
+function guardarLocal(){try{localStorage.setItem(LS,JSON.stringify(R))}catch(e){}}
+async function salvarNuvem(novoStatus){
+  guardarLocal();
+  const body={academia_id:ACAD,respostas:R,status:novoStatus||status,updated_at:Date.now()};
+  const r=await fetch(`${SB_URL}/rest/v1/roi_briefing_gestora`,{method:'POST',headers:{...H,'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error(await r.text());
+  if(novoStatus)status=novoStatus;
+}
+function coletarTela(){
+  if(step<0||step>=BLOCOS.length)return;
+  BLOCOS[step].q.forEach(([c,q])=>{
+    const k=BLOCOS[step].id+'.'+c;
+    const ta=document.getElementById('f_'+c), ns=document.getElementById('n_'+c);
+    if(!ta)return;
+    R[k]={q:q,a:ta.value.trim(),ns:!!(ns&&ns.checked)};
+  });
+  guardarLocal();
+}
+function setMsg(t,err){const m=document.getElementById('msg');if(m){m.textContent=t||'';m.className='msg'+(err?' err':'')}}
+function pararMic(){if(reco){try{reco.stop()}catch(e){}reco=null;recoKey=null;document.querySelectorAll('.mic.on').forEach(b=>{b.classList.remove('on');b.textContent='🎤 Falar'})}}
+function mic(c,btn){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Seu navegador não tem ditado nesta página. Toque na caixa de texto e use o microfone do teclado do celular.');return}
+  if(recoKey===c){pararMic();return}
+  pararMic();
+  const ta=document.getElementById('f_'+c);
+  reco=new SR();reco.lang='pt-BR';reco.continuous=true;reco.interimResults=false;recoKey=c;
+  btn.classList.add('on');btn.textContent='⏹ Parar';
+  reco.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)t+=e.results[i][0].transcript+' '}
+    if(t){ta.value=(ta.value?ta.value.replace(/\s*$/,' '):'')+t.trim()+' ';ta.dispatchEvent(new Event('input'))}};
+  reco.onend=()=>{if(recoKey===c){btn.classList.remove('on');btn.textContent='🎤 Falar';reco=null;recoKey=null}};
+  reco.onerror=()=>{pararMic()};
+  try{reco.start()}catch(e){pararMic()}
+}
+function bar(html){const b=document.getElementById('bar');b.style.display=html?'flex':'none';b.innerHTML=html||''}
+function progresso(){const n=respondidas();document.getElementById('prog').style.width=Math.round(n/total()*100)+'%'}
+async function ir(d){
+  pararMic();coletarTela();
+  if(d>0&&step>=0){ // salvar ao avançar
+    try{await salvarNuvem()}catch(e){console.error(e)}
+  }
+  step=Math.max(-1,Math.min(BLOCOS.length,step+d));
+  render();window.scrollTo(0,0);
+}
+async function enviar(){
+  const b=document.getElementById('btnEnviar');b.disabled=true;setMsg('Enviando...');
+  try{await salvarNuvem('enviado');setMsg('✓ Briefing enviado! Muito obrigado.');render()}
+  catch(e){console.error(e);setMsg('Não foi possível enviar agora. Suas respostas estão salvas neste aparelho. Tente de novo em instantes.',true);b.disabled=false}
+}
+function render(){
+  const app=document.getElementById('app');progresso();
+  if(step<0){
+    const n=respondidas();
+    app.innerHTML=`<div class="card"><div class="big">👋</div><h1>Olá! Vamos contar a história da sua academia</h1>
+      <p class="sub">Este briefing ajuda a GeFit a deixar o Desafio ROI 21 Dias, os scripts e as campanhas com a cara da sua academia. Quanto mais você contar, mais personalizado fica.</p>
+      <ul class="tips"><li>São ${BLOCOS.length} blocos curtos, uns 25 minutos no total.</li>
+      <li>Pode <b>digitar</b> ou tocar em <b>🎤 Falar</b> e ditar com a sua voz.</li>
+      <li>Responda do seu jeito. Não precisa ser perfeito.</li>
+      <li>Não sabe algo? Marque "Não sei agora" e a gente vê depois.</li>
+      <li>Suas respostas são salvas a cada bloco. Pode parar e voltar neste mesmo link.</li></ul>
+      ${n?`<div class="chips"><span class="chip">${n} de ${total()} perguntas já respondidas</span>${status==='enviado'?'<span class="chip">Já enviado, você pode ajustar</span>':''}</div>`:''}</div>`;
+    bar(`<button class="btn" style="max-width:none" onclick="ir(1)">${n?'Continuar':'Começar'}</button>`);
+    return;
+  }
+  if(step>=BLOCOS.length){
+    const n=respondidas();
+    const chips=BLOCOS.map(b=>{const c=b.q.filter(([f])=>{const r=R[b.id+'.'+f];return r&&((r.a||'').trim()||r.ns)}).length;return `<span class="chip ${c?'':'z'}">${b.emoji} ${esc(b.t)} ${c}/${b.q.length}</span>`}).join('');
+    app.innerHTML=`<div class="card"><div class="big">${status==='enviado'?'✅':'🎉'}</div><h1>${status==='enviado'?'Briefing enviado!':'Quase lá!'}</h1>
+      <p class="sub">Você respondeu ${n} de ${total()} perguntas. ${status==='enviado'?'Se lembrar de mais alguma coisa, pode voltar, ajustar e enviar de novo.':'Confira abaixo e toque em enviar. Você ainda poderá voltar e ajustar depois.'}</p>
+      <div class="chips">${chips}</div><div class="msg" id="msg"></div></div>`;
+    bar(`<button class="btn g" onclick="ir(-1)">Voltar</button><button class="btn" id="btnEnviar" onclick="enviar()">${status==='enviado'?'Enviar de novo':'Enviar briefing'}</button>`);
+    return;
+  }
+  const b=BLOCOS[step];
+  app.innerHTML=`<div style="font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--yt);margin-bottom:4px">Bloco ${step+1} de ${BLOCOS.length}</div>
+    <h2>${b.emoji} ${esc(b.t)}</h2><p class="sub">${esc(b.intro)}</p>`+
+    b.q.map(([c,q,h])=>{const r=R[b.id+'.'+c]||{};return `<div class="card q"><label for="f_${c}">${esc(q)}</label>${h?`<div class="hint">${esc(h)}</div>`:''}
+      <textarea id="f_${c}" placeholder="Digite aqui ou toque em Falar">${esc(r.a||'')}</textarea>
+      <div class="row"><button type="button" class="mic" onclick="mic('${c}',this)">🎤 Falar</button>
+      <label class="ns"><input type="checkbox" id="n_${c}" ${r.ns?'checked':''}> Não sei agora</label></div></div>`}).join('')+`<div class="msg" id="msg"></div>`;
+  bar(`<button class="btn g" onclick="ir(-1)">Voltar</button><button class="btn" id="btnNext" onclick="ir(1)">${step===BLOCOS.length-1?'Revisar':'Salvar e continuar'}</button>`);
+}
+carregar();
+</script>
+</body>
+</html>

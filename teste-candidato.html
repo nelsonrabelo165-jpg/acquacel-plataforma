@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hub de Pessoas Acquacel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: barra superior com 3 abas (visão geral, teste do candidato, painel do gestor); link do candidato (#candidato) mostra só o teste. */
+:root{
+  --bg:#F8FAFF; --surface:#FFFFFF; --surface2:#EAEFF8; --line:#DFE4EF;
+  --ink:#0A2472; --ink2:#4A5672; --ink3:#7D88A3;
+  --navy:#1B4FD8; --navy-ink:#FFFFFF; --lime:#38BDF8; --lime-ink:#0A2472; --lime-soft:#E0F2FE;
+  --d:#D6452D; --i:#E7A30B; --s:#2E9E5B; --c:#2F6BFF;
+  --f-display:'Barlow Condensed','Arial Narrow',sans-serif; --f-body:'Barlow',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#060A16; --surface:#0E1628; --surface2:#16223A; --line:#1F2C49;
+  --ink:#F2F5FF; --ink2:#B8C2DC; --ink3:#7F8AA8;
+  --navy:#38BDF8; --navy-ink:#0A2472; --lime-soft:#0C2A4A;
+  --d:#FF7A63; --i:#F5BD3C; --s:#58C98A; --c:#7DA6FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#060A16; --surface:#0E1628; --surface2:#16223A; --line:#1F2C49;
+  --ink:#F2F5FF; --ink2:#B8C2DC; --ink3:#7F8AA8;
+  --navy:#38BDF8; --navy-ink:#0A2472; --lime-soft:#0C2A4A;
+  --d:#FF7A63; --i:#F5BD3C; --s:#58C98A; --c:#7DA6FF; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:clamp(34px,6vw,56px);font-weight:800}
+h2{font-size:clamp(26px,4vw,34px);font-weight:700}
+h3{font-size:21px;font-weight:700}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.eyebrow{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--ink3)}
+/* topo */
+header.top{background:var(--navy);color:var(--navy-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+.brand span{padding-left:2px}
+.tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.tab{background:transparent;border:0;color:inherit;opacity:.8;padding:8px 14px;border-radius:8px;font-weight:600;font-size:15px}
+.tab:hover{opacity:1;background:rgba(255,255,255,.12)}
+.tab[aria-selected="true"]{opacity:1;background:var(--lime);color:var(--lime-ink)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--navy);z-index:10}
+.cand header.top{display:none}
+.demo{background:var(--lime-soft);border-bottom:1px solid var(--line);font-size:14px;color:var(--ink2)}
+.demo .wrap{padding-block:8px}
+main{padding-block:32px 64px}
+section[hidden],[hidden]{display:none!important}
+/* visão geral */
+.hero{display:grid;gap:14px;margin-bottom:36px;max-width:760px}
+.hero p{color:var(--ink2);font-size:18px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0 36px;padding:0;list-style:none;counter-reset:s}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:6px;align-content:start;position:relative}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--f-display);font-weight:800;font-size:30px;color:var(--navy)}
+.steps li.hl{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.steps small{color:var(--ink3);font-size:13px}
+.steps b{font-size:16px}
+.steps p{color:var(--ink2);font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--lime);color:var(--lime-ink);border-radius:20px;padding:2px 9px;width:fit-content}
+.profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:8px;border-top:4px solid var(--pc)}
+.pcard p{color:var(--ink2);font-size:14.5px}
+.pcard .k{font-family:var(--f-display);font-weight:800;font-size:15px;color:var(--pc)}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:16px}
+.three div{background:var(--surface2);border-radius:12px;padding:16px;display:grid;gap:6px}
+.three p{color:var(--ink2);font-size:14.5px}
+.sp{height:36px}
+.cta{display:inline-flex;margin-top:6px;background:var(--navy);color:var(--navy-ink);border:0;border-radius:10px;padding:12px 20px;font-weight:700;font-size:16px}
+.cta:hover{filter:brightness(1.12)}
+.cta.ghost{background:transparent;color:var(--navy);border:2px solid var(--navy)}
+.cta[disabled]{opacity:.45;cursor:not-allowed}
+/* teste */
+.box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,36px);max-width:720px;margin:0 auto;display:grid;gap:18px}
+.field{display:grid;gap:6px}
+.field label{font-weight:600;font-size:14px;color:var(--ink2)}
+input[type=text],select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+input[type=text]:focus,select:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--navy) 25%,transparent)}
+.check{display:flex;gap:10px;font-size:14px;color:var(--ink2);align-items:flex-start}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--navy)}
+.prog{height:8px;background:var(--surface2);border-radius:8px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--navy);transition:width .25s}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--ink3);font-weight:600}
+.ctx{font-family:var(--f-display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-size:13px}
+.q{font-size:clamp(19px,3vw,23px);font-weight:600;line-height:1.35}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--bg);border:1.5px solid var(--line);color:var(--ink);border-radius:12px;padding:14px 16px;font-size:16px;line-height:1.4;display:flex;gap:12px}
+.opt:hover{border-color:var(--navy)}
+.opt[aria-pressed="true"]{border-color:var(--navy);background:color-mix(in srgb,var(--navy) 10%,var(--bg));box-shadow:0 0 0 2px var(--navy) inset}
+.opt span.l{font-family:var(--f-display);font-weight:800;color:var(--navy);min-width:18px}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.done{text-align:center;display:grid;gap:12px;justify-items:center;padding-block:20px}
+.done .ok{width:64px;height:64px;border-radius:50%;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-size:34px;font-weight:800}
+.small{font-size:13px;color:var(--ink3)}
+/* painel */
+.grid2{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.list{display:grid;gap:8px}
+.row{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;color:var(--ink);display:grid;gap:4px}
+.row:hover{border-color:var(--navy)}
+.row[aria-pressed="true"]{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.row .n{font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.row .s{font-size:13px;color:var(--ink3)}
+.pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-radius:20px;padding:2px 8px;background:var(--surface2);color:var(--ink2)}
+.pill.real{background:var(--lime);color:var(--lime-ink)}
+.rep{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,28px);display:grid;gap:22px;min-width:0}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:130px 1fr 48px;gap:10px;align-items:center;font-size:14px}
+@media(max-width:480px){.bar{grid-template-columns:96px 1fr 42px}}
+.bar .t{height:14px;background:var(--surface2);border-radius:8px;overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--pc);border-radius:8px}
+.bar b{font-variant-numeric:tabular-nums;text-align:right}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.two ul,.rep ul{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:15px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:480px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.badge{display:inline-block;border-radius:8px;padding:2px 9px;font-weight:700;font-size:13px;background:var(--lime-soft);color:var(--ink)}
+.empty{color:var(--ink3);padding:30px;text-align:center;border:1.5px dashed var(--line);border-radius:12px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.linkbox{background:var(--surface2);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--ink2);overflow-wrap:anywhere;flex:1;min-width:200px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head><body>
+<header class="top"><div class="wrap">
+  <div class="brand"><img src="logo-acquacel.png" alt="Acquacel" style="height:30px;width:auto;display:block;background:#fff;padding:4px 8px;border-radius:8px;box-sizing:content-box"><span>Hub de Pessoas</span></div>
+  <nav class="tabs" role="tablist" aria-label="Seções">
+    <button class="tab" role="tab" data-v="visao">Visão geral</button>
+    <button class="tab" role="tab" data-v="teste">Teste do candidato</button>
+    <button class="tab" role="tab" data-v="painel">Painel do gestor</button>
+  </nav>
+</div></header>
+
+
+<main class="wrap">
+
+<!-- VISÃO GERAL -->
+<section id="v-visao">
+  <div class="hero">
+    <span class="eyebrow">Estratégia e Gestão · Gestão de Pessoas</span>
+    <h1>Contratar certo, em etapas curtas e com registro.</h1>
+    <p>Um processo único para atrair, selecionar e integrar. O gestor segue roteiros prontos, compara candidatos com a mesma régua e usa o perfil comportamental como apoio à decisão.</p>
+  </div>
+
+  <h2>Jornada em 7 etapas</h2>
+  <ol class="steps">
+    <li><small>5 min</small><b>Inscrição</b><p>Formulário com consentimento LGPD e Instagram.</p></li>
+    <li><small>5 min</small><b>Triagem de perfil público</b><p>Checklist objetivo, só sinais ligados à função.</p></li>
+    <li><small>10 a 15 min</small><b>Videochamada</b><p>Roteiro de perguntas sobre momento de vida e aprendizado.</p></li>
+    <li><small>20 a 30 min</small><b>Entrevista presencial</b><p>Apresentar a vaga, o treinamento e o onboarding.</p></li>
+    <li><small>Opcional</small><b>Teste prático</b><p>Simulação de atendimento, venda ou treino.</p></li>
+    <li class="hl"><small>15 a 20 min</small><b>Teste de situações</b><p>Perfil comportamental sem o candidato perceber.</p><span class="tag">Neste protótipo</span></li>
+    <li><small>30, 60, 90 dias</small><b>Decisão e onboarding</b><p>Plano de integração e checklist de experiência.</p></li>
+  </ol>
+
+  <h2>Os 4 perfis, no padrão brasileiro</h2>
+  <div class="profiles" id="profiles"></div>
+  <p class="small" style="margin-top:10px">Todos têm os quatro perfis em intensidades diferentes. O relatório mostra o predominante e o secundário em porcentagem. O resultado é apoio, nunca decide sozinho a contratação.</p>
+
+  <div class="sp"></div>
+  <h2>Três blocos do Hub</h2>
+  <div class="three">
+    <div><h3>Atrair</h3><p>Modelos de anúncio, página de vagas da academia e banco de talentos.</p><span class="tag">Fase 2</span></div>
+    <div><h3>Selecionar</h3><p>Formulário, triagem, roteiros, teste de perfil e funil de candidatos.</p><span class="tag">Fase 1</span></div>
+    <div><h3>Integrar</h3><p>Onboarding de 30, 60 e 90 dias e acompanhamento do período de experiência.</p><span class="tag">Fase 1</span></div>
+  </div>
+  <div class="sp"></div>
+  <button class="cta" data-go="teste">Experimentar o teste do candidato</button>
+</section>
+
+<!-- TESTE -->
+<section id="v-teste" hidden>
+  <div class="box" id="t-box"></div>
+</section>
+
+<!-- PAINEL -->
+<section id="v-painel" hidden>
+  <div class="box" id="gate" hidden><div><span class="eyebrow">Acesso da gestão</span><h2 style="margin-top:6px">Entre para ver os resultados</h2></div><form id="g-form" style="display:grid;gap:14px"><div class="field"><label for="g-email">E-mail</label><input type="text" id="g-email" autocomplete="username"></div><div class="field"><label for="g-senha">Senha</label><input type="password" id="g-senha" autocomplete="current-password" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit"></div><p id="g-err" class="small" style="color:var(--d)"></p><button class="cta" type="submit" style="margin:0">Entrar</button></form></div>
+  <div id="painel-conteudo">
+  <div class="toolbar">
+    <h2 style="margin-right:auto">Painel do gestor</h2>
+    <div class="linkbox" id="linkbox"></div>
+    <button class="cta ghost" id="copiar" type="button" style="margin:0">Copiar link do teste</button>
+  </div>
+  <div class="grid2">
+    <div><div class="eyebrow" style="margin-bottom:8px">Candidatos e equipe</div><div class="list" id="lista"></div>
+      <button class="cta ghost" id="limpar" type="button" style="margin-top:12px;font-size:14px;padding:8px 14px" hidden>Apagar respostas deste navegador</button></div>
+    <div id="relatorio"></div>
+  </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const P = {
+  D:{nome:'Executor',cor:'var(--d)',curto:'Decide rápido, foca em meta e resultado.',
+     fortes:['Decisão rápida e iniciativa','Foco em meta e resiliência','Assume a frente em situações difíceis'],
+     desafios:['Impaciência e pouca escuta','Tom duro sob pressão','Dificuldade de delegar'],
+     lider:'Meta clara, autonomia e cobrança de resultado com respeito.',
+     areas:{rec:'Resolve rápido, mas pode soar seco com o aluno.',ven:'Fecha bem e conduz a negociação. Cuidado com pressão e pouca escuta.',tec:'Motiva por desafio. Cuidado para respeitar o ritmo do aluno.',lid:'Entrega meta. Precisa desenvolver escuta e delegação.'},
+     perg:['Conte uma situação em que você precisou decidir rápido sem ter todas as informações.','Como você reage quando alguém discorda de uma decisão sua?','Quando foi a última vez que você mudou de ideia por causa de outra pessoa?']},
+  I:{nome:'Comunicador',cor:'var(--i)',curto:'Conecta pessoas, comunica e gera energia positiva.',
+     fortes:['Persuasão e carisma','Cria vínculo rápido com alunos','Mobiliza e anima o time'],
+     desafios:['Dispersão em rotina e detalhe','Follow-up e registros','Otimismo que subestima riscos'],
+     lider:'Reconhecimento, espaço para interagir e prazos curtos combinados.',
+     areas:{rec:'Acolhe e cria vínculo. Precisa de rotina de cadastro e cobrança.',ven:'Melhor para conexão e experiência. Precisa de CRM e follow-up disciplinado.',tec:'Engaja e motiva. Precisa de organização de fichas e revisões.',lid:'Inspira o time. Precisa de cobrança por indicadores.'},
+     perg:['Como você organiza seus contatos e retornos para não esquecer ninguém?','Conte uma vez em que o entusiasmo atrapalhou um resultado.','O que você faz quando a tarefa é repetitiva e sem interação?']},
+  S:{nome:'Planejador',cor:'var(--s)',curto:'Constante, leal e cuida do ritmo e do clima da equipe.',
+     fortes:['Constância e confiabilidade','Paciência e escuta','Ótimo em retenção e acompanhamento'],
+     desafios:['Resistência a mudanças rápidas','Demora em decisões difíceis','Evita dizer não'],
+     lider:'Previsibilidade, mudanças explicadas com antecedência e elogio sincero.',
+     areas:{rec:'Paciência e constância. Cuidado com evitar o "não".',ven:'Vende por confiança e indicação. Precisa treinar o pedido de fechamento.',tec:'Forte em retenção e acompanhamento. Precisa de estímulo para inovar.',lid:'Cuida do clima e do processo. Precisa de firmeza em decisões difíceis.'},
+     perg:['Conte uma mudança brusca no trabalho e como você lidou.','Como você diz "não" a um aluno ou colega?','O que você faz quando precisa decidir sem ter tempo de pensar?']},
+  C:{nome:'Analista',cor:'var(--c)',curto:'Preciso, organizado e busca fazer certo.',
+     fortes:['Atenção a detalhe e qualidade','Organização e consistência','Análise antes de agir'],
+     desafios:['Perfeccionismo e lentidão','Aversão a risco','Frieza percebida no primeiro contato'],
+     lider:'Critério claro, tempo para se preparar e feedback objetivo.',
+     areas:{rec:'Cadastro correto e processo. Cuidado com frieza no primeiro contato.',ven:'Vende por argumento e dado. Precisa treinar rapport e condução.',tec:'Forte em prescrição e técnica. Precisa de calor humano com o aluno.',lid:'Garante padrão e qualidade. Precisa de flexibilidade e reconhecimento.'},
+     perg:['Conte uma vez em que você entregou algo menos perfeito que o desejado e por quê.','Como você se sente quando precisa agir sem ter todos os dados?','Como você dá uma má notícia a alguém?']}
+};
+const ORD=['D','I','S','C'];
+const Q=[
+ {id:1,ctx:'Recepção',t:'Um aluno chega irritado porque o ar-condicionado quebrou e a fila está grande. O que você faz primeiro?',o:{D:'Resolvo o problema agora, chamando a manutenção e dando um prazo claro.',I:'Converso com ele, peço desculpas e tento deixá-lo à vontade enquanto isso.',S:'Ouço com calma, explico o que está sendo feito e fico por perto até resolver.',C:'Verifico o que aconteceu, registro a ocorrência e passo a informação correta.'}},
+ {id:2,ctx:'Vendas',t:'Um visitante fez a aula experimental, gostou, mas disse que ia pensar. Depois de 2 dias ele não respondeu. O que você faz?',o:{D:'Ligo e proponho uma data para ele decidir.',I:'Mando uma mensagem pessoal lembrando da experiência e convidando para voltar.',S:'Espero mais um pouco para não parecer insistente e depois retomo o contato.',C:'Reviso o que ele me disse e preparo uma resposta com os pontos que ele questionou.'}},
+ {id:3,ctx:'Equipe e rotina',t:'O gestor muda o processo de matrícula de um dia para o outro. Como você reage?',o:{D:'Pergunto o objetivo e já começo a aplicar para ganhar tempo.',I:'Gosto da novidade e ajudo a animar o time com a mudança.',S:'Prefiro entender o passo a passo e ter alguns dias para me adaptar.',C:'Peço o novo procedimento por escrito para não errar.'}},
+ {id:4,ctx:'Treino e técnica',t:'Um aluno treina há 2 meses sem ver resultado e fala em cancelar. Qual é a sua atitude?',o:{D:'Mostro o resultado possível e proponho metas mais ousadas, com prazo.',I:'Converso, motivo e ofereço treinar junto nas próximas semanas.',S:'Acompanho de perto, ajusto o ritmo e mostro que estou com ele.',C:'Reviso a ficha e os dados dele para achar o que precisa ser ajustado.'}},
+ {id:5,ctx:'Equipe e rotina',t:'Um colega atrasou e você precisou cobrir a escala dele. O que você faz?',o:{D:'Falo direto com ele e combino que não pode se repetir.',I:'Converso de forma leve e peço ajuda para não acontecer de novo.',S:'Cubro sem alarde e espero ele se explicar.',C:'Anoto o ocorrido com as datas e levo para o gestor.'}},
+ {id:6,ctx:'Vendas',t:'Faltam 10 dias para o fim do mês e a meta está 30% abaixo. O que você faz?',o:{D:'Assumo mais contatos e puxo o time para fechar.',I:'Animo o time e crio uma ação para atrair gente nova.',S:'Mantenho a rotina e reforço o acompanhamento de quem já veio.',C:'Analiso a base e priorizo quem tem mais chance de fechar.'}},
+ {id:7,ctx:'Recepção',t:'O telefone toca, há três alunos na fila e um deles pede uma explicação longa. Como você age?',o:{D:'Defino as prioridades, peço ajuda e resolvo primeiro o mais urgente.',I:'Cumprimento todo mundo, peço um minutinho e mantenho o clima leve.',S:'Atendo quem chegou primeiro com calma e retorno a ligação depois.',C:'Sigo o procedimento: anoto o recado e atendo a fila em ordem.'}},
+ {id:8,ctx:'Liderança',t:'Você foi escolhido para treinar um colega que acabou de entrar. Como começa?',o:{D:'Coloco na prática logo e corrijo no caminho.',I:'Apresento a todos e ensino conversando e mostrando.',S:'Ensino passo a passo, no ritmo dele, quantas vezes precisar.',C:'Preparo um material com o passo a passo e acompanho cada etapa.'}},
+ {id:9,ctx:'Vendas',t:'Um interessado chama no WhatsApp e pergunta só o preço. O que você responde?',o:{D:'Respondo rápido e já convido para conhecer e fechar.',I:'Respondo com simpatia e puxo conversa para conhecê-lo.',S:'Respondo com educação e deixo à vontade para voltar quando quiser.',C:'Respondo com os planos e condições de forma detalhada e organizada.'}},
+ {id:10,ctx:'Treino e técnica',t:'Um aluno antigo avisa que vai trancar a matrícula por falta de tempo. O que você faz?',par:4,o:{D:'Proponho um plano mais curto e objetivo, que caiba na agenda dele.',I:'Mantenho contato próximo e convido para voltar em um evento ou aula especial.',S:'Escuto, deixo a porta aberta e acompanho para saber quando ele puder voltar.',C:'Levanto o histórico dele e apresento opções de plano com os prós e contras.'}},
+ {id:11,ctx:'Equipe e rotina',t:'A academia vai trocar o aplicativo de acesso na semana que vem. Qual é a sua reação?',par:3,o:{D:'Quero saber o prazo e já começo a testar para ajudar o time.',I:'Fico animado e já converso com os alunos sobre a novidade.',S:'Prefiro um tempo para aprender com calma antes de usar com os alunos.',C:'Peço um manual e testo todas as funções antes de usar.'}},
+ {id:12,ctx:'Iniciativa',t:'Você tem uma tarde mais calma no trabalho. O que você faz com ela?',o:{D:'Procuro uma meta para antecipar ou um problema para resolver.',I:'Vou conversar com os alunos e ver quem precisa de atenção.',S:'Ajudo colegas e organizo o que está pendente.',C:'Estudo um material ou reviso processos e registros.'}}
+];
+const SB_URL='https://oevngnabqlxsensaohdy.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U';
+// Matriz atende várias academias: a academia vem por ?a= (o Hub abre já com ela).
+const ACADEMIA_PADRAO='b8ae52d9-ac2d-4785-bd9b-e5ebc9828f9e'; // Acquacel
+const QS=new URLSearchParams(location.search);
+const ACADEMIA_ID=QS.get('a')||ACADEMIA_PADRAO;
+const HD={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+async function sbGet(t,p){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:HD});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{...HD,'Prefer':'return=minimal'},body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text())}
+// Gestor(a) da própria academia ou admin GeFit. Quem abriu pelo Hub já chega logado
+// (a sessão da plataforma é copiada para a aba nova).
+function podeVerAcademia(g){return !!g&&(g.role==='admin'||(g.role==='gestor'&&g.academia_id===ACADEMIA_ID))}
+let gestor=null;try{gestor=JSON.parse(sessionStorage.getItem('gf_pessoas_gestor')||'null')}catch(e){}
+if(!podeVerAcademia(gestor)){gestor=null;try{const sp=JSON.parse(sessionStorage.getItem('qg90_sessao_roi')||'null');if(podeVerAcademia(sp))gestor=sp}catch(e){}}
+const KEY='gf_pessoas_demo_v1';
+const EX=[
+ {id:'ex1',nome:'Ana Souza',cargo:'Recepção',ex:true,sc:{D:2,I:5,S:3,C:2},cons:1},
+ {id:'ex2',nome:'Bruno Lima',cargo:'Vendas',ex:true,sc:{D:5,I:4,S:1,C:2},cons:.75},
+ {id:'ex3',nome:'Carla Dias',cargo:'Instrutor(a)',ex:true,sc:{D:1,I:2,S:4,C:5},cons:1}
+];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+let mem=load();
+
+/* visão geral */
+$('#profiles').innerHTML=ORD.map(k=>`<div class="pcard" style="--pc:${P[k].cor}"><span class="k">${k}</span><h3>${P[k].nome}</h3><p>${P[k].curto}</p></div>`).join('');
+
+/* navegação */
+const cand=true;
+if(cand){document.body.classList.add('cand')}
+function show(v){
+  ['visao','teste','painel'].forEach(x=>$('#v-'+x).hidden=(x!==v));
+  $$('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.v===v));
+  window.scrollTo(0,0);
+  if(v==='teste')renderTeste();
+  if(v==='painel')renderPainel();
+}
+$$('.tab').forEach(t=>t.onclick=()=>show(t.dataset.v));
+$$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+
+/* teste do candidato */
+let st={fase:'intro',i:0,nome:'',cargo:'Recepção',ans:{},ordem:{}};
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function renderTeste(){
+  const b=$('#t-box');
+  if(st.fase==='intro'){
+    b.innerHTML=`<div><span class="eyebrow">Processo seletivo</span><h2 style="margin-top:6px">Como você agiria na nossa academia?</h2></div>
+    <p style="color:var(--ink2)">São 12 situações do dia a dia. Não existe resposta certa ou errada: escolha a atitude que mais parece com a sua. Leva cerca de 5 minutos.</p>
+    <div class="field"><label for="f-nome">Seu nome</label><input type="text" id="f-nome" value="${st.nome.replace(/"/g,'&quot;')}" autocomplete="name"></div>
+    <div class="field"><label for="f-cargo">Vaga ou área</label><select id="f-cargo">${['Recepção','Vendas','Instrutor(a)','Coordenação','Outra / equipe atual'].map(c=>`<option${c===st.cargo?' selected':''}>${c}</option>`).join('')}</select></div>
+    <label class="check"><input type="checkbox" id="f-ok"><span>Concordo em fornecer minhas respostas para fins de processo seletivo, e que elas sejam guardadas pela academia pelo tempo necessário para esse processo (LGPD).</span></label>
+    <button class="cta" id="ini" disabled>Começar</button>`;
+    const chk=()=>{$('#ini').disabled=!($('#f-nome').value.trim()&&$('#f-ok').checked)};
+    $('#f-nome').oninput=chk;$('#f-ok').onchange=chk;
+    $('#ini').onclick=()=>{st.nome=$('#f-nome').value.trim();st.cargo=$('#f-cargo').value;st.fase='q';st.i=0;st.ans={};st.ordem={};renderTeste()};
+  }else if(st.fase==='q'){
+    const q=Q[st.i];
+    if(!st.ordem[q.id])st.ordem[q.id]=shuffle(ORD);
+    const ord=st.ordem[q.id], sel=st.ans[q.id];
+    b.innerHTML=`<div class="meta"><span>Situação ${st.i+1} de ${Q.length}</span><span>${Math.round(st.i/Q.length*100)}%</span></div>
+    <div class="prog"><i style="width:${st.i/Q.length*100}%"></i></div>
+    <div><div class="ctx">${q.ctx}</div><p class="q" style="margin-top:6px">${q.t}</p></div>
+    <div class="opts">${ord.map((k,n)=>`<button class="opt" data-k="${k}" aria-pressed="${sel===k}"><span class="l">${'ABCD'[n]}</span><span>${q.o[k]}</span></button>`).join('')}</div>
+    <div class="nav"><button class="cta ghost" id="vol" style="margin:0"${st.i===0?' disabled':''}>Voltar</button><button class="cta" id="prox" style="margin:0"${sel?'':' disabled'}>${st.i===Q.length-1?'Finalizar':'Próxima'}</button></div>`;
+    $$('.opt').forEach(o=>o.onclick=()=>{st.ans[q.id]=o.dataset.k;renderTeste()});
+    $('#vol').onclick=()=>{st.i--;renderTeste()};
+    $('#prox').onclick=()=>{if(st.i<Q.length-1){st.i++;renderTeste()}else finalizar()};
+  }else{
+    b.innerHTML=`<div class="done"><div class="ok">✓</div><h2>Respostas enviadas</h2><p style="color:var(--ink2);max-width:46ch">Obrigado, ${st.nome.split(' ')[0]}. A equipe da academia entrará em contato.</p>${cand?'':'<button class="cta ghost" id="novo">Fazer outro teste</button><button class="cta" id="vp">Ver no painel do gestor</button>'}</div>`;
+    if(!cand){$('#novo').onclick=()=>{st={fase:'intro',i:0,nome:'',cargo:'Recepção',ans:{},ordem:{}};renderTeste()};$('#vp').onclick=()=>show('painel')}
+  }
+}
+function calc(ans){
+  const sc={D:0,I:0,S:0,C:0};Object.values(ans).forEach(k=>sc[k]++);
+  const pares=Q.filter(q=>q.par);let ig=0;pares.forEach(q=>{if(ans[q.id]===ans[q.par])ig++});
+  return{sc,cons:pares.length?ig/pares.length:1};
+}
+async function finalizar(){
+  const r=calc(st.ans);const btn=$('#prox');btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    await sbPost('roi_pessoas_testes',{academia_id:ACADEMIA_ID,nome:st.nome,cargo:st.cargo,sc:r.sc,cons:r.cons,respostas:st.ans});
+    st.fase='fim';renderTeste();
+  }catch(e){console.error(e);btn.disabled=false;btn.textContent='Finalizar';
+    if(!$('#errt')){const d=document.createElement('p');d.id='errt';d.style.color='var(--d)';d.textContent='Não foi possível enviar agora. Verifique a internet e tente novamente.';$('#t-box').appendChild(d)}}
+}
+
+/* painel */
+let sel=null;
+let dbl=[];function todos(){return dbl.length?dbl:EX}
+async function renderPainel(){
+  if(!gestor){return loginGate()}
+  $('#painel-conteudo').hidden=false;$('#gate').hidden=true;
+  try{const rows=await sbGet('roi_pessoas_testes',`academia_id=eq.${encodeURIComponent(ACADEMIA_ID)}&select=*&order=created_at.desc`);dbl=rows.map(r=>({id:r.id,nome:r.nome,cargo:r.cargo,ex:false,sc:r.sc,cons:Number(r.cons),data:(r.created_at||'').slice(0,10)}))}catch(e){dbl=[]}
+  const base=location.href.split('#')[0].split('?')[0];
+  $('#linkbox').textContent=base+'?a='+encodeURIComponent(ACADEMIA_ID)+'&c=1';
+  const l=todos();if(!sel||!l.find(x=>x.id===sel))sel=l[0].id;
+  $('#lista').innerHTML=l.map(c=>{const t=Object.values(c.sc).reduce((a,b)=>a+b,0);const top=ORD.slice().sort((a,b)=>c.sc[b]-c.sc[a])[0];
+    return `<button class="row" data-id="${c.id}" aria-pressed="${c.id===sel}"><span class="n">${c.nome}<span class="pill${c.ex?'':' real'}">${c.ex?'exemplo':'respondeu'}</span></span><span class="s">${c.cargo} · ${P[top].nome} ${Math.round(c.sc[top]/t*100)}%</span></button>`}).join('');
+  $$('.row').forEach(r=>r.onclick=()=>{sel=r.dataset.id;renderPainel()});
+  $('#limpar').hidden=true;
+  rel(l.find(x=>x.id===sel));
+}
+function rel(c){
+  const t=Object.values(c.sc).reduce((a,b)=>a+b,0);
+  const r=ORD.slice().sort((a,b)=>c.sc[b]-c.sc[a]);const p=r[0],s=r[1];
+  const area={'Recepção':'rec','Vendas':'ven','Instrutor(a)':'tec','Coordenação':'lid'}[c.cargo];
+  const rows=[['rec','Recepção'],['ven','Vendas'],['tec','Técnica'],['lid','Liderança']];
+  $('#relatorio').innerHTML=`<div class="rep">
+   <div><span class="eyebrow">Relatório do gestor · uso interno</span><h2 style="margin-top:4px">${c.nome}</h2><p style="color:var(--ink2)">${c.cargo}${c.data?' · '+c.data:''} ${c.ex?'· dados de exemplo':''}</p></div>
+   <div><span class="badge">Predominante: ${P[p].nome} ${Math.round(c.sc[p]/t*100)}%</span> <span class="badge">Secundário: ${P[s].nome} ${Math.round(c.sc[s]/t*100)}%</span> <span class="badge">Consistência: ${Math.round(c.cons*100)}%</span></div>
+   <div class="bars">${ORD.map(k=>`<div class="bar" style="--pc:${P[k].cor}"><span>${P[k].nome}</span><span class="t"><i style="width:${c.sc[k]/t*100}%"></i></span><b>${Math.round(c.sc[k]/t*100)}%</b></div>`).join('')}</div>
+   <div class="two"><div><h3>Pontos fortes (${P[p].nome})</h3><ul>${P[p].fortes.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h3>Pede acompanhamento</h3><ul>${P[p].desafios.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+   <div><h3>Encaixe por área</h3><div class="tw"><table><thead><tr><th>Área</th><th>Leitura para o perfil predominante</th></tr></thead><tbody>${rows.map(([k,n])=>`<tr${k===area?' style="background:var(--lime-soft)"':''}><td><b>${n}</b>${k===area?' (vaga)':''}</td><td>${P[p].areas[k]}</td></tr>`).join('')}</tbody></table></div></div>
+   <div><h3>Perguntas para aprofundar na entrevista</h3><ul>${P[p].perg.map(x=>`<li>${x}</li>`).join('')}<li>${P[s].perg[0]}</li></ul></div>
+   <div><h3>Como liderar</h3><p style="color:var(--ink2)">${P[p].lider}</p></div>
+   <p class="small">O perfil indica tendência de comportamento e não decide a contratação. Compare com as notas das etapas 2 a 5, registradas antes de abrir este relatório.</p></div>`;
+}
+$('#copiar').onclick=async()=>{const t=$('#linkbox').textContent;try{await navigator.clipboard.writeText(t);$('#copiar').textContent='Link copiado'}catch(e){const r=document.createRange();r.selectNodeContents($('#linkbox'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('#copiar').textContent='Selecione e copie'}setTimeout(()=>$('#copiar').textContent='Copiar link do teste',2000)};
+function loginGate(){
+  $('#painel-conteudo').hidden=true;$('#gate').hidden=false;
+}
+$('#g-form').onsubmit=async ev=>{ev.preventDefault();const e=$('#g-email').value.trim().toLowerCase(),s=$('#g-senha').value;const er=$('#g-err');er.textContent='';
+  try{const r=await sbGet('roi_gestores',`email=eq.${encodeURIComponent(e)}&senha_hash=eq.${encodeURIComponent(s)}&ativo=eq.true&select=id,nome,role,academia_id`);
+    if(!r.length||!podeVerAcademia(r[0])){er.textContent='E-mail ou senha incorretos, ou sem acesso de gestão.';return}
+    gestor=r[0];try{sessionStorage.setItem('gf_pessoas_gestor',JSON.stringify(gestor))}catch(x){}renderPainel()}catch(x){er.textContent='Não foi possível entrar agora. Tente de novo.'}};
+
+show(cand?'teste':'visao');
+</script>
+
+</body></html>

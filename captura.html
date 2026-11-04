@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cadastro · Acquacel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ac:#1B4FD8;--ac-ink:#fff;--bg:#FBF7F9;--card:#fff;--ink:#1B1418;--ink2:#5E5258;--line:#E9DEE3;--err:#C62828;--ok:#1E8E4F;--wa:#1FAF54;
+  --f-d:'Barlow Condensed','Arial Narrow',sans-serif;--f-b:'Barlow',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+.page{max-width:520px;margin:0 auto;min-height:100vh;background:var(--card);box-shadow:0 0 0 1px var(--line)}
+.capa img{display:block;width:100%;height:auto}
+.capa.sem{background:var(--ac);color:var(--ac-ink);padding:36px 20px 28px}
+.capa.sem h1{font-family:var(--f-d);font-size:40px;line-height:1;margin:0 0 6px;text-transform:uppercase}
+.capa.sem p{margin:0;opacity:.9}
+.conteudo{padding:20px 18px calc(28px + env(safe-area-inset-bottom,0px))}
+h2.t{font-family:var(--f-d);font-weight:800;font-size:28px;line-height:1.05;margin:0 0 6px;text-transform:uppercase;color:var(--ac)}
+.chamada p{margin:0 0 18px;color:var(--ink2);font-size:16px}
+/* convite */
+.convite{background:color-mix(in srgb,var(--ac) 9%,#fff);border:1.5px solid color-mix(in srgb,var(--ac) 35%,#fff);border-radius:16px;padding:16px;margin-bottom:18px}
+.convite .de{font-family:var(--f-d);font-weight:800;font-size:27px;line-height:1.05;text-transform:uppercase;color:var(--ac);margin:0 0 10px}
+.convite ol{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:p}
+.convite li{display:flex;gap:10px;align-items:flex-start;background:#fff;border-radius:12px;padding:10px 12px;font-weight:600;font-size:15.5px}
+.convite li::before{counter-increment:p;content:counter(p);flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-family:var(--f-d);font-size:16px}
+.evento{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#1B1418;color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:18px;font-size:14.5px}
+.evento b{display:block;font-size:15.5px}
+.evento a{flex-shrink:0;background:#fff;color:#1B1418;border-radius:10px;padding:8px 12px;font-weight:700;text-decoration:none;font-size:14px}
+/* form */
+.campo{margin-bottom:16px}
+.campo>label,.campo>.lbl{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+input[type=text],input[type=tel],input[type=number]{width:100%;font:inherit;font-size:18px;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+input:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
+.opcoes{display:grid;gap:8px}
+.opcoes.duas{grid-template-columns:1fr 1fr}
+.op{position:relative}
+.op input{position:absolute;opacity:0;inset:0}
+.op span{display:flex;align-items:center;min-height:48px;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;font-weight:600;font-size:16px;background:#fff}
+.op input:checked+span{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#fff);color:var(--ink);box-shadow:0 0 0 2px var(--ac) inset}
+.op input:focus-visible+span{outline:3px solid var(--ac);outline-offset:2px}
+.campo>label.aceite,.aceite{display:flex;font-weight:500;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink2);margin:6px 0 18px}
+.aceite input{width:22px;height:22px;margin-top:1px;accent-color:var(--ac);flex-shrink:0}
+.erro{color:var(--err);font-size:14px;margin-top:5px;display:none}
+.campo.inv .erro{display:block}
+.campo.inv input[type=text],.campo.inv input[type=tel],.campo.inv input[type=number]{border-color:var(--err)}
+button.enviar,.btn-g{width:100%;border:0;border-radius:14px;background:var(--ac);color:var(--ac-ink);font-family:var(--f-d);font-weight:800;font-size:23px;letter-spacing:.03em;text-transform:uppercase;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+button.enviar:disabled{opacity:.6}
+.btn-g.wa{background:var(--wa)}
+.btn-g.sec{background:#fff;color:var(--ink);border:1.5px solid var(--line);font-size:19px}
+.rodape{text-align:center;font-size:12px;color:var(--ink2);margin-top:18px}
+/* sucesso */
+.ok{display:none;padding:28px 18px 40px}
+.ok .topo{text-align:center}
+.ok .sel{width:76px;height:76px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;margin:0 auto 14px;font-size:42px}
+.ok h2{font-family:var(--f-d);font-size:32px;line-height:1.05;margin:0 0 6px;text-transform:uppercase;color:var(--ac)}
+.ok p{color:var(--ink2);margin:0 0 8px}
+.bloco{border:1.5px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;text-align:left}
+.bloco h3{font-family:var(--f-d);font-size:24px;line-height:1.05;margin:0 0 6px;text-transform:uppercase}
+.bloco p{font-size:15.5px}
+.codigo{font-family:ui-monospace,Consolas,monospace;font-size:21px;font-weight:700;letter-spacing:.04em;background:var(--bg);border:1.5px dashed var(--ac);border-radius:12px;padding:10px;text-align:center;margin:10px 0 12px;word-break:break-all}
+.bloco .btn-g{margin-top:8px}
+.oferta{background:linear-gradient(135deg,#1B1418,#3B1028);color:#fff;border:0}
+.oferta h3{color:#fff}
+.oferta p{color:rgba(255,255,255,.85)}
+.selo{display:inline-block;background:var(--ac);color:#fff;font-family:var(--f-d);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:4px 12px;margin-bottom:8px}
+.pular{display:block;margin:14px auto 0;background:transparent;border:0;color:var(--ink2);font:inherit;font-size:14px;cursor:pointer;text-decoration:underline}
+#t3{display:none;padding:28px 18px 40px}
+#t3 .oferta{margin-top:0}
+.ok-aviso{font-size:13.5px;color:var(--ink2);text-align:center;margin:10px 0 0}
+.novo{display:block;margin:22px auto 0;background:transparent;border:0;color:var(--ink2);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="capa sem" id="capa"><h1 id="capa-titulo">Acquacel</h1><p id="capa-info"></p></div>
+
+  <div class="conteudo" id="form-area">
+    <div class="convite hidden" id="convite">
+      <p class="de" id="convite-de">Um amigo liberou presentes para você</p>
+      <ol id="presentes"></ol>
+    </div>
+    <div class="evento hidden" id="evento"><div><b id="evento-tit">Evento acontecendo agora</b><span id="evento-txt"></span></div><a id="evento-mapa" target="_blank" rel="noopener">📍 Ver no mapa</a></div>
+
+    <div class="chamada">
+      <h2 class="t" id="titulo">Faça seu cadastro</h2>
+      <p id="subtitulo">Leva menos de 1 minuto.</p>
+    </div>
+
+    <form id="f" novalidate autocomplete="on">
+      <div class="campo" data-c="nome">
+        <label for="nome">Nome completo</label>
+        <input type="text" id="nome" name="nome" autocomplete="name" maxlength="120" required>
+        <div class="erro">Digite seu nome completo.</div>
+      </div>
+      <div class="campo" data-c="whatsapp">
+        <label for="whatsapp">WhatsApp com DDD</label>
+        <input type="tel" id="whatsapp" name="whatsapp" inputmode="numeric" autocomplete="tel" placeholder="(55) 99999-9999" maxlength="16" required>
+        <div class="erro">Digite um WhatsApp válido com DDD.</div>
+      </div>
+      <div class="campo hidden" data-c="cargo" id="bloco-cargo">
+        <div class="lbl">Seu cargo</div>
+        <div class="opcoes duas">
+          <label class="op"><input type="radio" name="cargo" value="Dono(a)"><span>Dono(a)</span></label>
+          <label class="op"><input type="radio" name="cargo" value="Sócio(a)"><span>Sócio(a)</span></label>
+          <label class="op"><input type="radio" name="cargo" value="Gestor(a)"><span>Gestor(a)</span></label>
+          <label class="op"><input type="radio" name="cargo" value="Outro"><span>Outro</span></label>
+        </div>
+        <div class="erro">Escolha uma opção.</div>
+      </div>
+      <div class="campo" data-c="idade" id="bloco-idade">
+        <label for="idade">Idade</label>
+        <input type="number" id="idade" name="idade" inputmode="numeric" min="10" max="99" required>
+        <div class="erro">Digite sua idade.</div>
+      </div>
+      <div class="campo" data-c="treina" id="bloco-treina">
+        <div class="lbl">Você treina hoje?</div>
+        <div class="opcoes">
+          <label class="op"><input type="radio" name="treina" value="aluno"><span>Sim, já sou aluno(a) da academia</span></label>
+          <label class="op"><input type="radio" name="treina" value="academia"><span>Sim, em outra academia</span></label>
+          <label class="op"><input type="radio" name="treina" value="por_conta"><span>Sim, por conta própria</span></label>
+          <label class="op"><input type="radio" name="treina" value="nao_treina"><span>Não treino</span></label>
+        </div>
+        <div class="erro">Escolha uma opção.</div>
+      </div>
+      <div class="campo hidden" data-c="parado" id="bloco-parado">
+        <div class="lbl">Há quanto tempo está sem treinar?</div>
+        <div class="opcoes duas">
+          <label class="op"><input type="radio" name="parado" value="menos_6m"><span>Menos de 6 meses</span></label>
+          <label class="op"><input type="radio" name="parado" value="6_12m"><span>6 a 12 meses</span></label>
+          <label class="op"><input type="radio" name="parado" value="mais_1a"><span>Mais de 1 ano</span></label>
+          <label class="op"><input type="radio" name="parado" value="nunca"><span>Nunca treinei</span></label>
+        </div>
+        <div class="erro">Escolha uma opção.</div>
+      </div>
+      <div id="extras"></div>
+      <div class="campo" data-c="aceite">
+        <label class="aceite"><input type="checkbox" id="aceite"><span id="aceite-txt">Aceito receber contato da academia pelo WhatsApp.</span></label>
+        <div class="erro" style="margin-top:-12px">Marque para confirmar seu cadastro.</div>
+      </div>
+      <button class="enviar" type="submit" id="btn">Confirmar cadastro</button>
+    </form>
+    <div class="rodape" id="rodape">Seus dados são usados só pela academia para falar com você.</div>
+  </div>
+
+  <div class="ok" id="ok">
+    <div class="topo">
+      <div class="sel">✓</div>
+      <h2 id="ok-titulo">Cadastro confirmado!</h2>
+      <p id="ok-texto">Obrigado! Em breve a nossa equipe fala com você.</p>
+    </div>
+
+    <div class="bloco hidden" id="b-indica">
+      <h3 id="ind-tit">Convide até 5 amigos</h3>
+      <p id="ind-txt">Seus amigos ganham presentes especiais da academia.</p>
+      <div class="codigo" id="meu-codigo"></div>
+      <button class="btn-g wa" type="button" id="btn-wa" onclick="convidar()">💬 Convidar amigos pelo WhatsApp</button>
+      <button class="pular hidden" type="button" id="btn-pular" onclick="irOferta(false)">Agora não</button>
+    </div>
+
+
+    <div class="bloco oferta hidden" id="b-oferta">
+      <span class="selo">Desbloqueado</span>
+      <h3 id="of-tit">Condição super exclusiva</h3>
+      <p id="of-txt"></p>
+      <a class="btn-g" id="btn-oferta" target="_blank" rel="noopener">Reservar minha vaga</a>
+    </div>
+    <button class="novo" type="button" onclick="novoCadastro()">Fazer outro cadastro neste celular</button>
+  </div>
+
+  <div id="t3">
+    <div class="ok topo" style="display:block;padding:0 0 18px;text-align:center">
+      <div class="sel">🎉</div>
+      <h2 id="t3-tit">Parabéns!</h2>
+      <p id="t3-txt"></p>
+    </div>
+    <div id="t3-slot"></div>
+    <button class="pular" type="button" onclick="voltarConvite()">Convidar mais amigos</button>
+    <button class="novo" type="button" onclick="novoCadastro()">Fazer outro cadastro neste celular</button>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://oevngnabqlxsensaohdy.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U', P='roi_', ACADEMIA_PADRAO='b8ae52d9-ac2d-4785-bd9b-e5ebc9828f9e', ACADEMIA_CURTA='academia';
+const H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+const qs=new URLSearchParams(location.search);
+const SLUG=(qs.get('c')||'').trim().toLowerCase();
+const REF=(qs.get('ref')||'').trim();
+let camp=null, indicador=null, ultimoLead=null;
+const FILA='captura_fila_v2';
+const $=id=>document.getElementById(id);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function primeiroNome(n){const p=(n||'').trim().split(/\s+/)[0]||'';return p.charAt(0).toUpperCase()+p.slice(1).toLowerCase()}
+function semAcento(s){return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'')}
+const PRESENTES_PADRAO=['Mapeamento completo de 15 áreas da sua saúde, feito pelo celular em menos de 3 minutos','Consultoria com treinador especialista','Uma Experiência na '+ACADEMIA_CURTA+' para treinar e alcançar resultados em poucos dias'];
+
+function aplicarCampanha(c){
+  camp=c;
+  if(c.cor){document.documentElement.style.setProperty('--ac',c.cor)}
+  const capa=$('capa');
+  if(c.capa_url){capa.className='capa';capa.innerHTML='<img alt="'+esc(c.titulo||c.nome)+'" src="'+esc(c.capa_url)+'">'}
+  else{$('capa-titulo').textContent=c.titulo||c.nome;$('capa-info').textContent=c.info||''}
+  $('titulo').textContent=c.sorteio?'Cadastre-se para o sorteio':'Faça seu cadastro';
+  $('subtitulo').textContent=c.subtitulo||(c.sorteio?'Leva menos de 1 minuto e você já concorre aos prêmios.':'Leva menos de 1 minuto.');
+  if(c.sorteio){
+    $('aceite-txt').textContent='Aceito participar do sorteio e receber contato da '+ACADEMIA_CURTA+' pelo WhatsApp.';
+    $('ok-texto').textContent='Você já está concorrendo no sorteio. Boa sorte e bom treino!';
+  }
+  const pg=c.perguntas||{};
+  if(pg.idade===false)$('bloco-idade').classList.add('hidden');
+  if(pg.treina===false)$('bloco-treina').classList.add('hidden');
+  if(c.publico==='gestor'){
+    $('bloco-idade').classList.add('hidden');$('bloco-treina').classList.add('hidden');$('bloco-cargo').classList.remove('hidden');
+    if(!c.sorteio)$('aceite-txt').textContent='Aceito receber contato pelo WhatsApp.';
+    $('rodape').textContent='Seus dados são usados só para falar com você sobre a sua academia.';
+  }
+  renderExtras(c.campos_extra||[]);
+  document.title=(c.titulo||c.nome)+' · Cadastro';
+}
+function aplicarConvite(){
+  // página do convidado: quem chegou pelo link de alguém
+  const nome=indicador?primeiroNome(indicador.nome):'Um amigo';
+  const pres=(camp&&Array.isArray(camp.presentes)&&camp.presentes.length)?camp.presentes:PRESENTES_PADRAO;
+  $('convite-de').textContent=nome+' liberou '+(pres.length===1?'um presente':pres.length+' presentes')+' para você';
+  $('presentes').innerHTML=pres.map(p=>'<li>'+esc(p)+'</li>').join('');
+  $('convite').classList.remove('hidden');
+  if(camp&&camp.capa_convidado){const capa=$('capa');capa.className='capa';capa.innerHTML='<img alt="Seus presentes" src="'+esc(camp.capa_convidado)+'">'}
+  $('titulo').textContent='Retire seus presentes';
+  $('subtitulo').textContent='Faça seu cadastro em menos de 1 minuto e a nossa equipe fala com você.';
+  $('aceite-txt').textContent='Aceito receber contato da '+ACADEMIA_CURTA+' pelo WhatsApp para receber meus presentes.';
+  $('ok-titulo').textContent='Presentes garantidos!';
+  $('ok-texto').textContent='Em breve a nossa equipe chama você no WhatsApp para liberar seus presentes.';
+  if(camp&&(camp.evento_texto||camp.evento_mapa)&&eventoAtivo()){
+    $('evento-tit').textContent=camp.evento_titulo||'O evento está acontecendo agora';
+    $('evento-txt').textContent=camp.evento_texto||'';
+    if(camp.evento_mapa){$('evento-mapa').href=camp.evento_mapa}else{$('evento-mapa').classList.add('hidden')}
+    $('evento').classList.remove('hidden');
+  }
+}
+function renderExtras(lista){
+  $('extras').innerHTML=(lista||[]).map((x,i)=>{
+    const id='x_'+i, req=x.obrig?' *':'';
+    if(x.tipo==='opcoes'&&Array.isArray(x.opcoes)&&x.opcoes.length){
+      return `<div class="campo" data-c="${id}" data-k="${esc(x.k)}" data-obrig="${x.obrig?1:''}" data-tipo="opcoes"><div class="lbl">${esc(x.label)}${req}</div><div class="opcoes${x.opcoes.length>3&&x.opcoes.every(o=>o.length<18)?' duas':''}">${x.opcoes.map(o=>`<label class="op"><input type="radio" name="${id}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join('')}</div><div class="erro">Escolha uma opção.</div></div>`;
+    }
+    return `<div class="campo" data-c="${id}" data-k="${esc(x.k)}" data-obrig="${x.obrig?1:''}" data-tipo="${x.tipo==='numero'?'numero':'texto'}"><label for="${id}">${esc(x.label)}${req}</label><input type="${x.tipo==='numero'?'number':'text'}" id="${id}" ${x.tipo==='numero'?'inputmode="numeric"':''} maxlength="200"><div class="erro">Preencha este campo.</div></div>`;
+  }).join('');
+  $('extras').querySelectorAll('input').forEach(i=>i.addEventListener(i.type==='radio'?'change':'input',()=>i.closest('.campo').classList.remove('inv')));
+}
+function lerExtras(){
+  const r={};
+  $('extras').querySelectorAll('.campo').forEach(c=>{
+    let v=c.dataset.tipo==='opcoes'?(c.querySelector('input:checked')?.value||''):(c.querySelector('input')?.value||'').trim();
+    if(v!=='')r[c.dataset.k]=c.dataset.tipo==='numero'?Number(v):v;
+  });
+  return r;
+}
+function eventoAtivo(){if(!camp||!camp.evento_fim)return true;return new Date()<new Date(camp.evento_fim)}
+
+async function carregar(){
+  if(SLUG){
+    try{
+      const r=await fetch(`${SB_URL}/rest/v1/${P}lead_campanhas?slug=eq.${encodeURIComponent(SLUG)}&select=*&limit=1`,{headers:H});
+      if(r.ok){const d=await r.json();if(d.length){aplicarCampanha(d[0]);try{localStorage.setItem('camp_'+SLUG,JSON.stringify(d[0]))}catch(_){}}}
+    }catch(e){try{const c=JSON.parse(localStorage.getItem('camp_'+SLUG)||'null');if(c)aplicarCampanha(c)}catch(_){}}
+  }
+  if(REF){
+    try{
+      const r=await fetch(`${SB_URL}/rest/v1/${P}leads?codigo=eq.${encodeURIComponent(REF)}&select=id,nome,codigo&limit=1`,{headers:H});
+      if(r.ok){const d=await r.json();if(d.length)indicador=d[0]}
+    }catch(e){}
+    if(!indicador){const m=REF.match(/^([A-Za-zÀ-ú]+)/);indicador={id:null,nome:m?m[1]:'',codigo:REF}}
+    aplicarConvite();
+  }
+}
+
+// máscara do WhatsApp
+const wpp=$('whatsapp');
+wpp.addEventListener('input',()=>{
+  let d=wpp.value.replace(/\D/g,'').slice(0,11),v=d;
+  if(d.length>2)v='('+d.slice(0,2)+') '+d.slice(2);
+  if(d.length>7)v='('+d.slice(0,2)+') '+d.slice(2,d.length-4)+'-'+d.slice(-4);
+  wpp.value=v;
+});
+document.querySelectorAll('input[name=treina]').forEach(i=>i.addEventListener('change',()=>{
+  $('bloco-parado').classList.toggle('hidden',document.querySelector('input[name=treina]:checked')?.value!=='nao_treina');limpar('treina');
+}));
+document.querySelectorAll('input[name=parado]').forEach(i=>i.addEventListener('change',()=>limpar('parado')));
+document.querySelectorAll('input[name=cargo]').forEach(i=>i.addEventListener('change',()=>limpar('cargo')));
+['nome','whatsapp','idade'].forEach(id=>$(id).addEventListener('input',()=>limpar(id)));
+$('aceite').addEventListener('change',()=>limpar('aceite'));
+function limpar(c){document.querySelector(`.campo[data-c="${c}"]`)?.classList.remove('inv')}
+function marcar(c){document.querySelector(`.campo[data-c="${c}"]`).classList.add('inv')}
+
+function validar(){
+  let ok=true;
+  const nome=$('nome').value.trim();
+  if(nome.length<3){marcar('nome');ok=false}
+  if(wpp.value.replace(/\D/g,'').length<10){marcar('whatsapp');ok=false}
+  if(!$('bloco-idade').classList.contains('hidden')){const id=parseInt($('idade').value,10);if(!(id>=10&&id<=99)){marcar('idade');ok=false}}
+  if(!$('bloco-treina').classList.contains('hidden')){
+    if(!document.querySelector('input[name=treina]:checked')){marcar('treina');ok=false}
+    else if(!$('bloco-parado').classList.contains('hidden')&&!document.querySelector('input[name=parado]:checked')){marcar('parado');ok=false}
+  }
+  if(!$('bloco-cargo').classList.contains('hidden')&&!document.querySelector('input[name=cargo]:checked')){marcar('cargo');ok=false}
+  $('extras').querySelectorAll('.campo').forEach(c=>{if(!c.dataset.obrig)return;const v=c.dataset.tipo==='opcoes'?c.querySelector('input:checked'):(c.querySelector('input').value.trim());if(!v){c.classList.add('inv');ok=false}});
+  if(!$('aceite').checked){marcar('aceite');ok=false}
+  if(!ok){const el=document.querySelector('.campo.inv');el&&el.scrollIntoView({behavior:'smooth',block:'center'})}
+  return ok;
+}
+
+// código: NOME[SIGLA]1234
+function codigoBase(nome,dig){
+  const n=semAcento(primeiroNome(nome)).toUpperCase().replace(/[^A-Z]/g,'').slice(0,12)||'AMIGO';
+  const s=semAcento((camp&&camp.codigo_sigla)||'ACQUACEL').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);
+  return n+'['+s+']'+dig.slice(-4);
+}
+async function codigoUnico(base,norm){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/${P}leads?codigo=like.${encodeURIComponent(base.replace(/[\[\]]/g,'*'))}*&select=codigo,whatsapp_norm`,{headers:H});
+    if(!r.ok)return base;
+    const d=(await r.json()).filter(x=>x.codigo&&x.codigo.startsWith(base));
+    const mesmo=d.find(x=>x.whatsapp_norm===norm&&(x.codigo===base||/^[A-Z]$/.test(x.codigo.slice(base.length))));
+    if(mesmo)return mesmo.codigo;
+    const usados=new Set(d.map(x=>x.codigo));
+    if(!usados.has(base))return base;
+    for(const l of 'BCDEFGHJKLMNPQRSTUVWXZ'){if(!usados.has(base+l))return base+l}
+    return base+Date.now().toString(36).slice(-3).toUpperCase();
+  }catch(e){return base}
+}
+
+async function montarLead(){
+  const d=wpp.value.replace(/\D/g,'');
+  const norm=d.length>=10&&d.length<=11?'55'+d:d;
+  const treina=document.querySelector('input[name=treina]:checked')?.value||null;
+  const idade=parseInt($('idade').value,10);
+  const nome=$('nome').value.trim().replace(/\s+/g,' ');
+  const lead={
+    academia_id:(camp&&camp.academia_id)||ACADEMIA_PADRAO||null,
+    campanha_id:camp?camp.id:null,
+    campanha_slug:SLUG||null,
+    nome, whatsapp:wpp.value, whatsapp_norm:norm,
+    idade:isNaN(idade)?null:idade, treina,
+    tempo_parado:treina==='nao_treina'?(document.querySelector('input[name=parado]:checked')?.value||null):null,
+    origem:REF?'indicacao_digital':(qs.get('o')||(camp&&camp.origem)||(qs.get('utm_source')?'trafego_pago':'outro')),
+    utm_source:qs.get('utm_source'),utm_medium:qs.get('utm_medium'),utm_campaign:qs.get('utm_campaign'),utm_content:qs.get('utm_content'),
+    pagina:location.href.split('#')[0].slice(0,500),
+    consentimento:true, respostas:lerExtras(),
+    cargo:document.querySelector('input[name=cargo]:checked')?.value||null
+  };
+  ['academia_nome','cidade'].forEach(k=>{if(lead.respostas[k]!=null){lead[k]=String(lead.respostas[k])}});
+  if(REF){lead.indicado_por_codigo=REF;lead.indicado_por_lead=indicador&&indicador.id||null;lead.indicado_por_nome=indicador&&indicador.nome||null}
+  if(camp&&camp.indicacao)lead._precisaCodigo=true;
+  lead._digitos=d;
+  return lead;
+}
+const CAMPOS_COMPLETAR=['idade','treina','tempo_parado','cargo','academia_nome','cidade'];
+async function gravar(lead){
+  // mesmo WhatsApp na mesma academia = mesma pessoa: completa a ficha em vez de duplicar
+  const toque={data:new Date().toISOString(),campanha:lead.campanha_slug,origem:lead.origem,utm_source:lead.utm_source||null,utm_content:lead.utm_content||null,indicado_por:lead.indicado_por_codigo||null};
+  let ex=null;
+  if(lead.whatsapp_norm&&lead.academia_id){
+    const r=await fetch(`${SB_URL}/rest/v1/${P}leads?academia_id=eq.${encodeURIComponent(lead.academia_id)}&whatsapp_norm=eq.${encodeURIComponent(lead.whatsapp_norm)}&select=*&order=created_at.asc&limit=1`,{headers:H});
+    if(!r.ok)throw new Error(await r.text());
+    ex=(await r.json())[0]||null;
+  }
+  if(ex){
+    const patch={updated_at:new Date().toISOString(),historico:[...(Array.isArray(ex.historico)?ex.historico:[]),toque],respostas:{...(ex.respostas||{}),...(lead.respostas||{})}};
+    CAMPOS_COMPLETAR.forEach(k=>{if((ex[k]==null||ex[k]==='')&&lead[k]!=null)patch[k]=lead[k]});
+    if(!ex.codigo&&lead._precisaCodigo)patch.codigo=await codigoUnico(codigoBase(lead.nome,lead._digitos),lead.whatsapp_norm);
+    if(!ex.indicado_por_codigo&&lead.indicado_por_codigo){patch.indicado_por_codigo=lead.indicado_por_codigo;patch.indicado_por_lead=lead.indicado_por_lead;patch.indicado_por_nome=lead.indicado_por_nome}
+    const r=await fetch(`${SB_URL}/rest/v1/${P}leads?id=eq.${ex.id}`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(patch)});
+    if(!r.ok)throw new Error(await r.text());
+    lead.codigo=patch.codigo||ex.codigo||null;
+    return;
+  }
+  const novo={...lead,origem_primeira:lead.origem,historico:[toque]};
+  delete novo._precisaCodigo;delete novo._digitos;delete novo._tentou;
+  if(lead._precisaCodigo&&!novo.codigo)novo.codigo=await codigoUnico(codigoBase(lead.nome,lead._digitos),lead.whatsapp_norm);
+  const r=await fetch(`${SB_URL}/rest/v1/${P}leads`,{method:'POST',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(novo)});
+  if(!r.ok){const t=await r.text();if(t.includes('codigo')&&novo.codigo&&!lead._tentou){lead._tentou=true;lead.codigo=novo.codigo+Date.now().toString(36).slice(-2).toUpperCase();return gravar(lead)}throw new Error(t)}
+  lead.codigo=novo.codigo||null;
+}
+function filaLer(){try{return JSON.parse(localStorage.getItem(FILA)||'[]')}catch(e){return[]}}
+function filaSalvar(f){try{localStorage.setItem(FILA,JSON.stringify(f))}catch(e){}}
+async function filaEnviar(){const f=filaLer();if(!f.length)return;const resto=[];for(const l of f){try{await gravar(l)}catch(e){resto.push(l)}}filaSalvar(resto)}
+
+function linkConvite(codigo){
+  const u=new URL(location.href.split('#')[0]);
+  ['ref','o','utm_source','utm_medium','utm_campaign','utm_content'].forEach(k=>u.searchParams.delete(k));
+  if(SLUG)u.searchParams.set('c',SLUG);
+  u.searchParams.set('ref',codigo);
+  return u.toString();
+}
+function textoConvite(lead){
+  const nome=primeiroNome(lead.nome);
+  const ev=camp&&(camp.titulo||camp.nome)||ACADEMIA_CURTA;
+  return `${nome} está no ${ev} e liberou presentes especiais para você 🎁\n\nCadastre-se e retire: ${linkConvite(lead.codigo)}`;
+}
+function mostrarSucesso(lead){
+  ultimoLead=lead;
+  $('form-area').classList.add('hidden');
+  $('ok').style.display='block';
+  // bloco de indicação
+  if(camp&&camp.indicacao&&lead.codigo){
+    $('meu-codigo').textContent=lead.codigo;
+    const limite=camp.indicacao_limite?new Date(camp.indicacao_limite):null;
+    const hora=limite?limite.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
+    if(camp.sorteio&&!REF&&(!limite||new Date()<limite)){
+      $('ind-tit').textContent='Aumente suas chances no sorteio';
+      $('ind-txt').textContent='Convide até 5 amigos. Cada amigo que se cadastrar pelo seu link'+(hora?' até '+hora:'')+' vale uma chance a mais para você. E eles ganham presentes especiais da '+ACADEMIA_CURTA+'.';
+    }else{
+      $('ind-tit').textContent='Convide até 5 amigos';
+      $('ind-txt').textContent='Seus amigos também ganham presentes especiais da '+ACADEMIA_CURTA+'.';
+    }
+    const txt=textoConvite(lead);
+    textoAtual=txt;prepararArte();
+    $('b-indica').classList.remove('hidden');
+  }
+  // oferta do desafio
+  if(camp&&camp.oferta_ativa&&camp.whatsapp_academia){
+    if(camp.oferta_titulo)$('of-tit').textContent=camp.oferta_titulo;
+    $('of-txt').textContent=camp.oferta_texto||'';
+    const ev=camp.titulo||camp.nome||'';
+    const msg=(camp.oferta_mensagem||'Olá! Vim do cadastro do {evento} e quero garantir minha vaga com até 50% de desconto no Desafio de 21 dias.').replace('{evento}',ev)+(lead.codigo?' Meu código: '+lead.codigo:'');
+    $('btn-oferta').href='https://wa.me/'+camp.whatsapp_academia.replace(/\D/g,'')+'?text='+encodeURIComponent(msg);
+    $('b-oferta').classList.remove('hidden');
+    temOferta=true;
+  }
+  // com indicação, a oferta fica para a tela 3 (depois do convite)
+  if(temOferta&&!$('b-indica').classList.contains('hidden')){$('t3-slot').appendChild($('b-oferta'));$('btn-pular').classList.remove('hidden')}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+let textoAtual='',arteFile=null,temOferta=false;
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+async function prepararArte(){
+  // baixa a arte antes do clique (o compartilhar do celular exige resposta imediata ao toque)
+  arteFile=null;
+  if(IOS||!navigator.share||!camp||!camp.convite_img)return;
+  try{
+    const b=await fetch(camp.convite_img).then(r=>r.blob());
+    const f=new File([b],'convite.jpg',{type:b.type||'image/jpeg'});
+    if(navigator.canShare&&navigator.canShare({files:[f],text:'x'}))arteFile=f;
+  }catch(_){}
+}
+function abrirWhatsTexto(){
+  const url='https://wa.me/?text='+encodeURIComponent(textoAtual);
+  const w=window.open(url,'_blank');if(!w)location.href=url;
+}
+async function convidar(){
+  // Android: arte + texto pelo compartilhar do celular. iPhone e computador: texto com o link (o link nunca se perde).
+  if(arteFile){
+    try{await navigator.share({files:[arteFile],text:textoAtual});depoisConvite();return}
+    catch(e){if(e&&e.name==='AbortError')return}
+  }
+  abrirWhatsTexto();
+  setTimeout(depoisConvite,800);
+}
+function depoisConvite(){if(temOferta&&$('t3-slot').contains($('b-oferta')))irOferta(true)}
+function irOferta(convidou){
+  $('t3-tit').textContent=convidou?'Parabéns por convidar seus amigos!':'Parabéns pela sua decisão!';
+  $('t3-txt').textContent=convidou?'Você está ajudando outras pessoas a cuidarem da saúde. E acabou de desbloquear uma condição exclusiva:':'Cuidar da saúde começa agora. Você acabou de desbloquear uma condição exclusiva:';
+  $('ok').style.display='none';$('t3').style.display='block';window.scrollTo({top:0,behavior:'smooth'});
+}
+function voltarConvite(){$('t3').style.display='none';$('ok').style.display='block';window.scrollTo({top:0,behavior:'smooth'})}
+
+$('f').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  if(!validar())return;
+  const btn=$('btn');btn.disabled=true;btn.textContent='Enviando...';
+  const lead=await montarLead();
+  try{await gravar(lead)}
+  catch(e){if(lead._precisaCodigo&&!lead.codigo)lead.codigo=codigoBase(lead.nome,lead._digitos);const f=filaLer();f.push(lead);filaSalvar(f);console.warn('Sem conexão, cadastro guardado para reenviar.',e)}
+  mostrarSucesso(lead);
+  btn.disabled=false;btn.textContent='Confirmar cadastro';
+});
+function novoCadastro(){
+  $('f').reset();$('extras').querySelectorAll('.campo').forEach(c=>c.classList.remove('inv'));$('bloco-parado').classList.add('hidden');
+  ['b-indica','b-oferta','btn-pular'].forEach(id=>$(id).classList.add('hidden'));
+  $('ok').insertBefore($('b-oferta'),$('ok').querySelector('.novo'));temOferta=false;$('t3').style.display='none';
+  $('ok').style.display='none';$('form-area').classList.remove('hidden');window.scrollTo({top:0});
+}
+carregar();filaEnviar();setInterval(filaEnviar,15000);
+</script>
+</body>
+</html>

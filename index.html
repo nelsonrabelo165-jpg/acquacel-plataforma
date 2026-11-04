@@ -231,6 +231,7 @@ tbody tr:hover td{background:var(--s2)}
 .tv-mode button[onclick="abrirExperiencias()"],.tv-mode button[onclick="abrirAgendaUnificada()"]{display:none!important}
 .tv-mode .kpi-value{font-size:34px}
 .tv-mode .kpi-label{font-size:13px}
+.acq-dd{position:relative;display:inline-block}.acq-dd-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:60;background:#fff;border:1px solid rgba(10,36,114,.15);border-radius:10px;box-shadow:0 10px 30px rgba(10,36,114,.18);padding:6px;min-width:260px}.acq-dd.open .acq-dd-menu{display:block}.acq-dd-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 12px;border-radius:7px;font:inherit;font-size:13.5px;color:#0A2472;cursor:pointer}.acq-dd-menu button:hover{background:#EEF3FF}
 </style>
 <style id="marca-css">
 .acq-img{display:block;height:44px;width:auto}
@@ -307,9 +308,17 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
       <button class="btn-gh btn-sm" onclick="abrirCentralScripts()" title="Abre em nova aba, já logado">📚 Central de Scripts</button>
       <button class="btn-gh btn-sm" onclick="abrirBibliotecaAcademia({funil:'nat'})" title="Scripts do dia a dia por funil: natação infantil, opção 1 e opção 2, objeções e rotina">💬 Biblioteca de scripts</button>
       <button class="btn-gh btn-sm" onclick="abrirCentralScriptsV2()" title="Versão nova, ainda em construção — só Objeções está completa" style="color:#b45309">🚧 Scripts v2 (beta)</button>
+      <button class="btn-gh btn-sm" onclick="abrirCentralLeads()" title="Links de captação, indicação, ranking e sorteio">🎯 Central de Leads</button>
       <button class="btn-gh btn-sm" onclick="abrirCampanhas()" title="Abre em nova aba, já logado">📢 Campanhas</button>
       <button class="btn-gh btn-sm" onclick="abrirExperiencias()" title="Abre em nova aba, já logado">🎯 Experiências</button>
       <button class="btn-gh btn-sm" onclick="abrirAgendaUnificada()" title="Abre em nova aba, já logado">📅 Agenda</button>
+      <div class="acq-dd" id="acq-dd"><button class="btn-gh btn-sm" type="button" onclick="event.stopPropagation();document.getElementById('acq-dd').classList.toggle('open')">☰ Ferramentas ▾</button>
+        <div class="acq-dd-menu" onclick="document.getElementById('acq-dd').classList.remove('open')">
+          <button onclick="abrirHubPessoas()">👥 Hub de Pessoas</button>
+          <button onclick="copiarLinkAcq('nps.html','Link do NPS copiado. Mande para os alunos.')">⭐ Copiar link do NPS</button>
+          <button onclick="copiarLinkAcq('briefing-gestora.html?a='+ACQ_ACADEMIA,'Link do briefing copiado. Mande para o gestor responder pelo celular.')">📝 Copiar link do briefing do gestor</button>
+          <button onclick="window.open('mapa-ferramenta.html','_blank')">🗺️ Mapa do Hub</button>
+        </div></div>
       <button class="btn-gh btn-sm" id="btn-tv" onclick="toggleTV()" title="Modo apresentação em tela cheia">📺 TV</button>
       <button class="btn-logout" onclick="doLogout()">Sair</button>
     </div>
@@ -1500,6 +1509,19 @@ function abrirCentralScriptsV2(){
   if(!sessao||!sessao.id){toast('Faça login primeiro.',true);return;}
   window.location.href=`central-scripts-v2.html?uid=${encodeURIComponent(sessao.id)}`;
 }
+// ── Módulos trazidos da matriz (Central de Leads, Hub de Pessoas, NPS, briefing) ──
+const ACQ_ACADEMIA='b8ae52d9-ac2d-4785-bd9b-e5ebc9828f9e';
+function baseAcq(){return location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/,'');}
+function abrirCentralLeads(){
+  if(!sessao||!sessao.id){toast('Faça login primeiro.',true);return;}
+  window.open(`central-leads.html?uid=${encodeURIComponent(sessao.id)}`,'_blank');
+}
+function abrirHubPessoas(){window.open(`pessoas.html?a=${ACQ_ACADEMIA}`,'_blank');}
+function copiarLinkAcq(pag,msg){
+  const l=baseAcq()+pag;
+  (navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast(msg)).catch(()=>prompt('Copie o link:',l));
+}
+document.addEventListener('click',()=>{const d=document.getElementById('acq-dd');if(d)d.classList.remove('open')});
 function abrirCampanhas(){
   if(!sessao||!sessao.id){toast('Faça login primeiro.',true);return;}
   window.location.href=`campanhas.html?uid=${encodeURIComponent(sessao.id)}`;

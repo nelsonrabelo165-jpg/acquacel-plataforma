@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central de Leads · Acquacel</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#060A16;--card:#0B1222;--card2:#101A2E;--hover:#13203A;--line:#1E2B47;--ink:#FFFFFF;--ink2:rgba(255,255,255,.75);--ink3:rgba(255,255,255,.5);
+--top:#1B4FD8;--top-ink:#fff;--ac:#38BDF8;--ac-ink:#06122E;--link:#38BDF8;--ok:#22c55e;--err:#ef4444;--warn:#f59e0b;--warn-bg:rgba(245,158,11,.15);--c-novo:#6F9BFF;color-scheme:dark}
+.brand img{background:#fff;border-radius:8px;padding:3px 8px}
+.hidden{display:none!important}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Barlow',system-ui,sans-serif;font-size:15px;line-height:1.45}
+h1,h2,h3{font-family:'Barlow Condensed','Arial Narrow',sans-serif;margin:0;line-height:1.05}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1320px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+header.top{background:var(--top);color:var(--top-ink);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:.02em}
+.brand img{height:34px;width:auto}
+.brand small{display:block;font-family:'Barlow',sans-serif;font-weight:500;font-size:12px;opacity:.75;letter-spacing:0}
+.top .sp{flex:1}
+.user{font-size:13px;opacity:.85}
+.top select{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:6px 8px;color:inherit}
+.top select option{color:#111}
+.tabs{display:flex;gap:4px}
+.tab{background:transparent;border:0;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;color:inherit;opacity:.8}
+.tab[aria-selected=true]{background:var(--ac);color:var(--ac-ink);opacity:1}
+main{padding:22px 0 60px}
+section[hidden]{display:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.hidden{display:none!important}
+.ck{width:18px;height:18px;cursor:pointer;accent-color:var(--ac,#1B4FD8)}
+tr.marcado td{background:rgba(230,0,126,.06)}
+tr.oc td{opacity:.6}
+.btn.alerta{border-color:#c0392b;color:#c0392b}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px;line-height:1}
+.kpi .l{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:13px;cursor:pointer}
+.chip b{margin-left:4px}
+.chip.on{background:var(--ac);color:var(--ac-ink);border-color:var(--ac)}
+.filtros{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.filtros label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);display:block;margin-bottom:3px}
+.filtros input,.filtros select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 9px}
+.filtros .busca{grid-column:span 2}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.acoes .sp{flex:1}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink3)}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ac-ink)}
+.btn.sm{padding:5px 9px;font-size:13px}
+.cont{font-size:13px;color:var(--ink3)}
+.tabela{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:70vh}
+table{border-collapse:collapse;width:100%;min-width:1050px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14px}
+th{position:sticky;top:0;background:var(--card2);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);z-index:1;cursor:pointer;user-select:none}
+tr:hover td{background:var(--hover)}
+td .nm{font-weight:700}
+td .sub{font-size:12px;color:var(--ink3)}
+td select{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:4px 6px;font-size:13px;max-width:150px}
+a.wa{color:var(--link);text-decoration:none;font-weight:600}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);white-space:nowrap}
+.tag.rep{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.st-novo{color:var(--c-novo)}.st-convertido{color:var(--ok)}.st-perdido{color:var(--err)}
+.vazio{padding:40px 16px;text-align:center;color:var(--ink3)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.cc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:8px}
+.cc h3{font-size:22px}
+.cc .meta{font-size:13px;color:var(--ink3)}
+.cc .link{font-size:12.5px;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:7px 9px;word-break:break-all}
+.cc .bts{display:flex;gap:6px;flex-wrap:wrap}
+.cc .n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;line-height:1}
+.off{opacity:.55}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:30px 12px;overflow:auto}
+.modal.show{display:flex}
+.mbox{background:var(--card);color:var(--ink);border-radius:16px;max-width:620px;width:100%;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.mbox h2{font-size:28px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{margin-bottom:10px}
+.f label{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.f .dica{font-size:12px;color:var(--ink3);margin-top:3px}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;margin:4px 0}
+.mrod{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+#qr-box{display:grid;place-items:center;padding:16px;background:#fff;border-radius:12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:10px;z-index:99;display:none;font-weight:600}
+.slot{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--bg)}
+.sl-prev{width:96px;height:96px;border-radius:10px;background:var(--card2);display:grid;place-items:center;overflow:hidden;border:1px dashed var(--line)}
+.sl-prev img{max-width:100%;max-height:100%;display:block}
+.sl-prev.vazio::after{content:"sem imagem";font-size:11px;color:var(--ink3)}
+.sl-info{display:grid;gap:4px;font-size:13px;color:var(--ink2)}
+.sl-info>b{font-size:14px;color:var(--ink)}
+.sl-bts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.sl-url{width:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;margin-top:4px}
+.sl-aviso{font-size:12px;color:var(--warn)}
+.login{max-width:420px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center}
+@media (max-width:640px){.filtros .busca{grid-column:span 1}.grid2{grid-template-columns:1fr}.brand small{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><img alt="Acquacel" src="logo-acquacel.png"><div>Central de Leads<small>Acquacel · Metodologia GeFit</small></div></div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-t="leads">Leads</button>
+      <button class="tab" role="tab" aria-selected="false" data-t="links">Links de captação</button>
+      <button class="tab" role="tab" aria-selected="false" data-t="ind">Indicações</button>
+    </nav>
+    <div class="sp"></div>
+    <select id="sel-acad" class="hidden" title="Academia"></select>
+    <span class="user" id="user"></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="login" id="tela-login" hidden>
+    <h2 style="font-size:28px;margin-bottom:8px">Acesso pelo Hub</h2>
+    <p style="color:var(--ink2)">Abra a Central de Leads pelo menu do Hub, já logado.</p>
+  </div>
+
+  <main id="app" hidden>
+    <!-- LEADS -->
+    <section id="sec-leads">
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="k-total">0</div><div class="l">Leads no filtro</div></div>
+        <div class="kpi"><div class="v" id="k-hoje">0</div><div class="l">Chegaram hoje</div></div>
+        <div class="kpi"><div class="v" id="k-novos">0</div><div class="l">Sem contato (novos)</div></div>
+        <div class="kpi"><div class="v" id="k-sem">0</div><div class="l">Sem consultora</div></div>
+        <div class="kpi"><div class="v" id="k-conv">0</div><div class="l">Convertidos</div></div>
+      </div>
+      <div class="chips" id="chips-origem"></div>
+
+      <div class="filtros">
+        <div class="busca"><label for="f-busca">Busca</label><input id="f-busca" placeholder="Nome ou WhatsApp"></div>
+        <div><label for="f-origem">Origem</label><select id="f-origem"></select></div>
+        <div><label for="f-camp">Campanha</label><select id="f-camp"></select></div>
+        <div><label for="f-status">Status</label><select id="f-status"></select></div>
+        <div><label for="f-cons">Consultora</label><select id="f-cons"></select></div>
+        <div><label for="f-treina">Perfil</label><select id="f-treina"></select></div>
+        <div><label for="f-ind">Indicação</label><select id="f-ind"><option value="">Todos</option><option value="veio">Veio por indicação</option><option value="indicou">Indicou alguém</option></select></div>
+        <div><label for="f-oc">Ocultos</label><select id="f-oc"><option value="">Não mostrar</option><option value="so">Só os ocultos</option></select></div>
+        <div><label for="f-de">De</label><input type="date" id="f-de"></div>
+        <div><label for="f-ate">Até</label><input type="date" id="f-ate"></div>
+      </div>
+      <div class="acoes">
+        <button class="btn" onclick="limparFiltros()">Limpar filtros</button>
+        <button class="btn" onclick="carregarLeads()">↻ Atualizar</button>
+        <button class="btn" onclick="imprimirSorteioLeads()" title="Lista do sorteio para imprimir e recortar (sem ocultos e sem repetidos)">🖨 Imprimir sorteio</button>
+        <button class="btn" onclick="exportarCSV()">⬇ Exportar planilha</button>
+        <button class="btn" onclick="enviarParaCampanha(filtrados().filter(l=>!l.card_id).map(l=>l.id))" title="Envia os leads do filtro atual que ainda não estão no Kanban">📢 Enviar filtrados para campanha</button>
+        <button class="btn alerta hidden" id="btn-ocultar" onclick="ocultarSel(true)">🙈 Ocultar selecionados</button>
+        <button class="btn hidden" id="btn-reexibir" onclick="ocultarSel(false)">👁 Reexibir selecionados</button>
+        <div class="sp"></div>
+        <span class="cont" id="cont"></span>
+      </div>
+      <div class="tabela"><table>
+        <thead><tr>
+          <th><input type="checkbox" class="ck" id="ck-todos" title="Selecionar todos do filtro" onclick="marcarTodos(this.checked)"></th><th data-o="created_at">Chegou</th><th data-o="nome">Lead</th><th>WhatsApp</th><th>Perfil</th>
+          <th data-o="origem">Origem</th><th data-o="campanha">Campanha</th><th data-o="indicado_por_nome">Indicado por</th><th data-o="status">Status</th><th>Consultora</th><th></th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table></div>
+    </section>
+
+    <!-- LINKS -->
+    <section id="sec-links" hidden>
+      <div class="acoes">
+        <h2 style="font-size:30px">Links de captação</h2>
+        <div class="sp"></div>
+        <button class="btn pri" onclick="abrirCampanha()">+ Novo link de captação</button>
+      </div>
+      <p class="cont" style="margin:0 0 14px">Cada link leva para a página de cadastro e já marca a origem e a campanha de cada lead. Use um link por evento, anúncio, parceria ou ação.</p>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <!-- INDICAÇÕES -->
+    <section id="sec-ind" hidden>
+      <div class="acoes">
+        <h2 style="font-size:30px">Ranking de indicações</h2>
+        <div class="sp"></div>
+        <select id="i-camp" class="btn"></select>
+      </div>
+      <p class="cont" style="margin:0 0 14px">Quem mais trouxe amigos pelo link de indicação. "Matricularam" conta os indicados com status Convertido: base para premiar quem indica.</p>
+      <div class="tabela"><table style="min-width:720px">
+        <thead><tr><th>#</th><th>Quem indicou</th><th>Código</th><th>Amigos cadastrados</th><th>Em contato / agendados</th><th>Matricularam</th><th></th></tr></thead>
+        <tbody id="tb-ind"></tbody>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<!-- modal lead -->
+<div class="modal" id="m-lead"><div class="mbox">
+  <h2 id="ml-nome">Lead</h2>
+  <div id="ml-info" class="cont" style="margin-bottom:12px"></div>
+  <div class="grid2">
+    <div class="f"><label>Status</label><select id="ml-status"></select></div>
+    <div class="f"><label>Consultora</label><select id="ml-cons"></select></div>
+  </div>
+  <div id="ml-extra" style="margin-bottom:12px"></div>
+  <div class="f"><label>Observações</label><textarea id="ml-obs" rows="4"></textarea></div>
+  <div class="mrod">
+    <button class="btn" onclick="enviarParaCampanha([leadAtual.id])">📢 Enviar para campanha</button>
+    <a class="btn" id="ml-wa" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    <button class="btn" onclick="fechar('m-lead')">Cancelar</button>
+    <button class="btn pri" onclick="salvarLead()">Salvar</button>
+  </div>
+</div></div>
+
+<!-- modal campanha -->
+<div class="modal" id="m-camp"><div class="mbox">
+  <h2 id="mc-titulo">Novo link de captação</h2>
+  <div class="grid2">
+    <div class="f"><label>Nome da campanha</label><input id="mc-nome" placeholder="Ex.: Aulão Rosa 31/10"></div>
+    <div class="f"><label>Código no link</label><input id="mc-slug" placeholder="aulao-rosa"><div class="dica">Só letras, números e hífen.</div></div>
+  </div>
+  <div class="grid2">
+    <div class="f"><label>Origem</label><select id="mc-origem"></select></div>
+    <div class="f"><label>Cor de destaque</label><input id="mc-cor" type="color" value="#1B4FD8"></div>
+  </div>
+  <div class="f"><label>Título da página</label><input id="mc-tit" placeholder="Aulão Rosa · Movimento RG Cave"></div>
+  <div class="f"><label>Frase de apoio</label><input id="mc-sub" placeholder="Leva menos de 1 minuto e você já concorre aos prêmios."></div>
+  <div class="f"><label>Data, local e horário (aparece se não houver capa)</label><input id="mc-info" placeholder="Sábado, 31/10 · Parcão · 17h às 19h"></div>
+  <details style="margin:10px 0" open><summary style="cursor:pointer;font-weight:700">Artes da campanha</summary>
+    <p class="dica" style="margin:6px 0 10px">Gere a arte em qualquer ferramenta de imagem (use "Copiar prompt"), baixe e envie aqui. JPG, PNG ou WebP, até 2 MB.</p>
+    <div class="slot" data-campo="capa_url" data-input="mc-capa" data-w="1080" data-h="1080" data-tipo="capa">
+      <div class="sl-prev"><img alt=""></div>
+      <div class="sl-info"><b>Capa da página</b><span>Topo da página de cadastro. <b>1080 × 1080 px</b> (quadrada) ou 1080 × 900.</span>
+        <div class="sl-bts"><label class="btn sm">Enviar imagem<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn sm" data-prompt>Copiar prompt</button><button type="button" class="btn sm" data-limpar>Remover</button></div>
+        <input id="mc-capa" class="sl-url" placeholder="ou cole o endereço da imagem"></div>
+    </div>
+    <div class="slot" data-campo="capa_convidado" data-input="mc-capa2" data-w="1080" data-h="1080" data-tipo="convidado">
+      <div class="sl-prev"><img alt=""></div>
+      <div class="sl-info"><b>Capa do convidado</b><span>Topo da página de quem chega por indicação (presentes, mapeamento no celular, consultoria). <b>1080 × 1080 px</b>. Vazio = usa a capa da página.</span>
+        <div class="sl-bts"><label class="btn sm">Enviar imagem<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn sm" data-prompt>Copiar prompt</button><button type="button" class="btn sm" data-limpar>Remover</button></div>
+        <input id="mc-capa2" class="sl-url" placeholder="ou cole o endereço da imagem"></div>
+    </div>
+    <div class="slot" data-campo="convite_img" data-input="mc-img" data-w="1080" data-h="1350" data-tipo="compartilhar">
+      <div class="sl-prev"><img alt=""></div>
+      <div class="sl-info"><b>Arte para compartilhar</b><span>Vai junto no "Compartilhar com a arte" do WhatsApp. <b>1080 × 1350 px</b> (vertical 4:5).</span>
+        <div class="sl-bts"><label class="btn sm">Enviar imagem<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn sm" data-prompt>Copiar prompt</button><button type="button" class="btn sm" data-limpar>Remover</button></div>
+        <input id="mc-img" class="sl-url" placeholder="ou cole o endereço da imagem"></div>
+    </div>
+  </details>
+  <div class="grid2">
+    <div class="f"><label>Formulário para</label><select id="mc-pub"><option value="aluno">Aluno (idade, se treina)</option><option value="gestor">Gestor de academia (cargo)</option></select><div class="dica">Nome e WhatsApp sempre entram.</div></div>
+    <div class="f"><label>Perguntas extras (uma por linha)</label><textarea id="mc-extras" rows="3" placeholder="*Nome da academia | academia_nome&#10;Cidade | cidade&#10;*Alunos ativos: Até 150; 150 a 300; 300 a 600; Mais de 600"></textarea><div class="dica">* no início = obrigatória. "Pergunta: op1; op2" vira múltipla escolha. "| chave" define o nome do campo (academia_nome e cidade viram colunas).</div></div>
+  </div>
+  <label class="chk"><input type="checkbox" id="mc-sorteio"> Campanha com sorteio (libera a lista para imprimir)</label>
+  <label class="chk"><input type="checkbox" id="mc-p-idade" checked> Perguntar idade</label>
+  <label class="chk"><input type="checkbox" id="mc-p-treina" checked> Perguntar se treina (e há quanto tempo está parado)</label>
+  <label class="chk"><input type="checkbox" id="mc-ativo" checked> Link ativo</label>
+  <details style="margin:10px 0"><summary style="cursor:pointer;font-weight:700">Indicação digital (convide até 5 amigos)</summary>
+    <label class="chk"><input type="checkbox" id="mc-ind"> Ligar indicação: cada cadastro ganha um código e pode convidar amigos</label>
+    <div class="grid2">
+      <div class="f"><label>Sigla no código</label><input id="mc-sigla" placeholder="ROSA"><div class="dica">Fica assim: MARIA[ROSA]4821</div></div>
+      <div class="f"><label>Chance extra no sorteio até</label><input id="mc-lim" type="datetime-local"></div>
+    </div>
+    <div class="f"><label>Presentes do convidado (um por linha)</label><textarea id="mc-pres" rows="3"></textarea></div>
+    <div class="grid2">
+      <div class="f"><label>Faixa do evento: título</label><input id="mc-evt" placeholder="O Aulão Rosa está acontecendo agora"></div>
+      <div class="f"><label>Faixa some em</label><input id="mc-evf" type="datetime-local"></div>
+    </div>
+    <div class="f"><label>Faixa do evento: texto</label><input id="mc-evx" placeholder="Parcão · até 19h. Venha participar!"></div>
+    <div class="f"><label>Link do mapa</label><input id="mc-map" placeholder="https://maps.google.com/..."></div>
+  </details>
+  <details style="margin:10px 0"><summary style="cursor:pointer;font-weight:700">Oferta depois do cadastro (WhatsApp da academia)</summary>
+    <label class="chk"><input type="checkbox" id="mc-of"> Mostrar oferta</label>
+    <div class="f"><label>WhatsApp da academia (com DDD)</label><input id="mc-wa" placeholder="55 99999-9999"></div>
+    <div class="f"><label>Título</label><input id="mc-oft"></div>
+    <div class="f"><label>Texto</label><textarea id="mc-ofx" rows="3"></textarea></div>
+    <div class="f"><label>Mensagem pronta no WhatsApp</label><textarea id="mc-ofm" rows="2"></textarea><div class="dica">{evento} vira o nome da campanha; o código da pessoa entra no final.</div></div>
+  </details>
+  <div class="mrod">
+    <button class="btn" onclick="fechar('m-camp')">Cancelar</button>
+    <button class="btn pri" onclick="salvarCampanha()">Salvar</button>
+  </div>
+</div></div>
+
+<!-- modal link/QR -->
+<div class="modal" id="m-qr"><div class="mbox">
+  <h2 id="mq-titulo">Link e QR Code</h2>
+  <div class="f"><label>Link da página</label><input id="mq-link" readonly></div>
+  <details style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:700">Gerar link para anúncio ou parceiro (UTMs)</summary>
+    <div class="grid2" style="margin-top:8px">
+      <div class="f"><label>Origem no link</label><select id="mq-o"><option value="">(a da campanha)</option></select></div>
+      <div class="f"><label>utm_source</label><input id="mq-src" placeholder="instagram, facebook, parceiro-x"></div>
+      <div class="f"><label>utm_medium</label><input id="mq-med" placeholder="cpc, stories, bio"></div>
+      <div class="f"><label>utm_content</label><input id="mq-cont" placeholder="video-1, arte-2"></div>
+    </div>
+  </details>
+  <div id="qr-box"></div>
+  <div class="mrod">
+    <button class="btn" onclick="copiar(document.getElementById('mq-link').value)">Copiar link</button>
+    <button class="btn" onclick="baixarQR()">Baixar QR Code</button>
+    <a class="btn" id="mq-abrir" target="_blank" rel="noopener">Abrir página</a>
+    <button class="btn pri" onclick="fechar('m-qr')">Fechar</button>
+  </div>
+</div></div>
+
+<div class="modal" id="m-enviar"><div class="mbox">
+  <h2>Enviar para campanha</h2>
+  <p class="cont" id="me-txt"></p>
+  <div class="f"><label>Campanha (módulo Campanhas / Desafio ROI 21 Dias)</label><select id="me-sel"></select></div>
+  <div class="mrod"><button class="btn" onclick="fechar('m-enviar')">Cancelar</button><button class="btn pri" onclick="confirmarEnvio()">Enviar</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://oevngnabqlxsensaohdy.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ldm5nbmFicWx4c2Vuc2FvaGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzOTUwNjMsImV4cCI6MjA5Nzk3MTA2M30.TjuZPEi-9QOquqpARrbDvZBYxrLB8P32oYIvaX-s01U',P='roi_';
+const H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+const ORIGENS={indicacao_digital:'Indicação digital',isca_digital:'Isca digital',palestra:'Evento/palestra',trafego_pago:'Tráfego pago',whatsapp_organico:'WhatsApp orgânico',instagram_organico:'Instagram orgânico',evento:'Evento',parceria:'Parceria',indicacao:'Indicação',site:'Site',outro:'Outro'};
+const STATUS={novo:'Novo',contatado:'Contatado',agendado:'Agendado',experiencia:'Em Experiência',convertido:'Convertido',perdido:'Perdido'};
+const TREINA={aluno:'Já é aluno(a)',academia:'Treina em outra academia',por_conta:'Treina por conta',nao_treina:'Não treina'};
+const PARADO={menos_6m:'parado < 6 meses','6_12m':'parado 6 a 12 meses',mais_1a:'parado > 1 ano',nunca:'nunca treinou'};
+const GF_AC=null; // espaço ativo do admin, vindo do hub
+let sessao=null,acad=null,leads=[],camps=[],cons=[],ordem={c:'created_at',d:-1},leadAtual=null,campAtual=null,qrObj=null;
+
+async function sbGet(t,p){const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function sbPatch(t,f,b){const r=await fetch(`${SB_URL}/rest/v1/${t}?${f}`,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text())}
+async function sbPost(t,b){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(b)});if(!r.ok)throw new Error(await r.text());return r.json()}
+const $=id=>document.getElementById(id);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(t,erro){const e=$('toast');e.textContent=t;e.style.background=erro?'#B3261E':'#111';e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2600)}
+function fechar(id){$(id).classList.remove('show')}
+function opts(sel,obj,todos){sel.innerHTML=(todos?`<option value="">${todos}</option>`:'')+Object.entries(obj).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('')}
+function dataBR(iso){if(!iso)return'';const d=new Date(iso);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function hojeISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function diaLocal(iso){const d=new Date(iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function baseCaptura(){return location.href.split('?')[0].split('#')[0].replace(/[^/]*$/,'')+'captura.html'}
+function linkCamp(c){return baseCaptura()+'?c='+encodeURIComponent(c.slug)}
+function slugify(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)}
+
+// ---------- sessão ----------
+async function iniciar(){
+  const uid=new URLSearchParams(location.search).get('uid');
+  if(uid){
+    try{const r=await sbGet(P+'gestores',`id=eq.${encodeURIComponent(uid)}&ativo=eq.true&select=id,nome,email,academia_id,role,consultora_id`);
+      if(r.length){sessao=r[0];sessionStorage.setItem('central_leads_sessao',JSON.stringify(sessao));history.replaceState(null,'',location.pathname)}}catch(e){console.error(e)}
+  }
+  if(!sessao){try{sessao=JSON.parse(sessionStorage.getItem('central_leads_sessao')||'null')}catch(e){}}
+  if(!sessao){$('tela-login').hidden=false;return}
+  $('user').textContent=sessao.nome||sessao.email||'';
+  acad=(sessao.role==='admin'&&GF_AC)||sessao.academia_id;
+  if(sessao.role==='admin'){
+    try{const ac=await sbGet(P+'academias','select=id,nome&order=nome');
+      const s=$('sel-acad');s.classList.remove('hidden');s.innerHTML=ac.map(a=>`<option value="${a.id}">${esc(a.nome)}</option>`).join('');
+      if(!acad&&ac.length)acad=ac[0].id;s.value=acad;s.onchange=()=>{acad=s.value;carregarTudo()};
+      if(GF_AC){const a=ac.find(x=>x.id===GF_AC);s.classList.add('hidden');const tag=document.createElement('span');tag.textContent=a?a.nome:'Espaço selecionado no hub';tag.style.cssText='font-weight:700;padding:6px 12px;border:1px solid rgba(255,255,255,.25);border-radius:8px;white-space:nowrap';tag.title='Para trocar de espaço, use o seletor no topo do hub';s.insertAdjacentElement('afterend',tag);}
+    }catch(e){console.error(e)}
+  }
+  $('app').hidden=false;
+  opts($('f-origem'),ORIGENS,'Todas');opts($('f-status'),STATUS,'Todos');opts($('f-treina'),TREINA,'Todos');
+  opts($('ml-status'),STATUS);opts($('mc-origem'),ORIGENS);
+  $('mq-o').innerHTML='<option value="">(a da campanha)</option>'+Object.entries(ORIGENS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  ['f-busca','f-origem','f-camp','f-status','f-cons','f-treina','f-ind','f-oc','f-de','f-ate'].forEach(id=>$(id).addEventListener('input',()=>{selecionados.clear();render()}));
+  ['mq-o','mq-src','mq-med','mq-cont'].forEach(id=>$(id).addEventListener('input',atualizarLinkQR));
+  $('mc-nome').addEventListener('input',()=>{if(!campAtual)$('mc-slug').value=slugify($('mc-nome').value)});
+  document.querySelectorAll('th[data-o]').forEach(th=>th.onclick=()=>{const c=th.dataset.o;ordem=ordem.c===c?{c,d:-ordem.d}:{c,d:c==='created_at'?-1:1};render()});
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('sec-leads').hidden=b.dataset.t!=='leads';$('sec-links').hidden=b.dataset.t!=='links';$('sec-ind').hidden=b.dataset.t!=='ind';if(b.dataset.t==='ind')renderInd()});
+  carregarTudo();
+}
+async function carregarTudo(){await Promise.all([carregarCons(),carregarCamps()]);await carregarLeads()}
+async function carregarCons(){
+  try{cons=await sbGet(P+'consultoras',`academia_id=eq.${encodeURIComponent(acad)}&select=id,nome&order=nome`)}catch(e){cons=[]}
+  const o={};cons.forEach(c=>o[c.id]=c.nome);
+  $('f-cons').innerHTML='<option value="">Todas</option><option value="__sem">Sem consultora</option>'+cons.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+  $('ml-cons').innerHTML='<option value="">Sem consultora</option>'+cons.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+}
+async function carregarCamps(){
+  try{camps=await sbGet(P+'lead_campanhas',`academia_id=eq.${encodeURIComponent(acad)}&select=*&order=created_at.desc`)}catch(e){camps=[];toast('Rode o SQL da Central de Leads no Supabase.',true)}
+  $('f-camp').innerHTML='<option value="">Todas</option><option value="__sem">Sem campanha</option>'+camps.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+}
+async function carregarLeads(){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/${P}leads?academia_id=eq.${encodeURIComponent(acad)}&select=*&order=created_at.desc`,{headers:{...H,'Range-Unit':'items','Range':'0-4999'}});
+    if(!r.ok)throw new Error(await r.text());leads=await r.json();todosLeads=leads;
+  }catch(e){console.error(e);leads=[]}
+  if(sessao.role==='consultor'&&sessao.consultora_id)leads=leads.filter(l=>!l.consultora_id||l.consultora_id===sessao.consultora_id);
+  todosLeads=leads;leads=todosLeads.filter(l=>!l.oculto);selecionados.clear();
+  render();renderCards();
+}
+
+// ---------- leads ----------
+let todosLeads=[];const selecionados=new Set();
+function filtrados(){
+  const fi=$('f-ind').value,indicaram=new Set(leads.map(l=>l.indicado_por_codigo).filter(Boolean));const b=$('f-busca').value.trim().toLowerCase(),bd=b.replace(/\D/g,''),o=$('f-origem').value,c=$('f-camp').value,s=$('f-status').value,co=$('f-cons').value,t=$('f-treina').value,de=$('f-de').value,ate=$('f-ate').value;
+  const so=$('f-oc').value==='so';
+  return (so?todosLeads.filter(l=>l.oculto):leads).filter(l=>{
+    if(b&&!((l.nome||'').toLowerCase().includes(b)||(l.codigo||'').toLowerCase().includes(b)||(bd&&(l.whatsapp_norm||'').includes(bd))))return false;
+    if(o&&l.origem!==o)return false;
+    if(c==='__sem'&&l.campanha_id)return false; if(c&&c!=='__sem'&&l.campanha_id!==c)return false;
+    if(s&&l.status!==s)return false;
+    if(co==='__sem'&&l.consultora_id)return false; if(co&&co!=='__sem'&&l.consultora_id!==co)return false;
+    if(t&&l.treina!==t)return false;
+    if(filtroCodigo&&l.indicado_por_codigo!==filtroCodigo)return false;
+    if(fi==='veio'&&!l.indicado_por_codigo)return false; if(fi==='indicou'&&!(l.codigo&&indicaram.has(l.codigo)))return false;
+    const dia=diaLocal(l.created_at); if(de&&dia<de)return false; if(ate&&dia>ate)return false;
+    return true;
+  });
+}
+function nomeCamp(id){const c=camps.find(x=>x.id===id);return c?c.nome:''}
+function nomeIndicador(l){const x=l.indicado_por_codigo&&leads.find(y=>y.codigo===l.indicado_por_codigo);return x?x.nome:(l.indicado_por_nome||'')}
+function nomeCampSlug(s){const c=camps.find(x=>x.slug===s);return c?c.nome:s}
+function nomeCons(id){const c=cons.find(x=>x.id===id);return c?c.nome:''}
+function render(){
+  const f=filtrados();
+  const cont={};leads.forEach(l=>{if(l.whatsapp_norm)cont[l.whatsapp_norm]=(cont[l.whatsapp_norm]||0)+1});
+  const k=ordem.c;f.sort((a,b)=>{let x=k==='campanha'?nomeCamp(a.campanha_id):a[k],y=k==='campanha'?nomeCamp(b.campanha_id):b[k];x=(x||'').toString().toLowerCase();y=(y||'').toString().toLowerCase();return x<y?-ordem.d:x>y?ordem.d:0});
+  $('k-total').textContent=f.length;
+  $('k-hoje').textContent=f.filter(l=>diaLocal(l.created_at)===hojeISO()).length;
+  $('k-novos').textContent=f.filter(l=>l.status==='novo').length;
+  $('k-sem').textContent=f.filter(l=>!l.consultora_id).length;
+  $('k-conv').textContent=f.filter(l=>l.status==='convertido').length;
+  const po={};leads.forEach(l=>po[l.origem||'outro']=(po[l.origem||'outro']||0)+1);
+  const oSel=$('f-origem').value;
+  $('chips-origem').innerHTML=Object.entries(po).sort((a,b)=>b[1]-a[1]).map(([o,n])=>`<span class="chip ${oSel===o?'on':''}" onclick="filtrarOrigem('${o}')">${esc(ORIGENS[o]||o)}<b>${n}</b></span>`).join('');
+  $('cont').textContent=$('f-oc').value==='so'?`${f.length} ocultos`:`${f.length} de ${leads.length} leads`;
+  atualizarSel(f);
+  if(!f.length){$('tb').innerHTML=`<tr><td colspan="11" class="vazio">${leads.length?'Nenhum lead com esses filtros.':'Ainda não chegou nenhum lead. Crie um link em "Links de captação".'}</td></tr>`;return}
+  $('tb').innerHTML=f.map(l=>{
+    const perfil=l.cargo?`${esc(l.cargo)}<div class="sub">${esc([l.academia_nome,l.cidade].filter(Boolean).join(' · '))}</div>`:(TREINA[l.treina]||'')+(l.tempo_parado?`<div class="sub">${PARADO[l.tempo_parado]||''}</div>`:'');
+    const toques=Array.isArray(l.historico)?l.historico.length:0;
+    const rep=(l.whatsapp_norm&&cont[l.whatsapp_norm]>1?' <span class="tag rep">repetido</span>':'')+(toques>1?` <span class="tag" title="Formulários preenchidos">${toques} contatos</span>`:'')+(l.demo?' <span class="tag">demonstração</span>':'')+(l.card_id?' <span class="tag" title="Já está no Kanban de Campanhas">no Kanban</span>':'');
+    return `<tr class="${selecionados.has(l.id)?'marcado':''} ${l.oculto?'oc':''}">
+      <td><input type="checkbox" class="ck" ${selecionados.has(l.id)?'checked':''} onclick="marcarLead('${l.id}',this.checked)"></td>
+      <td>${dataBR(l.created_at)}${l.oculto?'<div class="sub">oculto</div>':''}</td>
+      <td><div class="nm">${esc(l.nome)}${rep}</div><div class="sub">${[l.idade?l.idade+' anos':'',l.codigo?esc(l.codigo):''].filter(Boolean).join(' · ')}</div></td>
+      <td>${l.whatsapp_norm?`<a class="wa" target="_blank" rel="noopener" href="https://wa.me/${l.whatsapp_norm}">${esc(l.whatsapp)}</a>`:esc(l.whatsapp)}</td>
+      <td>${perfil}</td>
+      <td><span class="tag">${esc(ORIGENS[l.origem]||l.origem||'')}</span>${l.utm_source?`<div class="sub">${esc(l.utm_source)}${l.utm_content?' · '+esc(l.utm_content):''}</div>`:''}</td>
+      <td>${esc(nomeCamp(l.campanha_id))}</td>
+      <td>${l.indicado_por_codigo?`<div class="nm">${esc(nomeIndicador(l))}</div><div class="sub">${esc(l.indicado_por_codigo)}</div>`:''}</td>
+      <td><select class="st-${l.status}" onchange="mudar('${l.id}','status',this.value)">${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${l.status===k?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td><select onchange="mudar('${l.id}','consultora_id',this.value||null)"><option value="">—</option>${cons.map(c=>`<option value="${c.id}" ${l.consultora_id===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}</select></td>
+      <td><button class="btn sm" onclick="abrirLead('${l.id}')">${l.observacoes?'📝':'Abrir'}</button></td>
+    </tr>`}).join('');
+}
+// ---------- selecionar e ocultar (nunca apaga) ----------
+function marcarLead(id,on){on?selecionados.add(id):selecionados.delete(id);render()}
+function marcarTodos(on){filtrados().forEach(l=>on?selecionados.add(l.id):selecionados.delete(l.id));render()}
+function atualizarSel(f){
+  const n=selecionados.size,so=$('f-oc').value==='so';
+  $('btn-ocultar').classList.toggle('hidden',!n||so);$('btn-reexibir').classList.toggle('hidden',!n||!so);
+  $('btn-ocultar').textContent='🙈 Ocultar selecionados ('+n+')';$('btn-reexibir').textContent='👁 Reexibir selecionados ('+n+')';
+  const ck=$('ck-todos');ck.checked=f.length>0&&f.every(l=>selecionados.has(l.id));
+}
+async function ocultarSel(ocultar){
+  const ids=[...selecionados];if(!ids.length)return;
+  if(ocultar&&!confirm('Ocultar '+ids.length+' lead(s)? Eles não são apagados: saem da lista, dos números e do sorteio. Para ver de novo, use o filtro "Ocultos".'))return;
+  try{
+    await sbPatch(P+'leads','id=in.('+ids.join(',')+')',{oculto:ocultar,updated_at:new Date().toISOString()});
+    todosLeads.forEach(l=>{if(selecionados.has(l.id))l.oculto=ocultar});
+    leads=todosLeads.filter(l=>!l.oculto);selecionados.clear();render();
+    toast((ocultar?'Ocultados: ':'Reexibidos: ')+ids.length);
+  }catch(e){toast(String(e.message||e).includes('oculto')?'Falta rodar o SQL do "ocultar" no Supabase.':'Não salvou: '+e.message,true)}
+}
+function imprimirSorteioLeads(){
+  const fc=$('f-camp').value, sorteios=camps.filter(c=>c.sorteio);
+  let c=fc?camps.find(x=>x.id===fc&&x.sorteio):null;
+  if(!c){const at=sorteios.filter(x=>x.ativo!==false);c=at.length===1?at[0]:(sorteios.length===1?sorteios[0]:null)}
+  if(!c){toast(sorteios.length?'Escolha a campanha do sorteio no filtro "Campanha".':'Nenhuma campanha com sorteio.',true);return}
+  imprimirSorteio(c.id);
+}
+function filtrarOrigem(o){$('f-origem').value=$('f-origem').value===o?'':o;render()}
+function limparFiltros(){filtroCodigo=null;['f-busca','f-origem','f-camp','f-status','f-cons','f-treina','f-ind','f-oc','f-de','f-ate'].forEach(id=>$(id).value='');selecionados.clear();render()}
+async function mudar(id,campo,val){
+  const l=todosLeads.find(x=>x.id===id);if(!l)return;const ant=l[campo];l[campo]=val;
+  try{await sbPatch(P+'leads','id=eq.'+id,{[campo]:val,updated_at:new Date().toISOString()});toast('Salvo');render()}
+  catch(e){l[campo]=ant;render();toast('Não salvou: '+e.message,true)}
+}
+function abrirLead(id){
+  const l=todosLeads.find(x=>x.id===id);if(!l)return;leadAtual=l;
+  $('ml-nome').textContent=l.nome;
+  $('ml-info').innerHTML=[dataBR(l.created_at),l.idade?l.idade+' anos':'',TREINA[l.treina]||'',PARADO[l.tempo_parado]||'',ORIGENS[l.origem]||'',nomeCamp(l.campanha_id),l.codigo?'código '+l.codigo:'',l.indicado_por_codigo?'indicado por '+nomeIndicador(l)+' ('+l.indicado_por_codigo+')':''].filter(Boolean).map(esc).join(' · ');
+  const resp=Object.entries(l.respostas||{}).filter(([k])=>!['academia_nome','cidade'].includes(k));
+  const hist=Array.isArray(l.historico)?l.historico:[];
+  $('ml-extra').innerHTML=(l.cargo||l.academia_nome||l.cidade?`<div class="cont"><b>${esc([l.cargo,l.academia_nome,l.cidade].filter(Boolean).join(' · '))}</b></div>`:'')+
+    (resp.length?`<div class="cont" style="margin-top:6px">${resp.map(([k,v])=>`<div>${esc(k.replace(/_/g,' '))}: <b>${esc(v)}</b></div>`).join('')}</div>`:'')+
+    (hist.length?`<div class="cont" style="margin-top:8px"><b>Pontos de contato (${hist.length})</b>${hist.map(h=>`<div>• ${dataBR(h.data)} · ${esc(ORIGENS[h.origem]||h.origem||'')}${h.campanha?' · '+esc(nomeCampSlug(h.campanha)):''}${h.utm_source?' · '+esc(h.utm_source):''}</div>`).join('')}</div>`:'')+
+    (l.origem_primeira&&l.origem_primeira!==l.origem?`<div class="cont">Primeiro contato: ${esc(ORIGENS[l.origem_primeira]||l.origem_primeira)}</div>`:'');
+  $('ml-status').value=l.status||'novo';$('ml-cons').value=l.consultora_id||'';$('ml-obs').value=l.observacoes||'';
+  $('ml-wa').href=l.whatsapp_norm?'https://wa.me/'+l.whatsapp_norm:'#';
+  $('m-lead').classList.add('show');
+}
+async function salvarLead(){
+  const l=leadAtual;if(!l)return;
+  const b={status:$('ml-status').value,consultora_id:$('ml-cons').value||null,observacoes:$('ml-obs').value.trim()||null,updated_at:new Date().toISOString()};
+  try{await sbPatch(P+'leads','id=eq.'+l.id,b);Object.assign(l,b);fechar('m-lead');render();toast('Lead atualizado')}catch(e){toast('Não salvou: '+e.message,true)}
+}
+function exportarCSV(){
+  const f=filtrados();
+  const extrasK=[...new Set(f.flatMap(l=>Object.keys(l.respostas||{})))];
+  const cab=['Data','Nome','WhatsApp','Idade','Treina','Parado há','Cargo','Academia','Cidade','Pontos de contato','Primeiro contato','Origem','Campanha','Código','Indicado por','Código de quem indicou','utm_source','utm_medium','utm_content','Status','Consultora','Observações',...extrasK];
+  const lin=f.map(l=>[dataBR(l.created_at),l.nome,l.whatsapp,l.idade||'',TREINA[l.treina]||'',PARADO[l.tempo_parado]||'',l.cargo||'',l.academia_nome||'',l.cidade||'',(l.historico||[]).length,ORIGENS[l.origem_primeira]||l.origem_primeira||'',ORIGENS[l.origem]||l.origem||'',nomeCamp(l.campanha_id),l.codigo||'',l.indicado_por_codigo?nomeIndicador(l):'',l.indicado_por_codigo||'',l.utm_source||'',l.utm_medium||'',l.utm_content||'',STATUS[l.status]||l.status,nomeCons(l.consultora_id),l.observacoes||'',...extrasK.map(k=>(l.respostas||{})[k]??'')]);
+  const csv='﻿'+[cab,...lin].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='leads-'+hojeISO()+'.csv';a.click();
+}
+
+// ---------- links de captação ----------
+function renderCards(){
+  if(!camps.length){$('cards').innerHTML='<div class="vazio">Nenhum link criado ainda.</div>';return}
+  $('cards').innerHTML=camps.map(c=>{
+    const n=leads.filter(l=>l.campanha_id===c.id).length;
+    const hoje=leads.filter(l=>l.campanha_id===c.id&&diaLocal(l.created_at)===hojeISO()).length;
+    return `<div class="cc ${c.ativo?'':'off'}">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+        <div><h3>${esc(c.nome)}</h3><div class="meta">${esc(ORIGENS[c.origem]||c.origem)}${c.sorteio?' · com sorteio':''}${c.indicacao?' · indicação ligada':''}${c.ativo?'':' · pausado'}</div></div>
+        <div style="text-align:right"><div class="n">${n}</div><div class="meta">leads${hoje?` · ${hoje} hoje`:''}</div></div>
+      </div>
+      <div class="link">${esc(linkCamp(c))}</div>
+      <div class="bts">
+        <button class="btn sm" onclick="copiar('${esc(linkCamp(c))}')">Copiar link</button>
+        <button class="btn sm" onclick="abrirQR('${c.id}')">QR Code</button>
+        <button class="btn sm" onclick="verLeadsCamp('${c.id}')">Ver leads</button>
+        ${c.sorteio?`<button class="btn sm" onclick="imprimirSorteio('${c.id}')">🎟 Imprimir sorteio</button>`:''}
+        <button class="btn sm" onclick="abrirCampanha('${c.id}')">Editar</button>
+      </div>
+    </div>`}).join('');
+}
+function renderInd(){
+  const sel=$('i-camp');const atual=sel.value;
+  sel.innerHTML='<option value="">Todas as campanhas</option>'+camps.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');sel.value=atual;sel.onchange=renderInd;
+  const base=leads.filter(l=>l.indicado_por_codigo&&(!sel.value||l.campanha_id===sel.value));
+  const g={};base.forEach(l=>{const k=l.indicado_por_codigo;(g[k]=g[k]||{codigo:k,nome:nomeIndicador(l),tot:0,and:0,conv:0}).tot++;if(['contatado','agendado','experiencia'].includes(l.status))g[k].and++;if(l.status==='convertido')g[k].conv++});
+  const rows=Object.values(g).sort((a,b)=>b.conv-a.conv||b.tot-a.tot);
+  $('tb-ind').innerHTML=rows.length?rows.map((r,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(r.nome)}</td><td class="sub">${esc(r.codigo)}</td><td><b>${r.tot}</b></td><td>${r.and}</td><td><b>${r.conv}</b></td><td><button class="btn sm" onclick="verIndicados('${esc(r.codigo)}')">Ver amigos</button></td></tr>`).join(''):'<tr><td colspan="7" class="vazio">Ainda não há leads vindos de indicação.</td></tr>';
+}
+function verIndicados(cod){limparFiltros();$('f-ind').value='veio';filtroCodigo=cod;document.querySelector('.tab[data-t=leads]').click();render();toast('Mostrando os amigos indicados por '+cod)}
+let filtroCodigo=null;
+function textoParaExtras(txt){
+  return txt.split('\n').map(s=>s.trim()).filter(Boolean).map((linha,i)=>{
+    let obrig=false;if(linha.startsWith('*')){obrig=true;linha=linha.slice(1).trim()}
+    let k=null;const pk=linha.lastIndexOf('|');if(pk>-1){k=slugify(linha.slice(pk+1)).replace(/-/g,'_');linha=linha.slice(0,pk).trim()}
+    let label=linha,opcoes=null;const pc=linha.indexOf(':');
+    if(pc>-1&&linha.slice(pc+1).includes(';')){label=linha.slice(0,pc).trim();opcoes=linha.slice(pc+1).split(';').map(s=>s.trim()).filter(Boolean)}
+    return {k:k||slugify(label).replace(/-/g,'_')||('campo_'+(i+1)),label,tipo:opcoes?'opcoes':(/(n[uú]mero|quantos|quantidade)/i.test(label)?'numero':'texto'),opcoes,obrig};
+  });
+}
+function extrasParaTexto(l){return (l||[]).map(x=>(x.obrig?'*':'')+x.label+(x.opcoes?': '+x.opcoes.join('; '):'')+' | '+x.k).join('\n')}
+// ---------- enviar para o Kanban de Campanhas ----------
+let envIds=[];
+async function enviarParaCampanha(ids){
+  envIds=ids.filter(Boolean);if(!envIds.length){toast('Nenhum lead para enviar (os que já estão no Kanban ficam de fora).',true);return}
+  let cs=[];try{cs=await sbGet(P+'campanhas',`academia_id=eq.${encodeURIComponent(acad)}&select=id,nome,status,perfis&order=created_at.desc`)}catch(e){toast('Não consegui ler as campanhas: '+e.message,true);return}
+  cs=cs.filter(c=>c.status!=='finalizada'&&c.status!=='encerrada'&&(!c.perfis||!c.perfis.length||c.perfis.includes('leads')));
+  if(!cs.length){toast('Crie primeiro uma campanha com perfil Leads no módulo Campanhas.',true);return}
+  $('me-sel').innerHTML=cs.map(c=>`<option value="${c.id}">${esc(c.nome)}${c.status?' ('+esc(c.status)+')':''}</option>`).join('');
+  $('me-txt').textContent=`${envIds.length} lead(s) vão entrar na primeira coluna do Kanban (perfil Leads) da campanha escolhida.`;
+  $('m-enviar').classList.add('show');
+}
+async function confirmarEnvio(){
+  const campId=$('me-sel').value;if(!campId)return;
+  let etapa='lista';
+  try{const a=await sbGet(P+'academias',`id=eq.${encodeURIComponent(acad)}&select=jornada_leads`);const j=a[0]&&a[0].jornada_leads;if(Array.isArray(j)&&j.length&&j[0].k)etapa=j[0].k}catch(e){}
+  let ok=0,falhas=0;
+  for(const id of envIds){
+    const l=leads.find(x=>x.id===id);if(!l||l.card_id)continue;
+    const extra=[l.cargo,l.academia_nome,l.cidade,TREINA[l.treina],PARADO[l.tempo_parado],...Object.entries(l.respostas||{}).filter(([k])=>!['academia_nome','cidade'].includes(k)).map(([k,v])=>k.replace(/_/g,' ')+': '+v),l.indicado_por_codigo?'indicado por '+nomeIndicador(l):'',l.observacoes].filter(Boolean).join(' · ');
+    try{
+      const r=await sbPost(P+'campanha_cards',{campanha_id:campId,onda_id:null,perfil:'leads',nome:l.nome,telefone:(l.whatsapp_norm||'').replace(/^55(?=\d{10,11}$)/,''),idade:l.idade||null,
+        observacoes:extra.slice(0,900),data_lead:diaLocal(l.created_at),origem_lead:(ORIGENS[l.origem]||l.origem||'')+(nomeCamp(l.campanha_id)?' · '+nomeCamp(l.campanha_id):''),
+        etapa_atual:etapa,etapa_maxima:etapa,consultora_id:l.consultora_id||null,cadencia_atual:0,cadencia_total:9,status:'ativo',created_at:Date.now(),updated_at:Date.now()});
+      const cid=r&&r[0]&&r[0].id;
+      await sbPatch(P+'leads','id=eq.'+l.id,{card_id:cid||null,updated_at:new Date().toISOString()});l.card_id=cid||'ok';ok++;
+    }catch(e){console.error(e);falhas++}
+  }
+  fechar('m-enviar');fechar('m-lead');render();toast(`${ok} lead(s) enviados para o Kanban${falhas?` · ${falhas} com erro`:''}.`,!!falhas);
+}
+function verLeadsCamp(id){limparFiltros();$('f-camp').value=id;document.querySelector('.tab[data-t=leads]').click();render()}
+function copiar(t){navigator.clipboard.writeText(t).then(()=>toast('Link copiado')).catch(()=>{prompt('Copie o link:',t)})}
+function abrirCampanha(id){
+  campAtual=id?camps.find(c=>c.id===id):null;const c=campAtual||{};
+  $('mc-titulo').textContent=campAtual?'Editar link de captação':'Novo link de captação';
+  $('mc-nome').value=c.nome||'';$('mc-slug').value=c.slug||'';$('mc-slug').disabled=!!campAtual;
+  $('mc-origem').value=c.origem||'evento';$('mc-cor').value=c.cor||'#1B4FD8';
+  $('mc-tit').value=c.titulo||'';$('mc-sub').value=c.subtitulo||'';$('mc-info').value=c.info||'';$('mc-capa').value=c.capa_url||'';$('mc-capa2').value=c.capa_convidado||'';
+  $('mc-sorteio').checked=!!c.sorteio;$('mc-ativo').checked=c.ativo!==false;
+  $('mc-pub').value=c.publico||'aluno';$('mc-extras').value=extrasParaTexto(c.campos_extra||[]);
+  const pg=c.perguntas||{};$('mc-p-idade').checked=pg.idade!==false;$('mc-p-treina').checked=pg.treina!==false;
+  const dl=v=>{if(!v)return'';const d=new Date(v);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)};
+  $('mc-ind').checked=!!c.indicacao;$('mc-sigla').value=c.codigo_sigla||'';$('mc-lim').value=dl(c.indicacao_limite);$('mc-pres').value=(c.presentes||[]).join('\n');$('mc-img').value=c.convite_img||'';atualizarSlots();
+  $('mc-evt').value=c.evento_titulo||'';$('mc-evx').value=c.evento_texto||'';$('mc-map').value=c.evento_mapa||'';$('mc-evf').value=dl(c.evento_fim);
+  $('mc-of').checked=!!c.oferta_ativa;$('mc-wa').value=c.whatsapp_academia||'';$('mc-oft').value=c.oferta_titulo||'';$('mc-ofx').value=c.oferta_texto||'';$('mc-ofm').value=c.oferta_mensagem||'';
+  $('m-camp').classList.add('show');
+}
+async function salvarCampanha(){
+  const nome=$('mc-nome').value.trim(),slug=slugify($('mc-slug').value||nome);
+  if(!nome||!slug){toast('Preencha o nome da campanha',true);return}
+  const b={publico:$('mc-pub').value,campos_extra:textoParaExtras($('mc-extras').value),nome,origem:$('mc-origem').value,cor:$('mc-cor').value,titulo:$('mc-tit').value.trim()||null,subtitulo:$('mc-sub').value.trim()||null,info:$('mc-info').value.trim()||null,capa_url:$('mc-capa').value.trim()||null,capa_convidado:$('mc-capa2').value.trim()||null,sorteio:$('mc-sorteio').checked,ativo:$('mc-ativo').checked,perguntas:{idade:$('mc-p-idade').checked,treina:$('mc-p-treina').checked,parado:$('mc-p-treina').checked},
+    indicacao:$('mc-ind').checked,codigo_sigla:$('mc-sigla').value.trim().toUpperCase()||null,indicacao_limite:$('mc-lim').value?new Date($('mc-lim').value).toISOString():null,
+    presentes:$('mc-pres').value.split('\n').map(s=>s.trim()).filter(Boolean),convite_img:$('mc-img').value.trim()||null,
+    evento_titulo:$('mc-evt').value.trim()||null,evento_texto:$('mc-evx').value.trim()||null,evento_mapa:$('mc-map').value.trim()||null,evento_fim:$('mc-evf').value?new Date($('mc-evf').value).toISOString():null,
+    oferta_ativa:$('mc-of').checked,whatsapp_academia:$('mc-wa').value.replace(/\D/g,'')||null,oferta_titulo:$('mc-oft').value.trim()||null,oferta_texto:$('mc-ofx').value.trim()||null,oferta_mensagem:$('mc-ofm').value.trim()||null};
+  try{
+    if(campAtual){await sbPatch(P+'lead_campanhas','id=eq.'+campAtual.id,b)}
+    else{await sbPost(P+'lead_campanhas',{...b,slug,academia_id:acad})}
+    fechar('m-camp');await carregarCamps();renderCards();toast('Link salvo');
+  }catch(e){toast(String(e.message).includes('duplicate')?'Esse código de link já existe. Escolha outro.':'Não salvou: '+e.message,true)}
+}
+function abrirQR(id){
+  campAtual=camps.find(c=>c.id===id);if(!campAtual)return;
+  $('mq-titulo').textContent=campAtual.nome;['mq-o','mq-src','mq-med','mq-cont'].forEach(i=>$(i).value='');
+  $('m-qr').classList.add('show');atualizarLinkQR();
+}
+function atualizarLinkQR(){
+  if(!campAtual)return;let u=linkCamp(campAtual);
+  const o=$('mq-o').value,s=$('mq-src').value.trim(),m=$('mq-med').value.trim(),ct=$('mq-cont').value.trim();
+  if(o)u+='&o='+encodeURIComponent(o);if(s)u+='&utm_source='+encodeURIComponent(s);if(m)u+='&utm_medium='+encodeURIComponent(m);if(ct)u+='&utm_content='+encodeURIComponent(ct);
+  if(s||m||ct)u+='&utm_campaign='+encodeURIComponent(campAtual.slug);
+  $('mq-link').value=u;$('mq-abrir').href=u;
+  const box=$('qr-box');box.innerHTML='';
+  if(window.QRCode){qrObj=new QRCode(box,{text:u,width:280,height:280,correctLevel:QRCode.CorrectLevel.M})}else{box.textContent='QR indisponível sem internet.'}
+}
+function baixarQR(){
+  const c=$('qr-box').querySelector('canvas');const img=$('qr-box').querySelector('img');
+  const src=c?c.toDataURL('image/png'):(img?img.src:null);if(!src)return;
+  const a=document.createElement('a');a.href=src;a.download='qrcode-'+(campAtual?campAtual.slug:'link')+'.png';a.click();
+}
+function imprimirSorteio(id){
+  const c=camps.find(x=>x.id===id);if(!c)return;
+  const vistos=new Set(),nomes=[];let extras=0;
+  const doEvento=leads.filter(l=>l.campanha_id===id&&!l.indicado_por_codigo).sort((a,b)=>a.created_at<b.created_at?-1:1);
+  doEvento.forEach(l=>{const k=l.whatsapp_norm||('n:'+(l.nome||'').toLowerCase());if(vistos.has(k))return;vistos.add(k);nomes.push(esc(l.nome))});
+  // chance extra: cada amigo indicado que se cadastrou até o horário limite
+  const lim=c.indicacao_limite?new Date(c.indicacao_limite):null, jaContou=new Set();
+  leads.filter(l=>l.campanha_id===id&&l.indicado_por_codigo&&(!lim||new Date(l.created_at)<=lim)).sort((a,b)=>a.created_at<b.created_at?-1:1).forEach(l=>{
+    const quem=doEvento.find(x=>x.codigo===l.indicado_por_codigo);if(!quem)return;
+    const k=l.whatsapp_norm||l.id;if(jaContou.has(k)||k===quem.whatsapp_norm)return;jaContou.add(k);
+    nomes.push(esc(quem.nome)+'<small>(indicou: '+esc(l.nome)+')</small>');extras++;
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Sorteio · ${esc(c.nome)}</title>
+  <style>@page{size:A4;margin:10mm}body{font-family:Arial,sans-serif;margin:0}h1{font-size:18px;margin:0 0 4px}p{margin:0 0 10px;font-size:12px;color:#555}
+  .g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}.n{border:1px dashed #999;height:24mm;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:17px;font-weight:700;padding:3mm;break-inside:avoid;text-transform:uppercase}.n small{font-size:10.5px;font-weight:400;text-transform:none;margin-top:2px}
+  .bar{position:sticky;top:0;background:#fff;padding:8px 0;border-bottom:1px solid #ddd;margin-bottom:8px}@media print{.bar{display:none}}</style></head><body>
+  <div class="bar"><button onclick="print()" style="font-size:16px;padding:8px 16px">Imprimir ou salvar PDF</button> <span style="font-size:13px;color:#555">Na janela, escolha a impressora ou "Salvar como PDF". Papel A4.</span></div>
+  <h1>Sorteio · ${esc(c.nome)}</h1><p>${nomes.length-extras} participantes + ${extras} chances extras por indicação · gerado em ${new Date().toLocaleString('pt-BR')} · recorte nas linhas pontilhadas</p>
+  <div class="g">${nomes.map(n=>`<div class="n">${n}</div>`).join('')}</div></body></html>`);
+  w.document.close();
+}
+// ---------- artes: upload no Supabase Storage (pasta pública "campanhas") ----------
+function urlImg(u){if(!u)return'';return /^https?:/.test(u)?u:baseCaptura().replace(/captura\.html$/,'')+u}
+function atualizarSlots(){document.querySelectorAll('.slot').forEach(s=>{const v=$(s.dataset.input).value.trim();const pv=s.querySelector('.sl-prev'),img=pv.querySelector('img');if(v){img.src=urlImg(v);img.hidden=false;pv.classList.remove('vazio')}else{img.removeAttribute('src');img.hidden=true;pv.classList.add('vazio')}})}
+document.querySelectorAll('.slot').forEach(s=>{
+  const inp=$(s.dataset.input);inp.addEventListener('input',atualizarSlots);
+  s.querySelector('[data-limpar]').onclick=()=>{inp.value='';atualizarSlots()};
+  s.querySelector('[data-prompt]').onclick=()=>copiarPrompt(s.dataset.tipo,+s.dataset.w,+s.dataset.h);
+  s.querySelector('input[type=file]').onchange=async ev=>{
+    const f=ev.target.files[0];ev.target.value='';if(!f)return;
+    s.querySelector('.sl-aviso')?.remove();
+    if(!/^image\/(jpeg|png|webp)$/.test(f.type)){toast('Use JPG, PNG ou WebP',true);return}
+    if(f.size>2*1024*1024){toast('A imagem passou de 2 MB. Exporte menor ou em JPG.',true);return}
+    const dim=await new Promise(r=>{const i=new Image();i.onload=()=>r([i.naturalWidth,i.naturalHeight]);i.onerror=()=>r([0,0]);i.src=URL.createObjectURL(f)});
+    const ideal=+s.dataset.w/+s.dataset.h, real=dim[1]?dim[0]/dim[1]:ideal;
+    const slug=slugify($('mc-slug').value||$('mc-nome').value||'campanha')||'campanha';
+    const nome=`${acad||'geral'}/${slug}/${s.dataset.tipo}-${Date.now()}.${f.type.split('/')[1].replace('jpeg','jpg')}`;
+    try{
+      toast('Enviando imagem...');
+      const r=await fetch(`${SB_URL}/storage/v1/object/campanhas/${nome}`,{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':f.type,'x-upsert':'false'},body:f});
+      if(!r.ok)throw new Error(await r.text());
+      inp.value=`${SB_URL}/storage/v1/object/public/campanhas/${nome}`;atualizarSlots();toast('Imagem enviada. Clique em Salvar para aplicar.');
+      if(Math.abs(real-ideal)>0.08)s.querySelector('.sl-info').insertAdjacentHTML('beforeend',`<span class="sl-aviso">A imagem tem ${dim[0]} × ${dim[1]} px. O ideal é ${s.dataset.w} × ${s.dataset.h}: pode aparecer cortada ou com sobra.</span>`);
+    }catch(e){toast(String(e.message).includes('Bucket')||String(e.message).includes('not found')?'Rode o SQL da pasta de imagens (v3) no Supabase.':'Não enviou: '+e.message,true)}
+  };
+});
+function copiarPrompt(tipo,w,h){
+  const nome=$('mc-tit').value||$('mc-nome').value||'campanha',cor=$('mc-cor').value,info=$('mc-info').value,acadN=$('sel-acad').selectedOptions[0]?.textContent||'Acquacel';
+  const pres=$('mc-pres').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const base=`Arte para academia de ginástica "${acadN}", campanha "${nome}". Formato ${w}x${h} px (${w===h?'quadrado 1:1':'vertical 4:5'}), para celular. Cor principal ${cor}, com preto e branco de apoio. Estilo fotográfico, moderno, energia positiva, pessoas reais treinando, alta qualidade, sem marcas d'água. Textos em português do Brasil, grandes e legíveis no celular, poucos textos. Deixe margem de segurança de 60 px nas bordas.`;
+  const p={
+    capa:`${base}\nConteúdo: título "${nome}"${info?`, informação "${info}"`:''}. É a capa de uma página de cadastro: o título deve ser o destaque e a parte de baixo da imagem pode ser mais limpa.`,
+    convidado:`${base}\nConteúdo: chamada "Você ganhou ${pres.length||3} presentes". Mostre ${pres.length?pres.map((x,i)=>`(${i+1}) ${x}`).join('; '):'(1) mapeamento completo de 15 áreas da saúde feito pelo celular; (2) consultoria com treinador especialista; (3) uma Experiência na academia'}. Inclua um mockup de celular mostrando um questionário de saúde com gráfico de 15 áreas, e uma foto de treinador conversando com aluno na academia. Visual de presente, acolhedor e premium.`,
+    compartilhar:`${base}\nConteúdo: convite para o WhatsApp. Topo com o nome do evento "${nome}"${info?` e "${info}"`:''}; meio com "Você ganhou ${pres.length||3} presentes" e a lista curta dos presentes; rodapé "Toque no link e retire os seus". Precisa chamar atenção na conversa do WhatsApp.`
+  }[tipo];
+  copiar(p);toast('Prompt copiado. Cole na ferramenta de imagem.');
+}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+iniciar();
+</script>
+</body>
+</html>

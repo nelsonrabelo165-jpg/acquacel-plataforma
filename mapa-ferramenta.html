@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa do Hub | Acquacel</title>
+<!-- Identidade da academia: na réplica, trocar só este bloco (mesmo padrão do index.html) -->
+<script>window.ACADEMIA_CFG={nome:"Acquacel",hub:"Hub Acquacel",logo:"logo-acquacel.png",cor:"#38BDF8",corClara:"#7DD3FC",corTexto:"#0A2472",escuro:"#0A2472",fundo:"#06102A"};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ac:#E6A92B;--ac2:#FFD978;--ac-ink:#111;--ac-d:rgba(230,169,43,.12);--ac-m:rgba(230,169,43,.32);
+  --bg:#06102A;--s1:#0B1A3D;--s2:#10224D;--s3:#16295A;--bd:rgba(255,255,255,.08);
+  --tx:#F5F2EA;--tm:rgba(245,242,234,.72);--td:rgba(245,242,234,.48);
+  --gr:#34C77B;--bl:#5AA9FF;--pu:#B48CFF;--re:#FF6B5B;
+  --fd:'Barlow Condensed','Arial Narrow',sans-serif;--fb:'Barlow',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:15.5px;line-height:1.55;-webkit-text-size-adjust:100%}
+a{color:var(--ac)}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+/* topo */
+.top{position:sticky;top:0;z-index:20;background:rgba(6,16,42,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:62px}
+.top img{height:40px;width:auto;background:#fff;border-radius:8px;padding:2px 6px;box-sizing:content-box}
+.top .t{font-family:var(--fd);font-weight:800;font-size:20px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.top .t small{display:block;font-family:var(--fb);font-weight:500;font-size:11.5px;letter-spacing:.3px;text-transform:none;color:var(--td);margin-top:-3px}
+.nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-family:var(--fd);font-weight:700;font-size:14px;letter-spacing:.4px;text-transform:uppercase;color:var(--tm);text-decoration:none;padding:7px 12px;border-radius:999px;white-space:nowrap}
+.nav a:hover{color:var(--tx);background:var(--s2)}
+.nav a.on{background:var(--ac);color:var(--ac-ink)}
+.voltar{font-family:var(--fd);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--tm);text-decoration:none;border:1px solid var(--bd);border-radius:8px;padding:6px 11px;white-space:nowrap}
+.voltar:hover{color:var(--tx);border-color:var(--ac-m)}
+/* hero */
+.hero{padding:54px 0 30px;background:radial-gradient(900px 380px at 15% -10%,rgba(56,189,248,.18),transparent 60%)}
+.eyebrow{font-family:var(--fd);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--ac)}
+h1{font-family:var(--fd);font-weight:800;font-size:clamp(34px,5.4vw,58px);line-height:1;text-transform:uppercase;margin:10px 0 14px;max-width:880px}
+h1 em{font-style:normal;color:var(--ac)}
+.lead{font-size:17.5px;color:var(--tm);max-width:760px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{font-size:13px;font-weight:600;color:var(--tm);background:var(--s1);border:1px solid var(--bd);border-radius:999px;padding:6px 12px}
+.chip b{color:var(--ac)}
+/* seções */
+section{padding:46px 0;border-top:1px solid var(--bd)}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+h2{font-family:var(--fd);font-weight:800;font-size:clamp(26px,3.4vw,36px);text-transform:uppercase;line-height:1.05}
+h2 .n{color:var(--ac);margin-right:8px}
+.sub{color:var(--tm);max-width:720px;margin-top:6px}
+/* mapa */
+.jornada{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;position:relative}
+.etapa{position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px 14px 14px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .15s,transform .15s,background .15s}
+.etapa:hover,.etapa:focus-visible{border-color:var(--ac-m);transform:translateY(-2px);outline:none}
+.etapa.on{border-color:var(--ac);background:linear-gradient(180deg,rgba(230,169,43,.10),var(--s1))}
+.etapa .num{position:absolute;top:-11px;left:14px;font-family:var(--fd);font-weight:800;font-size:12px;letter-spacing:.5px;background:var(--ac);color:var(--ac-ink);border-radius:999px;padding:2px 9px}
+.etapa .ic{font-size:26px;line-height:1}
+.etapa .nm{font-family:var(--fd);font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.3px;margin-top:8px;line-height:1.1}
+.etapa .ds{font-size:13px;color:var(--td);margin-top:4px;line-height:1.35}
+.etapa:not(:last-child)::after{content:'';position:absolute;right:-12px;top:50%;width:12px;height:2px;background:var(--ac-m)}
+.loop{margin-top:10px;font-size:13px;color:var(--td);display:flex;align-items:center;gap:8px}
+.loop span{color:var(--ac);font-weight:700}
+.camadas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.camada{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.camada h3{font-family:var(--fd);font-weight:800;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--td);margin-bottom:10px}
+.mods{display:flex;flex-wrap:wrap;gap:7px}
+.mod{font:inherit;font-size:13.5px;font-weight:600;color:var(--tx);background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:7px 11px;cursor:pointer}
+.mod:hover,.mod.on{border-color:var(--ac);color:var(--ac2)}
+.detalhe{margin-top:16px;background:var(--s2);border:1px solid var(--ac-m);border-radius:14px;padding:18px 20px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px}
+.detalhe h3{font-family:var(--fd);font-weight:800;font-size:24px;text-transform:uppercase;line-height:1.05}
+.detalhe p{color:var(--tm);margin-top:6px}
+.kv{display:grid;gap:10px;align-content:start}
+.kv div{font-size:13.5px}
+.kv b{display:block;font-family:var(--fd);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ac);margin-bottom:1px}
+.lista{margin-top:10px;display:grid;gap:5px}
+.lista li{list-style:none;padding-left:18px;position:relative;font-size:14px;color:var(--tm)}
+.lista li::before{content:'';position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--ac)}
+.caminho{display:inline-block;font-size:13px;font-weight:600;background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:4px 9px;color:var(--ac2)}
+/* começar */
+.prog{display:flex;align-items:center;gap:12px;min-width:240px}
+.barra{flex:1;height:8px;border-radius:99px;background:var(--s3);overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .3s}
+.prog span{font-family:var(--fd);font-weight:800;font-size:18px;color:var(--ac);white-space:nowrap}
+.passos{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;counter-reset:p}
+.passo{display:flex;gap:14px;align-items:flex-start;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.passo:hover{border-color:var(--ac-m)}
+.passo .ck{flex-shrink:0;width:28px;height:28px;border-radius:8px;border:2px solid var(--ac-m);display:grid;place-items:center;font-family:var(--fd);font-weight:800;color:var(--ac);font-size:15px}
+.passo.feito{background:rgba(52,199,123,.06);border-color:rgba(52,199,123,.35)}
+.passo.feito .ck{background:var(--gr);border-color:var(--gr);color:#0A0A0A}
+.passo.feito .tt{text-decoration:line-through;text-decoration-color:rgba(245,242,234,.35)}
+.passo .tt{font-weight:700}
+.passo .dd{font-size:13.5px;color:var(--td);margin-top:2px}
+/* perfis */
+.perfis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.perfil{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.perfil .tag{align-self:flex-start;font-family:var(--fd);font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;background:var(--ac-d);color:var(--ac)}
+.perfil h3{font-family:var(--fd);font-weight:800;font-size:26px;text-transform:uppercase;margin:10px 0 4px}
+.perfil .vê{font-size:14px;color:var(--tm)}
+.rotina{margin-top:14px;border-top:1px dashed var(--bd);padding-top:12px;display:grid;gap:12px}
+.rotina h4{font-family:var(--fd);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--td);margin-bottom:4px}
+/* passo a passo */
+.tarefas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tarefa-btn{font:inherit;font-weight:700;font-size:14px;color:var(--tm);background:var(--s1);border:1px solid var(--bd);border-radius:999px;padding:8px 14px;cursor:pointer}
+.tarefa-btn.on{background:var(--ac);color:var(--ac-ink);border-color:var(--ac)}
+.tarefa-btn .breve{font-size:11px;font-weight:700;color:var(--td);margin-left:4px}
+.guia{display:grid;gap:14px}
+.gpasso{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px;background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:18px}
+.gpasso.sem-img{grid-template-columns:1fr}
+.gpasso .gn{font-family:var(--fd);font-weight:800;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ac)}
+.gpasso h3{font-family:var(--fd);font-weight:800;font-size:22px;text-transform:uppercase;line-height:1.1;margin:3px 0 8px}
+.gpasso p,.gpasso li{color:var(--tm);font-size:14.5px}
+.gpasso ul{margin-top:6px;display:grid;gap:5px}
+.gpasso li{list-style:none;padding-left:18px;position:relative}
+.gpasso li::before{content:'›';position:absolute;left:3px;color:var(--ac);font-weight:800}
+.dica{margin-top:10px;font-size:13.5px;color:var(--ac2);background:var(--ac-d);border-radius:9px;padding:8px 11px}
+.shot{border-radius:10px;border:1px solid var(--bd);overflow:hidden;cursor:zoom-in;background:#000;align-self:start}
+.shot img{width:auto;max-width:100%;max-height:640px;height:auto;margin:0 auto}
+.em-breve{background:var(--s1);border:1px dashed var(--ac-m);border-radius:16px;padding:24px;color:var(--tm)}
+/* dúvidas */
+.faq{display:grid;gap:8px}
+details{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:0 16px}
+summary{cursor:pointer;list-style:none;padding:14px 0;font-weight:700;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';color:var(--ac);font-weight:800;font-size:20px;line-height:1}
+details[open] summary::after{content:'–'}
+details p{color:var(--tm);padding:0 0 14px;font-size:14.5px}
+footer{padding:30px 0 50px;border-top:1px solid var(--bd);color:var(--td);font-size:13px;text-align:center}
+/* zoom */
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.zoom.on{display:flex}
+.zoom img{max-height:92vh;width:auto;border-radius:10px}
+@media(max-width:980px){
+  .jornada{grid-template-columns:repeat(3,1fr)}
+  .etapa:nth-child(3)::after{display:none}
+  .perfis{grid-template-columns:1fr}
+  .detalhe{grid-template-columns:1fr}
+  .gpasso{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  .top .t small,.voltar{display:none}
+  .nav{margin-left:4px}
+  .jornada{grid-template-columns:1fr 1fr}
+  .etapa:nth-child(3)::after{display:block}
+  .etapa:nth-child(2n)::after{display:none}
+  .camadas,.passos{grid-template-columns:1fr}
+  .hero{padding-top:36px}
+}
+@media print{.top,.zoom{display:none}section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <img id="logo" src="logo-acquacel.png" alt="">
+    <div class="t"><span id="t-nome">Mapa do Hub</span><small>Como usar a plataforma, passo a passo</small></div>
+    <nav class="nav" id="nav">
+      <a href="#mapa">Mapa</a><a href="#comecar">Começar</a><a href="#perfis">Perfis</a><a href="#passos">Passo a passo</a><a href="#duvidas">Dúvidas</a>
+    </nav>
+    <a class="voltar" href="index.html">← Hub</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow" id="hero-eyebrow">Hub · Desafio ROI 21 Dias</div>
+    <h1>O caminho completo, do <em>lead</em> ao <em>aluno fiel</em></h1>
+    <p class="lead">Este é o mapa da plataforma: o que existe em cada acesso, por onde começar, a rotina de cada pessoa da equipe e o passo a passo das tarefas principais. Clique nos blocos para ver os detalhes.</p>
+    <div class="chips">
+      <span class="chip"><b>6</b> etapas da jornada do aluno</span>
+      <span class="chip"><b>3</b> perfis: gestor, consultor(a) e treinador(a)</span>
+      <span class="chip"><b>1</b> rotina diária: Lançar Dia</span>
+    </div>
+  </div>
+</div>
+
+<main>
+<section id="mapa">
+  <div class="wrap">
+    <div class="sh"><div><h2><span class="n">01</span>Mapa geral</h2><p class="sub">A jornada que cada pessoa percorre na academia, e onde cada etapa vive na plataforma. Embaixo, as ferramentas de gestão e de equipe que sustentam tudo.</p></div></div>
+    <div class="jornada" id="jornada"></div>
+    <div class="loop">↺ <span>Aluno satisfeito indica um amigo</span> e o ciclo recomeça na Central de Leads.</div>
+    <div class="camadas" id="camadas"></div>
+    <div class="detalhe" id="detalhe" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="comecar">
+  <div class="wrap">
+    <div class="sh">
+      <div><h2><span class="n">02</span>Por onde começar</h2><p class="sub">A implantação na ordem certa, para o gestor. Marque cada item quando terminar (fica salvo neste navegador).</p></div>
+      <div class="prog"><div class="barra"><i id="barra"></i></div><span id="pct">0/0</span></div>
+    </div>
+    <div class="passos" id="checklist"></div>
+  </div>
+</section>
+
+<section id="perfis">
+  <div class="wrap">
+    <div class="sh"><div><h2><span class="n">03</span>Quem faz o quê</h2><p class="sub">O que cada perfil enxerga ao entrar e a rotina que faz a máquina girar.</p></div></div>
+    <div class="perfis" id="perfis-lista"></div>
+  </div>
+</section>
+
+<section id="passos">
+  <div class="wrap">
+    <div class="sh"><div><h2><span class="n">04</span>Passo a passo</h2><p class="sub">As tarefas principais, passo a passo. As telas ilustradas entram na próxima versão.</p></div></div>
+    <div class="tarefas" id="tarefas"></div>
+    <div class="guia" id="guia"></div>
+  </div>
+</section>
+
+<section id="duvidas">
+  <div class="wrap">
+    <div class="sh"><div><h2><span class="n">05</span>Dúvidas comuns</h2></div></div>
+    <div class="faq" id="faq"></div>
+  </div>
+</section>
+</main>
+
+<footer><span id="rodape">Hub</span> · Metodologia GeFit</footer>
+<div class="zoom" id="zoom"><img alt=""></div>
+
+<script>
+const CFG=Object.assign({nome:'Academia',hub:'Hub',logo:'',cor:'#E6A92B',corClara:'#FFD978',corTexto:'#111'},window.ACADEMIA_CFG||{});
+(function aplicarIdentidade(){
+  const r=document.documentElement.style;
+  r.setProperty('--ac',CFG.cor);r.setProperty('--ac2',CFG.corClara||CFG.cor);r.setProperty('--ac-ink',CFG.corTexto||'#111');
+  const h=CFG.cor.replace('#','');if(h.length===6){const n=parseInt(h,16),rgb=[n>>16&255,n>>8&255,n&255].join(',');r.setProperty('--ac-d',`rgba(${rgb},.12)`);r.setProperty('--ac-m',`rgba(${rgb},.32)`);}
+  if(CFG.logo){document.getElementById('logo').src=CFG.logo;document.getElementById('logo').alt=CFG.nome;}
+  document.title='Mapa do Hub | '+CFG.nome;
+  document.getElementById('hero-eyebrow').textContent=CFG.hub+' · Desafio ROI 21 Dias';
+  document.getElementById('rodape').textContent=CFG.hub;
+})();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ───────── 01 · Mapa ───────── */
+const ETAPAS=[
+ {id:'leads',ic:'🎯',nm:'Central de Leads',ds:'Captação e indicação',
+  oque:'Onde todo lead chega. Você cria links de captação com QR Code para eventos, anúncios e redes sociais. Cada pessoa cadastrada ganha um código para convidar amigos, e quem mais indica aparece no ranking.',
+  itens:['Links de captação com QR Code e artes da campanha','Indicação digital: cada lead recebe um código e convida até 5 amigos','Ranking de indicações e impressão da lista do sorteio','Ocultar testes e repetidos sem apagar','Enviar leads filtrados direto para uma campanha do Kanban'],
+  quem:'Gestor(a) e consultor(a)',onde:'Menu lateral › Vendas › Central de Leads',quando:'Sempre que abrir uma ação de captação, e todo dia para ver quem chegou',passo:'leads'},
+ {id:'campanhas',ic:'📢',nm:'Campanhas',ds:'Kanban e cadência',
+  oque:'O CRM da equipe comercial. Cada campanha tem uma lista de pessoas, dividida entre os(as) consultores(as), que andam pelas etapas do Kanban seguindo a cadência de contatos com os scripts prontos.',
+  itens:['Perfis: Leads Novos, Rematrícula, Ciclo de Renovação e Sucesso do Cliente','Cadência de 10 contatos em Leads Novos, com opção 1 e opção 2 em cada tentativa','📚 Scripts: biblioteca por funil, etapa e canal, pronta para copiar','Registro de cada tentativa, agendamento e venda dentro do card','Minha Agenda com atrasados, hoje e semana'],
+  quem:'Gestor(a), consultor(a) e treinador(a) (departamento técnico)',onde:'Topo do Hub › Campanhas',quando:'Todo dia, é a principal tela de trabalho do comercial',passo:'campanha'},
+ {id:'experiencias',ic:'🧪',nm:'Experiências',ds:'Experiência Acquacel',
+  oque:'Controle das Experiências Acquacel agendadas a partir do Kanban: quem está fazendo, com qual treinador, em que dia da experiência está, e se virou matrícula.',
+  itens:['Colunas: agendada, iniciada, convertida e não convertida','Checklist do primeiro dia e consultoria com o treinador','Tarefas de acompanhamento (feedback, áudio, agendamento final)','Agenda unificada de consultores e treinadores'],
+  quem:'Consultor(a), treinador(a) e gestor(a)',onde:'Topo do Hub › Experiências (ou Agenda)',quando:'Todo dia, enquanto houver experiência em andamento',passo:'exp'},
+ {id:'matricula',ic:'💰',nm:'Matrícula',ds:'Venda registrada',
+  oque:'Quando o lead fecha, a venda é registrada no próprio card da campanha. Ela entra nos números da Visão Executiva, do Painel e do Ranking, e o líder confere o lançamento.',
+  itens:['💰 Registrar Venda: valor, forma de pagamento, tipo de venda','Conferência do líder em Campanhas › Vendas','Total vendido e ticket médio na Visão Executiva'],
+  quem:'Consultor(a) registra, gestor(a) confere',onde:'Card do Kanban › 💰 Registrar Venda',quando:'Na hora em que fecha a matrícula'},
+ {id:'retencao',ic:'🏋️',nm:'Retenção',ds:'Planner do treinador',
+  oque:'Depois da matrícula, o aluno entra na carteira de um treinador. O Planner Digital organiza a agenda, a consultoria técnica, o diário e a revisão de treino, para o aluno ficar e renovar.',
+  itens:['Planner do Treinador: home, agenda, carteira e consultoria técnica','Diário do Treinador e Revisão de Treino','Gestão da Retenção: indicadores, equipe, renovações e carteiras','Atualizar Carteira: suba a planilha de alunos e distribua','Painel de Vendas: funil de experiências e follow-ups'],
+  quem:'Treinador(a), consultor(a) e gestor(a)',onde:'Hub Central da Acquacel (entrada pelo Acesso ao Sistema)',quando:'Todo dia, durante o atendimento aos alunos',passo:'planner'},
+ {id:'nps',ic:'⭐',nm:'NPS e indicação',ds:'Satisfação do aluno',
+  oque:'A pesquisa de satisfação que o aluno responde pelo celular, de 0 a 10. O resultado aparece na Visão Executiva. Aluno satisfeito é o melhor momento para pedir indicação, e a indicação volta para a Central de Leads.',
+  itens:['Topo do Hub › ⭐ Link do NPS para mandar no WhatsApp','NPS geral e NPS por experiência (consultoria, avaliação, revisão, time técnico)','Funil Feedback + Indicação no Desafio'],
+  quem:'Gestor(a) envia, aluno responde',onde:'Topo do Hub › ⭐ Link do NPS',quando:'Após a consultoria, a avaliação física e as revisões de treino',passo:'nps'}
+];
+const CAMADAS=[
+ {t:'Gestão: acompanhar e decidir',mods:[
+  {id:'visao',nm:'Visão Executiva',oque:'O resumo do mês num lugar só: total vendido, recebido, alunos ativos, ticket médio, faturamento por mês, planos vendidos, despesas e NPS.',quem:'Gestor(a)',onde:'Menu lateral › Estratégia › Visão Executiva',quando:'Todo dia, ao abrir o Hub'},
+  {id:'lancar',nm:'Lançar Dia',oque:'O relatório diário de cada consultor(a): lista, tentativas, contatos efetivos, agendamentos e matrículas de cada funil. É a disciplina do Desafio ROI 21 Dias.',quem:'Gestor(a) ou o(a) próprio(a) consultor(a)',onde:'Botão LANÇAR DIA, no topo',quando:'Todo dia, no fim do expediente, mesmo com resultado zero',passo:'lancar'},
+  {id:'painel',nm:'Painel e Funis',oque:'A evolução do desafio dia a dia e a conversão de cada funil (Leads Novos, Renovação, Feedback + Indicação).',quem:'Gestor(a) e consultor(a)',onde:'Menu lateral › Painel / Funis & Indicadores',quando:'Diariamente e na reunião semanal'},
+  {id:'ranking',nm:'Relatório e Ranking',oque:'O histórico de lançamentos (com ✏️ para corrigir) e a classificação da equipe.',quem:'Gestor(a)',onde:'Menu lateral › Vendas › Relatório / Ranking',quando:'Na reunião semanal'},
+  {id:'planej',nm:'Planejamento',oque:'Metas do mês (meta 1, meta 2 e supermeta), fluxo de caixa, custos, encarteiramento e renovação.',quem:'Gestor(a)',onde:'Menu lateral › Estratégia › Planejamento',quando:'No início de cada mês'},
+  {id:'diag',nm:'Diagnóstico e Briefing',oque:'O raio-x da academia e o briefing do negócio (modalidades, público, diferenciais), que deixam os scripts com a cara da academia.',quem:'Gestor(a)',onde:'Menu lateral › Estratégia › Diagnóstico / Briefing',quando:'Na implantação e a cada trimestre'},
+  {id:'tv',nm:'Modo TV',oque:'Os números em tela cheia, para deixar na televisão da recepção ou da sala comercial.',quem:'Gestor(a)',onde:'Botão 📺 TV, no topo',quando:'Durante o dia, na sala da equipe'}
+ ]},
+ {t:'Exclusivo Acquacel',mods:[
+  {id:'hubcentral',nm:'Hub Central',oque:'A porta de entrada da equipe técnica e da gestão da Acquacel: Planner do treinador, Diário, Revisão de Treino, Central de Inteligência e Painel de Vendas.',quem:'Treinador(a), consultor(a) e gestor(a)',onde:'Hub Central (AC-Hub-Central) e Acesso ao Sistema',quando:'Todo dia'},
+  {id:'university',nm:'Acquacel University',oque:'A plataforma de desenvolvimento da equipe, com os capítulos T01 Identidade e Postura do Treinador, T02 Fluxo de Retenção Técnica, T03 Protocolo de Atenção Plena (ciclos de 30 minutos), T04 Gestão de Carteira e Indicadores e T05 Comunicação e Scripts Avançados.',quem:'Equipe técnica',onde:'Acquacel University (AC-University-MVP)',quando:'Na integração de quem chega e nos treinamentos'},
+  {id:'dashes',nm:'Dashboards',oque:'O Desafio Executivo da gestão e o Dashboard da Equipe Técnica, com os indicadores de cada frente.',quem:'Gestor(a)',onde:'AC-Dashboard-Executivo e AC-Dashboard-Equipe-Tecnica',quando:'Na reunião semanal'},
+  {id:'landing',nm:'Leads da Landing',oque:'Os cadastros que chegam pela página da natação infantil da Acquacel.',quem:'Consultor(a) e gestor(a)',onde:'AC-Leads',quando:'Todo dia, junto com a Central de Leads'},
+  {id:'conversor',nm:'Conversor de Carteira',oque:'Converte a planilha de alunos do sistema de gestão para o formato da carteira.',quem:'Gestor(a)',onde:'Conversor de Carteira',quando:'Antes de atualizar a carteira'},
+  {id:'nat',nm:'Scripts de natação infantil',oque:'Na Biblioteca de scripts: os funis de natação infantil falando com pais e mães, a Experiência Acquacel com o Guia da Metodologia e o Mapa de saúde para os pais, a Família Acquacel e as objeções de natação.',quem:'Consultor(a) e gestor(a)',onde:'Topo do Hub › 💬 Biblioteca de scripts, ou 📚 Scripts no Kanban',quando:'Em cada contato com as famílias'}
+ ]},
+ {t:'Equipe: pessoas e conhecimento',mods:[
+  {id:'equipe',nm:'Equipe e acessos',oque:'Cadastro de consultores(as) e treinadores(as), metas, funis e criação do login de cada pessoa com os módulos que ela pode usar.',quem:'Gestor(a)',onde:'Menu lateral › Vendas › Equipe (+ Consultor(a), + Treinador(a), 🔑 Acesso)',quando:'Na implantação e quando entrar alguém novo'},
+  {id:'uc',nm:'Universidade Corporativa',oque:'A metodologia e o treinamento da equipe: os pilares da conversa comercial, a ancoragem e a jornada da conversão.',quem:'Toda a equipe',onde:'Topo do Hub › 🎓 Universidade Corporativa',quando:'Na integração de quem chega e nos treinamentos'},
+  {id:'biblio',nm:'Biblioteca de scripts',oque:'Os scripts do dia a dia por funil e por tentativa, com opção 1 e opção 2, objeções, rotina e perfis.',quem:'Consultor(a) e gestor(a)',onde:'Topo do Hub › 💬 Biblioteca de scripts (ou 📚 Scripts no Kanban)',quando:'Em cada contato da cadência'},
+  {id:'pessoas',nm:'Hub de Pessoas',oque:'Contratação em etapas: o candidato faz o teste de perfil pelo celular e o gestor vê o resultado no painel.',quem:'Gestor(a) e candidatos',onde:'Topo do Hub › 👥 Hub de Pessoas',quando:'Em cada processo seletivo',passo:'pessoas'}
+ ]}
+];
+let selecionado='leads';
+function todos(){return [...ETAPAS,...CAMADAS.flatMap(c=>c.mods)]}
+function renderMapa(){
+  document.getElementById('jornada').innerHTML=ETAPAS.map((e,i)=>`<button class="etapa ${e.id===selecionado?'on':''}" data-id="${e.id}" aria-pressed="${e.id===selecionado}"><span class="num">${i+1}</span><div class="ic">${e.ic}</div><div class="nm">${esc(e.nm)}</div><div class="ds">${esc(e.ds)}</div></button>`).join('');
+  document.getElementById('camadas').innerHTML=CAMADAS.map(c=>`<div class="camada"><h3>${esc(c.t)}</h3><div class="mods">${c.mods.map(m=>`<button class="mod ${m.id===selecionado?'on':''}" data-id="${m.id}">${esc(m.nm)}</button>`).join('')}</div></div>`).join('');
+  const d=todos().find(x=>x.id===selecionado);
+  document.getElementById('detalhe').innerHTML=`<div><h3>${d.ic?d.ic+' ':''}${esc(d.nm)}</h3><p>${esc(d.oque)}</p>${d.itens?`<ul class="lista">${d.itens.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:''}${d.passo?`<p style="margin-top:12px"><a href="#passos" data-passo="${d.passo}">Ver o passo a passo →</a></p>`:''}</div>
+   <div class="kv"><div><b>Onde fica</b><span class="caminho">${esc(d.onde)}</span></div><div><b>Quem usa</b>${esc(d.quem)}</div><div><b>Quando</b>${esc(d.quando)}</div></div>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.etapa,.mod');if(b){selecionado=b.dataset.id;renderMapa();return}
+  const p=e.target.closest('[data-passo]');if(p){tarefaAtiva=p.dataset.passo;renderPassos()}
+});
+
+/* ───────── 02 · Começar ───────── */
+const CHECK=[
+ ['Entrar no Hub com o login de gestor','Use o e-mail e a senha de gestor(a) que você recebeu. Troque a senha depois do primeiro acesso.'],
+ ['Preencher o Briefing do negócio','Estratégia › Briefing: modalidades, público, ticket e diferenciais. É o que deixa os scripts com a cara da academia.'],
+ ['Cadastrar os(as) consultores(as)','Equipe › + Consultor(a): nome, tipo de meta, carga horária e funis de trabalho.'],
+ ['Cadastrar os(as) treinadores(as)','Equipe › + Treinador(a): nome, telefone, formação, CREF e nível de carreira.'],
+ ['Criar o acesso de cada pessoa','Equipe › 🔑 Acesso: e-mail, senha e os módulos liberados (Desafio, Campanhas, Scripts, Experiências).'],
+ ['Fazer o Planejamento do mês','Estratégia › Planejamento: meta 1, meta 2 e supermeta de faturamento, planos e alunos ativos.'],
+ ['Criar a primeira campanha','Campanhas › + Nova Campanha: suba a lista de leads e divida entre os(as) consultores(as).'],
+ ['Criar um link de captação','Central de Leads › Links de captação: ligue a indicação digital e o sorteio, se for usar.'],
+ ['Combinar a rotina do Lançar Dia','Todo dia, no fim do expediente, cada consultor(a) lança os números. Mesmo quando é zero.'],
+ ['Liberar o Hub Central e o Planner','Os acessos do Hub Central e do Planner são criados no Admin da Acquacel.']
+];
+const LS='mapa-hub-checklist:'+CFG.nome;
+let feitos=new Set();try{feitos=new Set(JSON.parse(localStorage.getItem(LS)||'[]'))}catch(e){}
+function renderCheck(){
+  document.getElementById('checklist').innerHTML=CHECK.map(([t,d],i)=>`<div class="passo ${feitos.has(i)?'feito':''}" role="checkbox" tabindex="0" aria-checked="${feitos.has(i)}" data-i="${i}"><div class="ck">${feitos.has(i)?'✓':i+1}</div><div><div class="tt">${esc(t)}</div><div class="dd">${esc(d)}</div></div></div>`).join('');
+  document.getElementById('pct').textContent=`${feitos.size}/${CHECK.length}`;
+  document.getElementById('barra').style.width=(feitos.size/CHECK.length*100)+'%';
+}
+function marcar(i){feitos.has(i)?feitos.delete(i):feitos.add(i);try{localStorage.setItem(LS,JSON.stringify([...feitos]))}catch(e){}renderCheck()}
+document.getElementById('checklist').addEventListener('click',e=>{const p=e.target.closest('.passo');if(p)marcar(+p.dataset.i)});
+document.getElementById('checklist').addEventListener('keydown',e=>{const p=e.target.closest('.passo');if(p&&(e.key===' '||e.key==='Enter')){e.preventDefault();marcar(+p.dataset.i)}});
+
+/* ───────── 03 · Perfis ───────── */
+const PERFIS=[
+ {tag:'Visão completa',nm:'Gestor(a)',ve:'Vê todos os números da academia, cadastra a equipe, cria acessos, faz o planejamento e acompanha cada consultor(a).',
+  rot:[['Todo dia',['Abrir a Visão Executiva','Conferir se a equipe fez o Lançar Dia','Olhar os atrasados na Minha Agenda das campanhas']],
+       ['Toda semana',['Reunião com Painel, Funis, Relatório e Ranking','Conferir as vendas lançadas (Campanhas › Vendas)']],
+       ['Todo mês',['Planejamento do mês e nova campanha','Diagnóstico e envio do NPS']]]},
+ {tag:'Comercial',nm:'Consultor(a)',ve:'Entra direto no Painel com os próprios números e trabalha as campanhas liberadas para ele(a).',
+  rot:[['Começo do dia',['Abrir Campanhas › Minha Agenda: atrasados e contatos de hoje','Ver novos leads na Central de Leads']],
+       ['Durante o dia',['Trabalhar o Kanban seguindo a cadência com 📚 Scripts','Registrar cada tentativa no card','Agendar experiências e registrar as vendas']],
+       ['Fim do dia',['Fazer o Lançar Dia (Leads Novos já vem automático do Kanban)']]]},
+ {tag:'Técnico',nm:'Treinador(a)',ve:'Usa o Hub Central e o Planner para cuidar da própria carteira de alunos e acompanha as experiências.',
+  rot:[['Começo do dia',['Abrir o Planner no Hub Central: agenda e carteira','Ver as experiências do dia']],
+       ['Durante o dia',['Consultoria técnica com os alunos','Revisão de Treino com o checklist guiado','Cards do departamento técnico nas campanhas']],
+       ['Fim do dia',['Preencher o Diário do Treinador']]]}
+];
+document.getElementById('perfis-lista').innerHTML=PERFIS.map(p=>`<div class="perfil"><span class="tag">${esc(p.tag)}</span><h3>${esc(p.nm)}</h3><p class="vê">${esc(p.ve)}</p><div class="rotina">${p.rot.map(([q,l])=>`<div><h4>${esc(q)}</h4><ul class="lista" style="margin-top:0">${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</div></div>`).join('');
+
+/* ───────── 04 · Passo a passo ───────── */
+const TAREFAS=[
+ {id:'lancar',nm:'📝 Lançar o dia',passos:[
+  {t:'Abrir o lançamento',p:'No topo do Hub, clique em LANÇAR DIA.'},
+  {t:'Escolher consultor(a), dia e data',p:'Selecione o(a) consultor(a), o dia do desafio (1 a 21) e a data. Depois clique em ▶ Carregar campos do funil.',ul:['Dá para lançar um dia que passou: coloque o número do dia e a data certa.']},
+  {t:'Modo de trabalho do dia',p:'Informe quantos ciclos exclusivos de CRM foram feitos (0 a 6) e o modo do dia. Use a observação para contar o que aconteceu (ex.: campanha ativa, evento na academia).'},
+  {t:'Indicadores de cada funil',p:'Em cada funil, preencha:',ul:['Total da lista hoje','1ª tentativa (pessoas abordadas pela primeira vez)','Cadência (retornos de dias anteriores)','Contatos efetivos (quem atendeu e foi qualificado)','Agendamentos e matrículas do dia'],dica:'Leads Novos já vem automático do Kanban (🔗 Auto). Para digitar à mão, clique em ✎ Manual.'},
+  {t:'Salvar',p:'Clique em SALVAR LANÇAMENTO. Os números entram no Painel, nos Funis, no Relatório e no Ranking na hora.',dica:'Lance todo dia, mesmo quando o resultado for zero. Errou? Corrija em Relatório, no ✏️ do lançamento.'}
+ ]},
+ {id:'campanha',nm:'📢 Criar uma campanha',passos:[
+  {t:'Dados da campanha',p:'Em Topo do Hub › Campanhas, abra a aba + Nova Campanha e preencha:',ul:['Nome e mês de referência','Investimento em tráfego pago (para calcular CPL e ROAS)','Perfis: Leads Novos, Rematrícula, Ciclo de Renovação ou Sucesso do Cliente']},
+  {t:'Subir a lista',p:'Escolha o perfil e arraste a planilha. Vale o Excel exportado do sistema de gestão (SCA, Pacto, EVO, Next Fit) ou CSV.',ul:['Use 📥 Baixar modelo de planilha se ainda não tiver um arquivo','Sem lista pronta? Clique em Ativar este funil vazio e adicione os cards depois, pelo Kanban'],dica:'Não precisa seguir uma ordem de colunas: você diz qual coluna é o nome, o telefone etc. e confere as 3 primeiras linhas antes de continuar.'},
+  {t:'Processar a lista',p:'Clique em Processar lista. O sistema mostra quantas pessoas estão prontas para dividir. Clique em Continuar para divisão em ciclos.'},
+  {t:'Dividir entre a equipe',p:'Escolha o departamento, a liderança da campanha (obrigatória), a capacidade semanal e quem vai trabalhar a lista. Clique em Calcular divisão sugerida e depois em ✅ Confirmar e Salvar.'},
+  {t:'Campanha ativada',p:'A campanha aparece em Minhas Campanhas. Clique nela para abrir o Kanban: cada pessoa da lista vira um card na coluna Lista / Iniciar cadência.'},
+  {t:'Trabalhar a cadência',p:'Clique no card para ver a tentativa da vez, com a opção 1 e a opção 2 da mensagem prontas para copiar. Registre o resultado e o card anda sozinho pelas etapas.',ul:['📚 Scripts: a biblioteca completa por funil, etapa e canal','💰 Registrar Venda quando fechar a matrícula']}
+ ]},
+ {id:'leads',nm:'🎯 Link de captação e sorteio',passos:[
+  {t:'Criar o link',p:'Na Central de Leads, abra Links de captação e clique em + Novo link de captação. Preencha:',ul:['Nome da campanha e o código que vai no link (só letras, números e hífen)','Origem (evento, tráfego pago, Instagram, parceria...) e a cor de destaque','Título da página, frase de apoio e data, local e horário','Artes da campanha: capa da página e capa do convidado (use "Copiar prompt" para gerar a arte)']},
+  {t:'Ligar a indicação e o sorteio',p:'No mesmo formulário, marque o sorteio e a indicação digital, defina a sigla que vai no código (ex.: POWER) e escreva os presentes de quem chega por indicação, um por linha. Clique em Salvar.',dica:'Cada amigo que se cadastra pelo convite vale uma chance a mais no sorteio para quem indicou.'},
+  {t:'Divulgar',p:'No card do link aparecem os botões Copiar link, QR Code, Ver leads, Imprimir sorteio e Editar. O QR Code pode ser baixado para cartaz, banner ou tela no evento.',ul:['Gerar link para anúncio ou parceiro (UTMs): mostra de onde veio cada lead']},
+  {t:'O aluno se cadastra',p:'A pessoa abre o link no celular, preenche nome, WhatsApp e as perguntas, aceita o contato e confirma. Leva menos de 1 minuto.'},
+  {t:'Código e convite',p:'Na hora aparece o código da pessoa (ex.: FERNANDA[POWER]3456) e o botão Convidar amigos pelo WhatsApp. O amigo que abre o convite vê os presentes liberados por quem indicou.'},
+  {t:'Acompanhar os leads',p:'Na aba Leads ficam todos os cadastros, com filtros por origem, campanha, status, consultora e indicação. Clique em Abrir para mudar o status, escolher a consultora e anotar.',ul:['Ocultar: tira testes e repetidos da lista e do sorteio, sem apagar','Enviar filtrados para campanha: cria os cards no Kanban de Campanhas','Exportar planilha']},
+  {t:'Ranking e sorteio',p:'Em Indicações fica o ranking de quem mais trouxe amigos e quantos matricularam. Para sortear, clique em Imprimir sorteio: sai uma folha com um nome por chance, pronta para recortar, ou salve em PDF.'}
+ ]},
+ {id:'exp',nm:'🧪 Registrar experiência',passos:[
+  {t:'Como a experiência nasce',p:'O jeito mais comum é pelo Kanban: quando o card vai para Experiência agendada, a experiência é criada sozinha e já fica ligada ao lead. Para cadastrar direto, abra Topo do Hub › Experiências e clique em + Nova Experiência.'},
+  {t:'Cadastro e qualificação',p:'Preencha o nome do lead, nº de cadastro, WhatsApp, data de início e consultor(a). Depois a qualificação:',ul:['Perfil: 95% (precisa de orientação), 5% (autônomo, já treina) ou sem qualificação','Programa (pilar): Emagrecimento com Saúde, Imunidade e Energia, Performance e Esporte ou Cuidados Especiais','Duração em dias e o objetivo específico do aluno']},
+  {t:'Dia 1: treinador responsável',p:'Abra o card e registre quem atendeu no primeiro dia. Esse campo trava depois de salvo, porque é o indicador de conversão do treinador.',dica:'É depois do Dia 1 que liberam o checklist, os pontos críticos, a presença e as tarefas.'},
+  {t:'Acompanhar os dias',p:'Durante a experiência, use o card para registrar:',ul:['Pontos críticos: mapeamento de sintomas e consultoria com o treinador','Presença de cada dia e a temperatura do aluno (esquentando, estável, esfriando)','Tarefas de vendas e do time técnico, e o toque de sexta-feira']},
+  {t:'Fechar a experiência',p:'Mova para Experiência Convertida quando matricular (a data fica registrada) ou para Não Convertida, com o motivo. A aba Agenda mostra o que cada um tem para fazer, e Indicadores mostra conversão, frequência e resultado por treinador.'}
+ ]},
+ {id:'nps',nm:'⭐ Enviar o NPS',passos:[
+  {t:'Copiar o link',p:'No Hub, abra ☰ Ferramentas e clique em ⭐ Copiar link do NPS. Mande no WhatsApp do aluno ou deixe num QR Code na recepção.'},
+  {t:'O aluno responde',p:'Pelo celular, ele escolhe sobre o que quer avaliar (experiência geral, consultoria, avaliação física, revisão de treino ou time técnico), dá a nota de 0 a 10 e, se quiser, coloca o nome.'},
+  {t:'Ver o resultado',p:'As notas entram na Visão Executiva: NPS geral e NPS por experiência (consultoria, avaliação física, revisão de treino e time técnico).',dica:'Mande logo depois da consultoria, da avaliação física e das revisões. Nota 9 ou 10 é o melhor momento para pedir uma indicação.'}
+ ]},
+ {id:'pessoas',nm:'👥 Hub de Pessoas',passos:[
+  {t:'Abrir e entrar',p:'Em Topo do Hub › 👥 Hub de Pessoas. A Visão geral mostra a jornada de contratação em 7 etapas. Para ver resultados, abra Painel do gestor e entre com o e-mail e a senha de gestor(a) do Hub (consultor e treinador não veem esse painel).'},
+  {t:'Mandar o teste ao candidato',p:'No Painel do gestor, clique em Copiar link do teste e mande para o candidato. Ele coloca o nome, escolhe a vaga e aceita o uso das respostas (LGPD).'},
+  {t:'O candidato responde',p:'São 12 situações do dia a dia da academia, cerca de 5 minutos. Não existe resposta certa: ele escolhe a atitude que mais parece com a dele.'},
+  {t:'Ler o relatório',p:'O candidato aparece no painel com o perfil predominante e o secundário, a consistência das respostas, os pontos fortes, o que pede acompanhamento e o encaixe em cada área (recepção, vendas, técnica).',dica:'O resultado é apoio à decisão, nunca decide sozinho a contratação.'}
+ ]},
+ {id:'planner',nm:'🏋️ Entrar no Planner',passos:[
+  {t:'Abrir o Acesso ao Sistema',p:'O treinador entra pela tela Acesso ao Sistema da Acquacel, escolhe o perfil (treinador, gestor ou consultor) e coloca o e-mail e a senha.'},
+  {t:'Usar o Hub Central',p:'Depois de entrar, o Hub Central abre os módulos do dia a dia:',ul:['Sistema do Depto. Técnico (planner, agenda, carteira e consultoria técnica)','Diário do Treinador e Revisão de Treino','Central de Inteligência e Painel de Vendas (gestão)']},
+  {t:'Criar os acessos',p:'Os acessos da equipe técnica são criados no Admin da Acquacel. Use o mesmo e-mail que a pessoa usa no Hub.'}
+ ]}
+];
+let tarefaAtiva='lancar';
+function renderPassos(){
+  document.getElementById('tarefas').innerHTML=TAREFAS.map(t=>`<button class="tarefa-btn ${t.id===tarefaAtiva?'on':''}" data-t="${t.id}">${esc(t.nm)}${t.breve?'<span class="breve">em breve</span>':''}</button>`).join('');
+  const t=TAREFAS.find(x=>x.id===tarefaAtiva);
+  document.getElementById('guia').innerHTML=t.breve
+   ?`<div class="em-breve"><b>${esc(t.nm)}</b><br>Este passo a passo está sendo preparado e entra na próxima versão do mapa. Enquanto isso, veja o resumo dessa área no Mapa geral, lá em cima.</div>`
+   :t.passos.map((p,i)=>`<div class="gpasso ${p.img?'':'sem-img'}"><div><div class="gn">Passo ${i+1} de ${t.passos.length}</div><h3>${esc(p.t)}</h3><p>${esc(p.p)}</p>${p.ul?`<ul>${p.ul.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${p.dica?`<div class="dica">💡 ${esc(p.dica)}</div>`:''}</div>${p.img?`<div class="shot"><img src="${p.img}" alt="${esc(p.t)}" loading="lazy"></div>`:''}</div>`).join('');
+}
+document.getElementById('tarefas').addEventListener('click',e=>{const b=e.target.closest('.tarefa-btn');if(b){tarefaAtiva=b.dataset.t;renderPassos()}});
+
+/* ───────── 05 · Dúvidas ───────── */
+const FAQ=[
+ ['Esqueci a senha. E agora?','O gestor(a) troca a senha de qualquer pessoa da equipe em Equipe › 🔑 Acesso. A senha do gestor(a) é trocada pela equipe GeFit.'],
+ ['Não consigo entrar no Planner','O Planner entra pelo Acesso ao Sistema da Acquacel. Se não entrar, o acesso dessa pessoa ainda não foi criado no Admin: fale com a gestão.'],
+ ['Não aparece Campanhas (ou outro módulo) para mim','O módulo não foi liberado no seu acesso. O gestor(a) libera em Equipe › 🔑 Acesso, marcando os módulos.'],
+ ['Lancei o dia errado','Abra Relatório, encontre o lançamento e clique no ✏️ para corrigir (ou 🗑 para apagar e lançar de novo).'],
+ ['Posso lançar um dia que já passou?','Sim. No Lançar Dia, informe o número do dia do desafio e a data correta.'],
+ ['O lead se cadastrou duas vezes','Na Central de Leads, marque o repetido e clique em Ocultar. Ele sai da lista, dos números e do sorteio, sem ser apagado.'],
+ ['Os dados ficam salvos se eu fechar o navegador?','Sim. Tudo é salvo na nuvem na hora e pode ser acessado de qualquer celular ou computador.']
+];
+document.getElementById('faq').innerHTML=FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('');
+
+/* zoom das imagens */
+const zoom=document.getElementById('zoom');
+document.addEventListener('click',e=>{const s=e.target.closest('.shot img');if(s){zoom.querySelector('img').src=s.src;zoom.classList.add('on')}else if(e.target.closest('#zoom'))zoom.classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')zoom.classList.remove('on')});
+
+/* destaque do menu conforme a rolagem */
+const links=[...document.querySelectorAll('#nav a')];
+const obs=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id))}),{rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+
+renderMapa();renderCheck();renderPassos();
+</script>
+</body>
+</html>
