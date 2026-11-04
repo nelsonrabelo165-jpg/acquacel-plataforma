@@ -302,7 +302,9 @@ table.vd-table th{color:var(--laranja);font-size:11px;text-transform:uppercase;}
 .auth-box .gf-foot{padding:16px 0 0}
 .auth-screen.active~.gf-foot,#loginScreen:not([style*="none"])~.gf-foot{display:none}
 .app.show~.gf-foot{margin-left:210px}
-</style></head>
+</style><script>window.ACADEMIA_CFG={nome:"Acquacel",presente:"o Guia da Metodologia Acquacel para a família + o Mapa de saúde para a mãe ou o pai",cor:"#1B4FD8",corT:"#0A2472",corTexto:"#FFFFFF",escuro:"#0A2472",fundo:"#F8FAFF"};</script>
+<script src="ferramentas-academia.js"></script>
+</head>
 <body>
 
 <div class="auth-screen" id="screen-checking"><div class="auth-checking">Verificando acesso...</div></div>
@@ -463,6 +465,7 @@ table.vd-table th{color:var(--laranja);font-size:11px;text-transform:uppercase;}
       <input class="kb-search" id="kbSearch" placeholder="🔍 Buscar por nome ou código..." oninput="renderKanbanBoard()" style="margin-bottom:0;flex:1;min-width:220px">
       <select class="fsel" id="kbFiltroConsultorSel" style="display:none;width:auto;min-width:180px;" onchange="mudarFiltroConsultorKanban(this.value)"><option value="">👥 Todos(as) os(as) consultores(as)</option></select>
       <button class="btn-primary" onclick="abrirNovoCardManual()">+ Adicionar Card</button>
+      <button class="btn-gh" onclick="abrirScriptsKanban()" title="Biblioteca de scripts por funil, com opção 1 e opção 2">📚 Scripts</button>
       <button class="btn-gh" onclick="abrirGerenciarTreinadores()">👥 Treinadores(as)</button>
       <button class="btn-gh" id="btnJornadaSucesso" style="display:none;" onclick="abrirEditorJornada(kbPerfilAtivo)">🎯 Jornada</button>
       <button class="btn-gh" id="btnAtribuirCarteira" style="display:none;" onclick="abrirAtribuirCarteira()">📋 Atribuir Carteira</button>
@@ -1630,6 +1633,8 @@ async function abrirCardPelaAgenda(cardId){
 // ou enquanto não há integração automática com o sistema de gestão da academia.
 const CADENCIA_TOTAL_PADRAO_MANUAL={leads:9,rematricula:4,renovacao:4};
 // ── Gerenciar Treinadores(as) — equipe técnica que recebe as experiências/consultorias ──
+// Biblioteca de scripts (ferramentas-academia.js): abre no funil do perfil ativo do Kanban
+function abrirScriptsKanban(){if(typeof abrirBibliotecaAcademia!=='function'){toast('Biblioteca de scripts não carregou.',true);return;}const m={leads:'nat',rematricula:'ex',renovacao:'renov',sucesso_cliente:'natfam'};abrirBibliotecaAcademia({funil:m[kbPerfilAtivo]||'nat'});}
 function abrirGerenciarTreinadores(){
   renderListaTreinadores();
   document.getElementById('novoTreinadorNome').value='';
@@ -2197,7 +2202,7 @@ function closeM(id){document.getElementById(id).classList.remove('open');}
 
 // Repertório de scripts por tentativa — baseado nos blocos B.11 (leads/10x15),
 // B.13/B.14 (rematrícula) e B.17 (renovação) já validados na Central de Scripts.
-const SCRIPT_CADENCIA={
+const SCRIPT_CADENCIA_ANTIGA={
   leads:[
     {tipo:'Texto + Áudio · Primeiro Contato',texto:'Oi, {NOME}! Que alegria receber sua mensagem 🙌 Parabéns pela decisão — dar esse passo já mostra que você está levando sua saúde a sério. Aqui a gente trabalha diferente das academias convencionais: montamos um projeto personalizado pra cada aluno. Pra eu te ajudar melhor: qual sua idade, e você já está treinando atualmente?'},
     {tipo:'Direcionar p/ Ligação',texto:'Oi, {NOME}! Separei um presente de boas-vindas especial pra você e quero te explicar rapidinho como funciona nossa metodologia. Entendo a correria e quero valorizar seu tempo — consigo ligar rapidinho agora, ou prefere que eu ligue em outro horário? São só 2 a 3 minutinhos, garanto que vai valer a pena.'},
@@ -2227,6 +2232,9 @@ const SCRIPT_CADENCIA={
     {tipo:'Fechamento do ciclo',texto:'Muito obrigado(a) pelo seu tempo, {NOME}! Qualquer coisa que precisar, é só me chamar.'}
   ]
 };
+// Cadência do card vem da Biblioteca de scripts (ferramentas-academia.js): natação infantil em leads.
+// Se o arquivo não carregar, usa a antiga.
+const SCRIPT_CADENCIA=Object.assign({},SCRIPT_CADENCIA_ANTIGA,(window.FT_ACADEMIA&&FT_ACADEMIA.cadencia())||{});
 
 // ── MODO COMPROMISSO — etapas onde o card já tem um agendamento confirmado.
 // Aqui a cadência de prospecção para de contar; o script vira Confirmação ou
