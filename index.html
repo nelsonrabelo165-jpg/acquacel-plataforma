@@ -232,6 +232,13 @@ tbody tr:hover td{background:var(--s2)}
 .tv-mode .kpi-value{font-size:34px}
 .tv-mode .kpi-label{font-size:13px}
 .acq-dd{position:relative;display:inline-block}.acq-dd-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:60;background:#fff;border:1px solid rgba(10,36,114,.15);border-radius:10px;box-shadow:0 10px 30px rgba(10,36,114,.18);padding:6px;min-width:260px}.acq-dd.open .acq-dd-menu{display:block}.acq-dd-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 12px;border-radius:7px;font:inherit;font-size:13.5px;color:#0A2472;cursor:pointer}.acq-dd-menu button:hover{background:#EEF3FF}
+.acq-dd-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#6B7FB3;padding:6px 12px 4px}.acq-dd-sep{height:1px;background:rgba(10,36,114,.12);margin:6px 8px}
+/* menu lateral em azul Acquacel */
+.tabs{background:linear-gradient(180deg,#0A2472 0%,#0D2E8C 100%)!important;border-right:none!important}
+.tabs .tab{color:rgba(255,255,255,.78)!important;border-left-color:transparent}
+.tabs .tab:hover{color:#fff!important;background:rgba(255,255,255,.08)!important}
+.tabs .tab.active{color:#fff!important;border-left-color:#38BDF8!important;background:rgba(255,255,255,.14)!important}
+.tabs .nav-group-label{color:#8FB6FF!important;opacity:1!important}
 </style>
 <style id="marca-css">
 .acq-img{display:block;height:44px;width:auto}
@@ -302,24 +309,26 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
         <span style="font-size:11px;color:var(--td)">Academia:</span>
         <select id="sel-ac" class="fi-sel" onchange="switchAc(this.value)"><option value="">— Selecione —</option></select>
       </div>
-      <span id="user-chip" class="user-chip"></span>
-      <button class="btn-gh btn-sm" id="btn-add-cons-top" onclick="if(!ac()){toast('Selecione uma academia no seletor acima.',true);return}openM('m-cons')" style="display:none">+ Consultor(a)</button>
       <button class="btn-or" id="btn-lancar-top" onclick="if(!ac()){toast('Selecione uma academia no seletor acima.',true);return}openM('m-lanc')" style="display:none">Lançar Dia</button>
-      <button class="btn-gh btn-sm" onclick="abrirCentralScripts()" title="Abre em nova aba, já logado">📚 Central de Scripts</button>
-      <button class="btn-gh btn-sm" onclick="abrirBibliotecaAcademia({funil:'nat'})" title="Scripts do dia a dia por funil: natação infantil, opção 1 e opção 2, objeções e rotina">💬 Biblioteca de scripts</button>
-      <button class="btn-gh btn-sm" onclick="abrirCentralScriptsV2()" title="Versão nova, ainda em construção — só Objeções está completa" style="color:#b45309">🚧 Scripts v2 (beta)</button>
-      <button class="btn-gh btn-sm" onclick="abrirCentralLeads()" title="Links de captação, indicação, ranking e sorteio">🎯 Central de Leads</button>
-      <button class="btn-gh btn-sm" onclick="abrirCampanhas()" title="Abre em nova aba, já logado">📢 Campanhas</button>
-      <button class="btn-gh btn-sm" onclick="abrirExperiencias()" title="Abre em nova aba, já logado">🎯 Experiências</button>
-      <button class="btn-gh btn-sm" onclick="abrirAgendaUnificada()" title="Abre em nova aba, já logado">📅 Agenda</button>
       <div class="acq-dd" id="acq-dd"><button class="btn-gh btn-sm" type="button" onclick="event.stopPropagation();document.getElementById('acq-dd').classList.toggle('open')">☰ Ferramentas ▾</button>
-        <div class="acq-dd-menu" onclick="document.getElementById('acq-dd').classList.remove('open')">
-          <button onclick="abrirHubPessoas()">👥 Hub de Pessoas</button>
+        <div class="acq-dd-menu" onclick="if(event.target.closest('button'))document.getElementById('acq-dd').classList.remove('open')">
+          <div class="acq-dd-lbl">Abrem já logado</div>
+          <button onclick="abrirCentralLeads()">🎯 Central de Leads</button>
+          <button onclick="abrirCampanhas()">📢 Campanhas</button>
+          <button onclick="abrirExperiencias()">🧪 Experiências</button>
+          <button onclick="abrirAgendaUnificada()">📅 Agenda</button>
+          <button onclick="abrirCentralScripts()" title="Metodologia e treinamento (Central de Scripts AQÚI)">🎓 Universidade Corporativa</button>
+          <button onclick="abrirBibliotecaAcademia({funil:'nat'})" title="Scripts do dia a dia por funil: natação infantil, opção 1 e opção 2, objeções e rotina">💬 Biblioteca de scripts</button>
+          <button onclick="abrirHubPessoas()" title="Teste de perfil do candidato e painel do gestor">👥 Hub de Pessoas</button>
           <button onclick="copiarLinkAcq('nps.html','Link do NPS copiado. Mande para os alunos.')">⭐ Copiar link do NPS</button>
           <button onclick="copiarLinkAcq('briefing-gestora.html?a='+ACQ_ACADEMIA,'Link do briefing copiado. Mande para o gestor responder pelo celular.')">📝 Copiar link do briefing do gestor</button>
           <button onclick="window.open('mapa-ferramenta.html','_blank')">🗺️ Mapa do Hub</button>
+          <button onclick="abrirCentralScriptsV2()" style="color:#b45309" title="Versão nova, ainda em construção">🚧 Scripts v2 (beta)</button>
+          <div class="acq-dd-sep"></div>
+          <button id="btn-add-cons-top" onclick="if(!ac()){toast('Selecione uma academia no seletor acima.',true);return}openM('m-cons')" style="display:none">➕ Consultor(a)</button>
         </div></div>
       <button class="btn-gh btn-sm" id="btn-tv" onclick="toggleTV()" title="Modo apresentação em tela cheia">📺 TV</button>
+      <span id="user-chip" class="user-chip"></span>
       <button class="btn-logout" onclick="doLogout()">Sair</button>
     </div>
   </div>
@@ -334,6 +343,7 @@ body.role-consultor #painel-prod-time,body.role-consultor #painel-cons-filter{di
 
     <div class="nav-group-label">📈 Vendas</div>
     <div class="tab" data-tab="vendasmkt" onclick="switchTab('vendasmkt')">Vendas & Marketing</div>
+    <div class="tab" onclick="abrirCentralLeads()" title="Abre em nova aba, já logado">🎯 Central de Leads ↗</div>
     <div class="tab" data-tab="funis" onclick="switchTab('funis')">Funis & Indicadores</div>
     <div class="tab" data-tab="consultoras" onclick="switchTab('consultoras')">Equipe</div>
     <div class="tab" data-tab="relatorio" onclick="switchTab('relatorio')">Relatório</div>
