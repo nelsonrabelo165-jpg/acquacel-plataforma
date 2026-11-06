@@ -53,6 +53,7 @@ tr.oc td{opacity:.6}
 .acoes .sp{flex:1}
 .btn{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--ink3)}
+a.btn{text-decoration:none;color:inherit;display:inline-block}
 .btn.pri{background:var(--ac);border-color:var(--ac);color:var(--ac-ink)}
 .btn.sm{padding:5px 9px;font-size:13px}
 .cont{font-size:13px;color:var(--ink3)}
@@ -99,6 +100,20 @@ a.wa{color:var(--link);text-decoration:none;font-weight:600}
 .sl-bts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .sl-url{width:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;margin-top:4px}
 .sl-aviso{font-size:12px;color:var(--warn)}
+.pg-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:minmax(220px,300px) 1fr;margin-bottom:14px}
+.pg-thumb{background:var(--card2);display:flex;align-items:center;justify-content:center;min-height:170px}
+.pg-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pg-body{padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pg-st{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;border:1px solid var(--line);color:var(--ink2)}
+.pg-st i{width:8px;height:8px;border-radius:50%;background:var(--ink3);display:inline-block}
+.pg-st.ok{color:var(--ok);border-color:var(--ok)}.pg-st.ok i{background:var(--ok)}
+.pg-st.err{color:var(--err);border-color:var(--err)}.pg-st.err i{background:var(--err)}
+.pg-link{display:grid;grid-template-columns:150px 1fr auto auto;gap:8px;align-items:center}
+.pg-link .r{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
+.pg-link input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;color:var(--ink)}
+.pg-info{display:flex;flex-wrap:wrap;gap:8px}
+.pg-info span{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:12.5px;color:var(--ink2)}
+@media (max-width:760px){.pg-card{grid-template-columns:1fr}.pg-link{grid-template-columns:1fr auto auto}.pg-link .r{grid-column:1/-1}}
 .login{max-width:420px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center}
 @media (max-width:640px){.filtros .busca{grid-column:span 1}.grid2{grid-template-columns:1fr}.brand small{display:none}}
 </style>
@@ -111,6 +126,7 @@ a.wa{color:var(--link);text-decoration:none;font-weight:600}
       <button class="tab" role="tab" aria-selected="true" data-t="leads">Leads</button>
       <button class="tab" role="tab" aria-selected="false" data-t="links">Links de captação</button>
       <button class="tab" role="tab" aria-selected="false" data-t="ind">Indicações</button>
+      <button class="tab" role="tab" aria-selected="false" data-t="paginas">Páginas no ar</button>
     </nav>
     <div class="sp"></div>
     <select id="sel-acad" class="hidden" title="Academia"></select>
@@ -191,6 +207,17 @@ a.wa{color:var(--link);text-decoration:none;font-weight:600}
         <thead><tr><th>#</th><th>Quem indicou</th><th>Código</th><th>Amigos cadastrados</th><th>Em contato / agendados</th><th>Matricularam</th><th></th></tr></thead>
         <tbody id="tb-ind"></tbody>
       </table></div>
+    </section>
+
+    <!-- PÁGINAS NO AR -->
+    <section id="sec-paginas" hidden>
+      <div class="acoes">
+        <h2 style="font-size:30px">Páginas no ar</h2>
+        <div class="sp"></div>
+        <button class="btn" onclick="renderPaginas(true)">Verificar de novo</button>
+      </div>
+      <p class="cont" style="margin:0 0 14px">As landing pages da Acquacel, com o endereço, os links prontos para bio e anúncios e a ligação com a Central de Leads. Os leads que chegam por elas aparecem na aba Leads, com a origem marcada.</p>
+      <div id="pg-lista"></div>
     </section>
   </main>
 </div>
@@ -364,7 +391,7 @@ async function iniciar(){
   ['mq-o','mq-src','mq-med','mq-cont'].forEach(id=>$(id).addEventListener('input',atualizarLinkQR));
   $('mc-nome').addEventListener('input',()=>{if(!campAtual)$('mc-slug').value=slugify($('mc-nome').value)});
   document.querySelectorAll('th[data-o]').forEach(th=>th.onclick=()=>{const c=th.dataset.o;ordem=ordem.c===c?{c,d:-ordem.d}:{c,d:c==='created_at'?-1:1};render()});
-  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('sec-leads').hidden=b.dataset.t!=='leads';$('sec-links').hidden=b.dataset.t!=='links';$('sec-ind').hidden=b.dataset.t!=='ind';if(b.dataset.t==='ind')renderInd()});
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));$('sec-leads').hidden=b.dataset.t!=='leads';$('sec-links').hidden=b.dataset.t!=='links';$('sec-ind').hidden=b.dataset.t!=='ind';$('sec-paginas').hidden=b.dataset.t!=='paginas';if(b.dataset.t==='ind')renderInd();if(b.dataset.t==='paginas')renderPaginas()});
   carregarTudo();
 }
 async function carregarTudo(){await Promise.all([carregarCons(),carregarCamps()]);await carregarLeads()}
@@ -386,6 +413,7 @@ async function carregarLeads(){
   if(sessao.role==='consultor'&&sessao.consultora_id)leads=leads.filter(l=>!l.consultora_id||l.consultora_id===sessao.consultora_id);
   todosLeads=leads;leads=todosLeads.filter(l=>!l.oculto);selecionados.clear();
   render();renderCards();
+  const tp=document.querySelector('.tab[data-t=paginas]');if(tp)tp.hidden=(sessao.role==='consultor');
 }
 
 // ---------- leads ----------
@@ -575,6 +603,34 @@ async function confirmarEnvio(){
   fechar('m-enviar');fechar('m-lead');render();toast(`${ok} lead(s) enviados para o Kanban${falhas?` · ${falhas} com erro`:''}.`,!!falhas);
 }
 function verLeadsCamp(id){limparFiltros();$('f-camp').value=id;document.querySelector('.tab[data-t=leads]').click();render()}
+// ---------- páginas no ar ----------
+const PAGINAS=[{
+  id:'metodo-natacao',slug:'metodo-natacao',nome:'Método Acquacel · Natação',
+  desc:'Landing do método de natação: os 7 níveis e mascotes, guia gratuito para os pais e agendamento da Experiência Acquacel.',
+  base:'https://acquacel.com.br/metodologia-natacao/',onde:'Hostinger · public_html/metodologia-natacao',
+  links:[['Página (direto)',''],['Link da bio','?origem=bio'],['Link de anúncio','?origem=anuncio'],['Guia em PDF','guia-primeiros-passos-acquacel.pdf'],['Política de Privacidade','politica-de-privacidade.html']]
+}];
+function sondar(base,cb){const i=new Image();let fim=false;const f=v=>{if(!fim){fim=true;cb(v)}};i.onload=()=>f(true);i.onerror=()=>f(false);setTimeout(()=>f(false),8000);i.src=base+'favicon.png?_='+Date.now()}
+function renderPaginas(recheck){
+  const box=$('pg-lista');if(!box)return;
+  box.innerHTML=PAGINAS.map(pg=>{
+    const meus=(todosLeads||[]).filter(l=>l.campanha_slug===pg.slug);
+    const por={};meus.forEach(l=>{const o=ORIGENS[l.origem]||l.origem||'Outro';por[o]=(por[o]||0)+1});
+    const ult=meus.length?dataBR(meus[0].created_at):'nenhum ainda';
+    const linhas=pg.links.map(([r,q],k)=>{const u=pg.base+q;return `<div class="pg-link"><span class="r">${esc(r)}</span><input readonly value="${esc(u)}" onclick="this.select()"><button class="btn sm" onclick="copiar('${esc(u)}')">Copiar</button><a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">Abrir</a></div>`}).join('');
+    return `<div class="pg-card" data-pg="${esc(pg.id)}">
+      <div class="pg-thumb"><img alt="Prévia de ${esc(pg.nome)}" src="${esc(pg.base)}og-imagem.jpg" onerror="this.style.display='none'"></div>
+      <div class="pg-body">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="font-size:24px;margin:0">${esc(pg.nome)}</h3><span class="pg-st" id="st-${esc(pg.id)}"><i></i>Verificando…</span></div>
+        <div class="cont">${esc(pg.desc)}</div>
+        ${linhas}
+        <div class="cont" style="margin-top:2px"><b>Conectada à Central de Leads</b> · campanha “${esc(pg.slug)}” · cada pedido de guia ou de Experiência vira um lead aqui, com origem (bio, anúncio ou direto), modalidade e faixa etária.</div>
+        <div class="pg-info"><span>${meus.length} lead${meus.length===1?'':'s'} recebido${meus.length===1?'':'s'}</span><span>Último: ${esc(ult)}</span>${Object.entries(por).map(([o,n])=>`<span>${esc(o)}: ${n}</span>`).join('')}<span>Hospedagem: ${esc(pg.onde)}</span></div>
+        <div><button class="btn sm" onclick="verLeadsPagina('${esc(pg.slug)}')">Ver leads desta página</button></div>
+      </div></div>`}).join('');
+  PAGINAS.forEach(pg=>{const el=$('st-'+pg.id);sondar(pg.base,ok=>{if(!el)return;el.className='pg-st '+(ok?'ok':'err');el.innerHTML='<i></i>'+(ok?'No ar':'Fora do ar ou sem resposta')})});
+}
+function verLeadsPagina(slug){const c=(camps||[]).find(x=>x.slug===slug);limparFiltros();if(c)$('f-camp').value=c.id;document.querySelector('.tab[data-t=leads]').click();render()}
 function copiar(t){navigator.clipboard.writeText(t).then(()=>toast('Link copiado')).catch(()=>{prompt('Copie o link:',t)})}
 function abrirCampanha(id){
   campAtual=id?camps.find(c=>c.id===id):null;const c=campAtual||{};
